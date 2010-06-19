@@ -71,15 +71,15 @@
 			isa = PBXGroup;
 			children = (
 				08FB7796FE84155DC02AAC07 /* main.cpp */,
-				2A305FB511CCE38000DD3304 /* mix_byte.h */,
+				2A305FB911CCE50A00DD3304 /* mix_machine.h */,
+				2A305FCA11CCE79400DD3304 /* mix_machine.cpp */,
 				2A305FAD11CCE27E00DD3304 /* mix_small_word.h */,
 				2A305FEE11CCE9AA00DD3304 /* mix_small_word.cpp */,
 				2A305FB111CCE2DE00DD3304 /* mix_word.h */,
 				2A305FE711CCE93B00DD3304 /* mix_word.cpp */,
 				2A305FB711CCE40F00DD3304 /* mix_printer.h */,
-				2A305FB911CCE50A00DD3304 /* mix_machine.h */,
-				2A305FCA11CCE79400DD3304 /* mix_machine.cpp */,
 				2A305FFF11CCEA9800DD3304 /* mix_printer.cpp */,
+				2A305FB511CCE38000DD3304 /* mix_byte.h */,
 				2A30605011CD1C8100DD3304 /* format_range.h */,
 				2A30605111CD1C8100DD3304 /* format_range.cpp */,
 			);

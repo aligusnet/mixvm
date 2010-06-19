@@ -52,6 +52,7 @@ namespace mix
 		
 		void nop(const word &data);	//0
 		void hlt(const word &data);	//5
+		
 		void lda(const word &data);	//8
 		void ld1(const word &data);	//9
 		void ld2(const word &data);	//10
@@ -60,6 +61,15 @@ namespace mix
 		void ld5(const word &data);	//13
 		void ld6(const word &data);	//14
 		void ldx(const word &data);	//15
+		
+		void ldan(const word &data);	//16
+		void ld1n(const word &data);	//17
+		void ld2n(const word &data);	//18
+		void ld3n(const word &data);	//19
+		void ld4n(const word &data);	//20
+		void ld5n(const word &data);	//21
+		void ld6n(const word &data);	//22
+		void ldxn(const word &data);	//23
 		void run(short initial_address);
 	};
 	
