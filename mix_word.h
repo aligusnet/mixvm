@@ -44,7 +44,7 @@ namespace mix
 	value_type get_value(const word &data, byte format = DEFAULT_FORMAT);
 	void set_address(byte *bytes, short addr);
 	word make_word(bool sign, byte a1, byte a2, byte i, byte f, byte c);
-	word make_cmd(byte cmd, short addr, byte f);
+	word make_cmd(byte cmd, short addr = 0, byte f = DEFAULT_FORMAT);
 	
 }
 

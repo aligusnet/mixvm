@@ -50,8 +50,8 @@ namespace mix
 	{
 		static do_statement statements[] = {
 			&Machine::nop, //0 
-			&Machine::nothing, 
-			&Machine::nothing, 
+			&Machine::add, 
+			&Machine::sub, 
 			&Machine::nothing, 
 			&Machine::nothing,
 			&Machine::hlt,
@@ -127,6 +127,30 @@ namespace mix
 	{
 		print_command(std::cout, data, "nop");
 		std::cout << std::endl;
+	}
+	
+	void Machine::add(const word &data)	//1
+	{
+		print_command(std::cout, data, "add");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		
+		value_type val = get_value(memory[addr], data.bytes[byte_f]);
+		val += get_value(reg_a);
+		set_value(val, reg_a, override);
+	}
+	
+	void Machine::sub(const word &data)	//2
+	{
+		print_command(std::cout, data, "sub");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		
+		value_type val = get_value(memory[addr], data.bytes[byte_f]) * -1;
+		val += get_value(reg_a);
+		set_value(val, reg_a, override);
 	}
 	
 	void Machine::hlt(const word &data)	//5
