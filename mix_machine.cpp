@@ -9,6 +9,7 @@
 
 #include "mix_machine.h"
 #include <iostream>
+#include <math.h>
 
 namespace mix
 {	
@@ -52,8 +53,8 @@ namespace mix
 			&Machine::nop, //0 
 			&Machine::add, 
 			&Machine::sub, 
-			&Machine::nothing, 
-			&Machine::nothing,
+			&Machine::mul, 
+			&Machine::div,
 			&Machine::hlt,
 			&Machine::nothing,
 			&Machine::nothing,
@@ -147,10 +148,48 @@ namespace mix
 		std::cout << std::endl;
 		
 		int addr = get_address(data);
-		
 		value_type val = get_value(memory[addr], data.bytes[byte_f]) * -1;
 		val += get_value(reg_a);
 		set_value(val, reg_a, override);
+	}
+	
+	void Machine::mul(const word &data)	//3
+	{
+		print_command(std::cout, data, "mul");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		
+		long_value_type val1 = get_value(reg_a);
+		long_value_type val2 = get_value(memory[addr], data.bytes[byte_f]);
+		long_value_type val = val1*val2;
+		set_long_value(val, reg_a, reg_x, override);
+	}
+	
+	void Machine::div(const word &data)	//4
+	{
+		print_command(std::cout, data, "div");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		
+		value_type val_reg_a = get_value(reg_a);
+		value_type val_mem = get_value(memory[addr], data.bytes[byte_f]);
+		if (abs(val_reg_a) < abs(val_mem))
+		{
+			long_value_type val = get_long_value(reg_a, reg_x);
+			long_value_type quotient = val/val_mem;
+			value_type remainder = val - quotient*val_mem;
+			set_value((value_type)remainder, reg_x, override);
+			reg_x.sign = reg_a.sign;
+			set_value((value_type)quotient, reg_a, override);
+		}
+		else 
+		{
+			override = true;
+		}
+
+		
 	}
 	
 	void Machine::hlt(const word &data)	//5

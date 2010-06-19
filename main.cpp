@@ -12,14 +12,14 @@ void test_vm()
 	std::ofstream ofs_result2("result2.txt");
 	Machine vm;
 	
-	vm.memory[0] = make_cmd(	cmd_lda, 52);
-	vm.memory[1] = make_cmd(	cmd_ldx, 50, encode_format(0, 3));
-	vm.memory[2] = make_cmd(	cmd_ld1, 51);
-	vm.memory[3] = make_cmd(	cmd_ld2, 51);
-	vm.memory[4] = make_cmd(	cmd_ld3, 51);
-	vm.memory[5] = make_cmd(	cmd_ld4, 51);
-	vm.memory[6] = make_cmd(	cmd_ld5, 51);
-	vm.memory[7] = make_cmd(	cmd_ld6, 51);
+	vm.memory[0] = make_cmd(	cmd_lda, 152);
+	vm.memory[1] = make_cmd(	cmd_ldx, 150, encode_format(0, 3));
+	vm.memory[2] = make_cmd(	cmd_ld1, 151);
+	vm.memory[3] = make_cmd(	cmd_ld2, 151);
+	vm.memory[4] = make_cmd(	cmd_ld3, 151);
+	vm.memory[5] = make_cmd(	cmd_ld4, 151);
+	vm.memory[6] = make_cmd(	cmd_ld5, 151);
+	vm.memory[7] = make_cmd(	cmd_ld6, 151);
 	vm.memory[8] = make_cmd(	cmd_nop);
 	vm.memory[9] = make_cmd(	cmd_sta, 100);
 	vm.memory[10] = make_cmd(	cmd_sta, 101, encode_format(1, 5));
@@ -36,6 +36,8 @@ void test_vm()
 	vm.memory[21] = make_cmd(	cmd_st5, 112);
 	vm.memory[22] = make_cmd(	cmd_st6, 113);
 	vm.memory[23] = make_cmd(	cmd_stj, 114);
+	
+	//add
 	vm.memory[24] = make_cmd(	cmd_sta, 199);
 	vm.memory[25] = make_cmd(	cmd_lda, 200);
 	vm.memory[26] = make_cmd(	cmd_sta, 201);
@@ -45,16 +47,41 @@ void test_vm()
 	vm.memory[30] = make_cmd(	cmd_add, 201, encode_format(2, 2));
 	vm.memory[31] = make_cmd(	cmd_add, 201, encode_format(1, 1));
 	vm.memory[32] = make_cmd(	cmd_sta, 202);
+	
+	//sub
 	vm.memory[33] = make_cmd(	cmd_lda, 210);
 	vm.memory[34] = make_cmd(	cmd_sub, 211);
 	vm.memory[35] = make_cmd(	cmd_sta, 212);
+	
 	vm.memory[36] = make_cmd(	cmd_lda, 199);
 	
-	vm.memory[37] = make_cmd(	cmd_hlt);
+	//mul
+	vm.memory[38] = make_cmd(	cmd_sta, 218);
+	vm.memory[39] = make_cmd(	cmd_stx, 219);
+	vm.memory[40] = make_cmd(	cmd_lda, 220); //A
+	vm.memory[41] = make_cmd(	cmd_mul, 221); //*B
+	vm.memory[42] = make_cmd(	cmd_sta, 222);
+	vm.memory[43] = make_cmd(	cmd_stx, 223);
+	vm.memory[44] = make_cmd(	cmd_lda, 218);
+	vm.memory[45] = make_cmd(	cmd_ldx, 219);
 	
-	vm.memory[50] = make_word(POS_SIGN, 8, 0, 3, 5, 4);
-	vm.memory[51] = make_word(POS_SIGN, 0, 0, 0, 11, 11);
-	vm.memory[52] = make_word(POS_SIGN, 6, 7, 8, 9, 0);
+	//div
+	vm.memory[46] = make_cmd(	cmd_sta, 228);
+	vm.memory[47] = make_cmd(	cmd_stx, 229);
+	vm.memory[48] = make_cmd(	cmd_lda, 230);
+	vm.memory[49] = make_cmd(	cmd_ldx, 231);
+	vm.memory[50] = make_cmd(	cmd_div, 232);
+	vm.memory[51] = make_cmd(	cmd_sta, 233);
+	vm.memory[52] = make_cmd(	cmd_stx, 234);
+	vm.memory[53] = make_cmd(	cmd_lda, 228);
+	vm.memory[54] = make_cmd(	cmd_ldx, 229);
+	
+	
+	vm.memory[55] = make_cmd(	cmd_hlt);
+	
+	vm.memory[150] = make_word(POS_SIGN, 8, 0, 3, 5, 4);
+	vm.memory[151] = make_word(POS_SIGN, 0, 0, 0, 11, 11);
+	vm.memory[152] = make_word(POS_SIGN, 6, 7, 8, 9, 0);
 	vm.memory[100] = make_word(NEG_SIGN, 1, 2, 3, 4, 5);
 	vm.memory[101] = make_word(NEG_SIGN, 1, 2, 3, 4, 5);
 	vm.memory[102] = make_word(NEG_SIGN, 1, 2, 3, 4, 5);
@@ -73,19 +100,24 @@ void test_vm()
 	vm.memory[200] = make_word(POS_SIGN, 1, 2, 3, 4, 5);
 	vm.memory[210] = make_word(POS_SIGN, 0, 0, 0, 0, 30);
 	vm.memory[211] = make_word(POS_SIGN, 0, 0, 0, 0, 50);
+	vm.memory[220] = make_word(POS_SIGN, 1, 1, 1, 1, 1);
+	vm.memory[221] = make_word(POS_SIGN, 1, 1, 1, 1, 1);
+	vm.memory[230] = make_word(POS_SIGN, 0, 1, 2, 3, 4);
+	vm.memory[231] = make_word(POS_SIGN, 5, 4, 3, 2, 1);
+	vm.memory[232] = make_word(POS_SIGN, 1, 1, 1, 1, 1);
 	
 	vm.print_state(ofs_start);
 	
 	vm.run(0);
 	
-	vm.memory[0] = make_cmd(	cmd_ldan, 50);
-	vm.memory[1] = make_cmd(	cmd_ldxn, 50, encode_format(0, 3));
-	vm.memory[2] = make_cmd(	cmd_ld1n, 51);
-	vm.memory[3] = make_cmd(	cmd_ld2n, 51);
-	vm.memory[4] = make_cmd(	cmd_ld3n, 51);
-	vm.memory[5] = make_cmd(	cmd_ld4n, 51);
-	vm.memory[6] = make_cmd(	cmd_ld5n, 51);
-	vm.memory[7] = make_cmd(	cmd_ld6n, 51);
+	vm.memory[0] = make_cmd(	cmd_ldan, 150);
+	vm.memory[1] = make_cmd(	cmd_ldxn, 150, encode_format(0, 3));
+	vm.memory[2] = make_cmd(	cmd_ld1n, 151);
+	vm.memory[3] = make_cmd(	cmd_ld2n, 151);
+	vm.memory[4] = make_cmd(	cmd_ld3n, 151);
+	vm.memory[5] = make_cmd(	cmd_ld4n, 151);
+	vm.memory[6] = make_cmd(	cmd_ld5n, 151);
+	vm.memory[7] = make_cmd(	cmd_ld6n, 151);
 	vm.memory[8] = make_cmd(	cmd_nop);
 	vm.memory[9] = make_cmd(	cmd_hlt);
 	
