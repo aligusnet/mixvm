@@ -71,14 +71,14 @@ namespace mix
 			&Machine::ld5, 
 			&Machine::ld6,
 			&Machine::ldx,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,	//20
-			&Machine::nothing, 
-			&Machine::nothing, 
-			&Machine::nothing, 
+			&Machine::ldan,
+			&Machine::ld1n,
+			&Machine::ld2n,
+			&Machine::ld3n,
+			&Machine::ld4n,	//20
+			&Machine::ld5n, 
+			&Machine::ld6n, 
+			&Machine::ldxn, 
 			&Machine::nothing,
 			&Machine::nothing,
 			&Machine::nothing,
@@ -213,8 +213,81 @@ namespace mix
 		set_value(memory[addr], data.bytes[byte_f], reg_x);
 	}
 	
+	void Machine::ldan(const word &data)	//16
+	{
+		print_command(std::cout, data, "ldan");
+		std::cout << std::endl;
+		int addr = get_address(data);
+		set_value(memory[addr], data.bytes[byte_f], reg_a);
+		reg_a.sign = !reg_a.sign;
+	}
+	
+	void Machine::ld1n(const word &data)	//17
+	{
+		print_command(std::cout, data, "ld1n");
+		std::cout << std::endl;
+		int addr = get_address(data);
+		value_type val = get_value(memory[addr]);
+		set_value(val * -1, reg_i[0], override);
+	}
+	
+	void Machine::ld2n(const word &data)	//18
+	{
+		print_command(std::cout, data, "ld2n");
+		std::cout << std::endl;
+		int addr = get_address(data);
+		value_type val = get_value(memory[addr]);
+		set_value(val * -1, reg_i[1], override);
+	}
+	
+	void Machine::ld3n(const word &data)	//19
+	{
+		print_command(std::cout, data, "ld3n");
+		std::cout << std::endl;
+		int addr = get_address(data);
+		value_type val = get_value(memory[addr]);
+		set_value(val * -1, reg_i[2], override);
+	}
+	
+	void Machine::ld4n(const word &data)	//20
+	{
+		print_command(std::cout, data, "ld4n");
+		std::cout << std::endl;
+		int addr = get_address(data);
+		value_type val = get_value(memory[addr]);
+		set_value(val * -1, reg_i[3], override);
+	}
+	
+	void Machine::ld5n(const word &data)	//21
+	{
+		print_command(std::cout, data, "ld5n");
+		std::cout << std::endl;
+		int addr = get_address(data);
+		value_type val = get_value(memory[addr]);
+		set_value(val * -1, reg_i[4], override);
+	}
+	
+	void Machine::ld6n(const word &data)	//22
+	{
+		print_command(std::cout, data, "ld6n");
+		std::cout << std::endl;
+		int addr = get_address(data);
+		value_type val = get_value(memory[addr]);
+		set_value(val * -1, reg_i[5], override);
+	}
+	
+	void Machine::ldxn(const word &data)	//23
+	{
+		print_command(std::cout, data, "ldxn");
+		std::cout << std::endl;
+		int addr = get_address(data);
+		set_value(memory[addr], data.bytes[byte_f], reg_x);
+		reg_x.sign = !reg_x.sign;
+	}
+	
 	void Machine::run(short initial_address)
 	{
+		halt = false;
 		set_address(reg_j.bytes, initial_address);
 		while(!halt)
 		{
