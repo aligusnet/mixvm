@@ -12,7 +12,7 @@ namespace mix
 {
 	bool is_negative(const small_word &data)
 	{
-		return data.sign;
+		return data.sign == NEG_SIGN;
 	}
 	
 	void inc(small_word &sreg, bool &override)
@@ -52,7 +52,7 @@ namespace mix
 	
 	void set_value(value_type val, small_word &data, bool &override)
 	{
-		data.sign = val < 0;
+		data.sign = val < 0 ? NEG_SIGN : POS_SIGN;
 		if (val < 0) val *= -1;
 		value_type tmp = val / VALUES_IN_BYTE;
 		if (tmp > VALUES_IN_BYTE)

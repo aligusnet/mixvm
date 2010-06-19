@@ -11,13 +11,7 @@
 #include <iostream>
 
 namespace mix
-{
-	void set_address(byte *bytes, short addr)
-	{
-		bytes[0] = addr/VALUES_IN_BYTE;
-		bytes[1] = addr - bytes[0]*VALUES_IN_BYTE;
-	}
-	
+{	
 	Machine::Machine()
 	{
 		memset(this, 0, sizeof(Machine));
@@ -79,16 +73,16 @@ namespace mix
 			&Machine::ld5n, 
 			&Machine::ld6n, 
 			&Machine::ldxn, 
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,	//30
-			&Machine::nothing, 
-			&Machine::nothing, 
-			&Machine::nothing, 
+			&Machine::sta,
+			&Machine::st1,
+			&Machine::st2,
+			&Machine::st3,
+			&Machine::st4,
+			&Machine::st5,
+			&Machine::st6,	//30
+			&Machine::stx, 
+			&Machine::stj, 
+			&Machine::stz, 
 			&Machine::nothing,
 			&Machine::nothing,
 			&Machine::nothing,
@@ -148,7 +142,14 @@ namespace mix
 		print_command(std::cout, data, "lda");
 		std::cout << std::endl;
 		int addr = get_address(data);
+		memset(&reg_a, 0, sizeof(reg_a));
 		set_value(memory[addr], data.bytes[byte_f], reg_a);
+		format_range fmt = decode_format(data.bytes[byte_f]);
+		int count = DATA_BYTES_IN_WORD - fmt.high;
+		if (count > 0)
+		{
+			right_shift(reg_a, count);
+		}
 	}
 	
 	void Machine::ld1(const word &data)	//9
@@ -210,7 +211,14 @@ namespace mix
 		print_command(std::cout, data, "ldx");
 		std::cout << std::endl;
 		int addr = get_address(data);
+		memset(&reg_x, 0, sizeof(reg_x));
 		set_value(memory[addr], data.bytes[byte_f], reg_x);
+		format_range fmt = decode_format(data.bytes[byte_f]);
+		int count = DATA_BYTES_IN_WORD - fmt.high;
+		if (count > 0)
+		{
+			right_shift(reg_x, count);
+		}
 	}
 	
 	void Machine::ldan(const word &data)	//16
@@ -218,7 +226,14 @@ namespace mix
 		print_command(std::cout, data, "ldan");
 		std::cout << std::endl;
 		int addr = get_address(data);
+		memset(&reg_a, 0, sizeof(reg_a));
 		set_value(memory[addr], data.bytes[byte_f], reg_a);
+		format_range fmt = decode_format(data.bytes[byte_f]);
+		int count = DATA_BYTES_IN_WORD - fmt.high;
+		if (count > 0)
+		{
+			right_shift(reg_a, count);
+		}
 		reg_a.sign = !reg_a.sign;
 	}
 	
@@ -281,8 +296,130 @@ namespace mix
 		print_command(std::cout, data, "ldxn");
 		std::cout << std::endl;
 		int addr = get_address(data);
+		memset(&reg_x, 0, sizeof(reg_x));
 		set_value(memory[addr], data.bytes[byte_f], reg_x);
+		format_range fmt = decode_format(data.bytes[byte_f]);
+		int count = DATA_BYTES_IN_WORD - fmt.high;
+		if (count > 0)
+		{
+			right_shift(reg_x, count);
+		}
 		reg_x.sign = !reg_x.sign;
+	}
+	
+	void Machine::sta(const word &data) //24
+	{
+		print_command(std::cout, data, "sta");
+		std::cout << std::endl;
+		int addr = get_address(data);
+		format_range fmt = decode_format(data.bytes[byte_f]);
+		int count = DATA_BYTES_IN_WORD - fmt.high;
+		big_register tmp_reg = reg_a;
+		if (count > 0)
+		{
+			left_shift(tmp_reg, count);
+		}
+		
+		set_value(tmp_reg, data.bytes[byte_f], memory[addr]);
+	}
+	
+	void Machine::st1(const word &data) //25
+	{
+		print_command(std::cout, data, "st1");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type val = get_value(reg_i[0]);
+		set_value(val, memory[addr], override);
+	}
+	
+	void Machine::st2(const word &data) //26
+	{
+		print_command(std::cout, data, "st2");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type val = get_value(reg_i[1]);
+		set_value(val, memory[addr], override);
+	}
+	
+	void Machine::st3(const word &data) //27
+	{
+		print_command(std::cout, data, "st3");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type val = get_value(reg_i[2]);
+		set_value(val, memory[addr], override);
+	}
+	
+	void Machine::st4(const word &data) //28
+	{
+		print_command(std::cout, data, "st4");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type val = get_value(reg_i[3]);
+		set_value(val, memory[addr], override);
+	}
+	
+	void Machine::st5(const word &data) //29
+	{
+		print_command(std::cout, data, "st5");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type val = get_value(reg_i[4]);
+		set_value(val, memory[addr], override);
+	}
+	
+	void Machine::st6(const word &data) //30
+	{
+		print_command(std::cout, data, "st6");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type val = get_value(reg_i[5]);
+		set_value(val, memory[addr], override);
+	}
+	
+	void Machine::stx(const word &data) //31
+	{
+		print_command(std::cout, data, "stx");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		format_range fmt = decode_format(data.bytes[byte_f]);
+		int count = DATA_BYTES_IN_WORD - fmt.high;
+		big_register tmp_reg = reg_x;
+		if (count > 0)
+		{
+			left_shift(tmp_reg, count);
+		}
+		
+		set_value(tmp_reg, data.bytes[byte_f], memory[addr]);
+	}
+	
+	void Machine::stj(const word &data) //32
+	{
+		print_command(std::cout, data, "stj");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type val = get_value(reg_j);
+		set_value(val, memory[addr], override);
+	}
+	
+	void Machine::stz(const word &data) //33
+	{
+		print_command(std::cout, data, "stz");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		word zero;
+		memset(&zero, 0, sizeof(zero));
+		set_value(zero, data.bytes[byte_f], memory[addr]);
+		
 	}
 	
 	void Machine::run(short initial_address)

@@ -15,7 +15,7 @@ namespace mix
 {
 	void print_small_word(std::ostream &os, const small_word &word)
 	{
-		os << word.sign;
+		os << (word.sign == POS_SIGN ? "+" : "-");
 		for(int i = 0; i < DATA_BYTES_IN_SMALL_REGISTER; ++i)
 		{
 			os << ", " << (int)word.bytes[i];
@@ -24,7 +24,7 @@ namespace mix
 	
 	void print_word(std::ostream &os, const word &word)
 	{
-		os << word.sign;
+		os << (word.sign == POS_SIGN ? "+" : "-");
 		for(int i = 0; i < DATA_BYTES_IN_WORD; ++i)
 		{
 			os << ", " << (int)word.bytes[i];

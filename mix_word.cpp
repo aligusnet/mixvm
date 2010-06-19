@@ -14,7 +14,7 @@ namespace mix
 {
 	bool is_negative(const word &data)
 	{
-		return data.sign;
+		return data.sign == NEG_SIGN;
 	}
 	
 	unsigned short get_address(const word &data)
@@ -42,6 +42,19 @@ namespace mix
 		}
 	}
 	
+	void left_shift(word &data, int count)
+	{
+		for (int i = 0; i+count < DATA_BYTES_IN_WORD; ++i)
+		{
+			data.bytes[i] = data.bytes[i+count];
+		}
+		
+		for (int i = DATA_BYTES_IN_WORD-1; i > (DATA_BYTES_IN_WORD - count); --i )
+		{
+			data.bytes[i] = 0;
+		}
+	}
+	
 	void set_value(const word &from, int format, word &to)
 	{
 		format_range fmt = decode_format(format);
@@ -55,25 +68,23 @@ namespace mix
 			++fmt.low; //remove sign
 		}
 		
-		//convert for data bytes
-		--fmt.low;
-		--fmt.high;
-		
-		for(int i = 0; i < fmt.low; ++i)
-		{
-			to.bytes[i] = 0;
-		}
-		for(int i = fmt.low; i <= fmt.high; ++i)
+		for(int i = fmt.low-1; i < fmt.high; ++i)
 		{
 			to.bytes[i] = from.bytes[i];
 		}
-		
-		int count = DATA_BYTES_IN_WORD - fmt.high - 1;
-		if(count > 0)
+	}
+	
+	void set_value(value_type val, word &to, bool &override)
+	{
+		to.sign = val < 0 ? NEG_SIGN : POS_SIGN;
+		if(val < 0) val *= -1;
+		for (int i = DATA_BYTES_IN_WORD-1; i >= 0; --i)
 		{
-			right_shift(to, count);
+			to.bytes[i] = val % VALUES_IN_BYTE;
+			val /= VALUES_IN_BYTE;
 		}
 		
+		override = val > 0;
 	}
 	
 	value_type get_value(const word &data, byte format)
@@ -103,6 +114,12 @@ namespace mix
 		return value;
 	}
 	
+	void set_address(byte *bytes, short addr)
+	{
+		bytes[0] = addr/VALUES_IN_BYTE;
+		bytes[1] = addr - bytes[0]*VALUES_IN_BYTE;
+	}
+	
 	word make_word(bool sign, byte a1, byte a2, byte i, byte f, byte c)
 	{
 		word result;
@@ -112,6 +129,17 @@ namespace mix
 		result.bytes[byte_i] = i;
 		result.bytes[byte_f] = f;
 		result.bytes[byte_c] = c;
+		return result;
+	}
+	
+	word make_cmd(byte cmd, short addr, byte f)
+	{
+		word result;
+		result.sign = POS_SIGN;
+		set_address(result.bytes, addr);
+		result.bytes[byte_i] = 0;
+		result.bytes[byte_f] = f;
+		result.bytes[byte_c] = cmd;
 		return result;
 	}
 	

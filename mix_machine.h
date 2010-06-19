@@ -23,13 +23,44 @@ namespace mix
 		compare_greater
 	};
 	
+	enum commands_t
+	{
+		cmd_nop = 0,
+		cmd_hlt = 5,
+		cmd_lda = 8,
+		cmd_ld1,
+		cmd_ld2 = 10,
+		cmd_ld3,
+		cmd_ld4,
+		cmd_ld5,
+		cmd_ld6,
+		cmd_ldx,
+		cmd_ldan,
+		cmd_ld1n,
+		cmd_ld2n,
+		cmd_ld3n,
+		cmd_ld4n = 20,
+		cmd_ld5n,
+		cmd_ld6n,
+		cmd_ldxn,
+		cmd_sta,
+		cmd_st1,
+		cmd_st2,
+		cmd_st3,
+		cmd_st4,
+		cmd_st5,
+		cmd_st6 = 30,
+		cmd_stx,
+		cmd_stj,
+		cmd_stz
+		
+	};
+	
 	typedef word big_register;
 	typedef small_word small_register;
 	
 	struct Machine;
 	typedef void (Machine::*do_statement)(const word &command);
-	
-	void set_address(byte *bytes, short addr);
 
 	struct Machine
 	{
@@ -70,6 +101,17 @@ namespace mix
 		void ld5n(const word &data);	//21
 		void ld6n(const word &data);	//22
 		void ldxn(const word &data);	//23
+		void sta(const word &data);		//24
+		void st1(const word &data);		//25
+		void st2(const word &data);		//26
+		void st3(const word &data);		//27
+		void st4(const word &data);		//28
+		void st5(const word &data);		//29
+		void st6(const word &data);		//30
+		void stx(const word &data);		//31
+		void stj(const word &data);		//32
+		void stz(const word &data);		//33
+		
 		void run(short initial_address);
 	};
 	
