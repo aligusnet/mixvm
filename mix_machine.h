@@ -28,6 +28,8 @@ namespace mix
 		cmd_nop = 0,
 		cmd_add,
 		cmd_sub,
+		cmd_mul,
+		cmd_div,
 		cmd_hlt = 5,
 		cmd_lda = 8,
 		cmd_ld1,
@@ -86,6 +88,8 @@ namespace mix
 		void nop(const word &data);	//0
 		void add(const word &data);	//1
 		void sub(const word &data);	//2
+		void mul(const word &data);	//3
+		void div(const word &data);	//4
 		void hlt(const word &data);	//5
 		
 		void lda(const word &data);	//8

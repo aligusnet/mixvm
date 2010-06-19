@@ -87,6 +87,26 @@ namespace mix
 		override = val > 0;
 	}
 	
+	void set_long_value(long_value_type val, word &high_word, word &low_word, bool &override)
+	{
+		high_word.sign = val < 0 ? NEG_SIGN : POS_SIGN;
+		low_word.sign = high_word.sign;
+		if(val < 0) val *= -1;
+		for (int i = DATA_BYTES_IN_WORD-1; i >= 0; --i)
+		{
+			low_word.bytes[i] = val % VALUES_IN_BYTE;
+			val /= VALUES_IN_BYTE;
+		}
+		
+		for (int i = DATA_BYTES_IN_WORD-1; i >= 0; --i)
+		{
+			high_word.bytes[i] = val % VALUES_IN_BYTE;
+			val /= VALUES_IN_BYTE;
+		}
+		
+		override = val > 0;
+	}
+	
 	value_type get_value(const word &data, byte format)
 	{
 		format_range fmt = decode_format(format);
@@ -111,6 +131,29 @@ namespace mix
 		{
 			value *= -1;
 		}
+		return value;
+	}
+	
+	long_value_type get_long_value(const word &high_word, const word &low_word)
+	{
+		long_value_type value = 0;
+		for (int i = 0; i < DATA_BYTES_IN_WORD; ++i)
+		{
+			value *= VALUES_IN_BYTE;
+			value += high_word.bytes[i];
+		}
+		
+		for (int i = 0; i < DATA_BYTES_IN_WORD; ++i)
+		{
+			value *= VALUES_IN_BYTE;
+			value += low_word.bytes[i];
+		}
+		
+		if (high_word.sign == NEG_SIGN)
+		{
+			value *= -1;
+		}
+		
 		return value;
 	}
 	

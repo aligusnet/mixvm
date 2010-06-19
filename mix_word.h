@@ -41,7 +41,9 @@ namespace mix
 	void left_shift(word &data, int count);
 	void set_value(const word &from, int format, word &to);
 	void set_value(value_type val, word &to, bool &override);
+	void set_long_value(long_value_type val, word &high_word, word &low_word, bool &override);
 	value_type get_value(const word &data, byte format = DEFAULT_FORMAT);
+	long_value_type get_long_value(const word &high_word, const word &low_word);
 	void set_address(byte *bytes, short addr);
 	word make_word(bool sign, byte a1, byte a2, byte i, byte f, byte c);
 	word make_cmd(byte cmd, short addr = 0, byte f = DEFAULT_FORMAT);
