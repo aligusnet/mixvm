@@ -38,9 +38,13 @@ namespace mix
 	bool is_negative(const word &data);
 	unsigned short get_address(const word &data);
 	void right_shift(word &data, int count);
+	void left_shift(word &data, int count);
 	void set_value(const word &from, int format, word &to);
+	void set_value(value_type val, word &to, bool &override);
 	value_type get_value(const word &data, byte format = DEFAULT_FORMAT);
+	void set_address(byte *bytes, short addr);
 	word make_word(bool sign, byte a1, byte a2, byte i, byte f, byte c);
+	word make_cmd(byte cmd, short addr, byte f);
 	
 }
 
