@@ -56,7 +56,23 @@ namespace mix
 		cmd_st6 = 30,
 		cmd_stx,
 		cmd_stj,
-		cmd_stz
+		cmd_stz,
+		cmd_enta = 48,
+		cmd_ent1,
+		cmd_ent2,
+		cmd_ent3,
+		cmd_ent4,
+		cmd_ent5,
+		cmd_ent6,
+		cmd_entx,
+		cmd_enna = cmd_enta,
+		cmd_enn1 = cmd_ent1,
+		cmd_enn2 = cmd_ent2,
+		cmd_enn3 = cmd_ent3,
+		cmd_enn4 = cmd_ent4,
+		cmd_enn5 = cmd_ent5,
+		cmd_enn6 = cmd_ent6,
+		cmd_ennx = cmd_entx
 		
 	};
 	
@@ -119,6 +135,33 @@ namespace mix
 		void stx(const word &data);		//31
 		void stj(const word &data);		//32
 		void stz(const word &data);		//33
+		
+		void ena(const word &data);		//48
+		void en1(const word &data);		//49
+		void en2(const word &data);		//50
+		void en3(const word &data);		//51
+		void en4(const word &data);		//52
+		void en5(const word &data);		//53
+		void en6(const word &data);		//54
+		void enx(const word &data);		//55
+		
+		void enta(const word &data);		//48, 2
+		void ent1(const word &data);		//49, 2
+		void ent2(const word &data);		//50, 2
+		void ent3(const word &data);		//51, 2
+		void ent4(const word &data);		//52, 2
+		void ent5(const word &data);		//53, 2
+		void ent6(const word &data);		//54, 2
+		void entx(const word &data);		//55, 2
+		
+		void enna(const word &data);		//48, 3
+		void enn1(const word &data);		//49, 3
+		void enn2(const word &data);		//50, 3
+		void enn3(const word &data);		//51, 3
+		void enn4(const word &data);		//52, 3
+		void enn5(const word &data);		//53, 3
+		void enn6(const word &data);		//54, 3
+		void ennx(const word &data);		//55, 3
 		
 		void run(short initial_address);
 	};

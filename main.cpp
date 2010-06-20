@@ -76,8 +76,26 @@ void test_vm()
 	vm.memory[53] = make_cmd(	cmd_lda, 228);
 	vm.memory[54] = make_cmd(	cmd_ldx, 229);
 	
+	vm.memory[55] = make_cmd(	cmd_enta, 12, 2);
+	vm.memory[56] = make_cmd(	cmd_entx, 15, 2);
+	vm.memory[57] = make_cmd(	cmd_ent1, 1, 2);
+	vm.memory[58] = make_cmd(	cmd_ent2, 2, 2);
+	vm.memory[59] = make_cmd(	cmd_ent3, 3, 2);
+	vm.memory[60] = make_cmd(	cmd_ent4, 4, 2);
+	vm.memory[61] = make_cmd(	cmd_ent5, 5, 2);
+	vm.memory[62] = make_cmd(	cmd_ent6, 6, 2);
 	
-	vm.memory[55] = make_cmd(	cmd_hlt);
+	vm.memory[63] = make_cmd(	cmd_enna, 12, 3);
+	vm.memory[64] = make_cmd(	cmd_ennx, 15, 3);
+	vm.memory[65] = make_cmd(	cmd_enn1, 1, 3);
+	vm.memory[66] = make_cmd(	cmd_enn2, 2, 3);
+	vm.memory[67] = make_cmd(	cmd_enn3, 3, 3);
+	vm.memory[68] = make_cmd(	cmd_enn4, 4, 3);
+	vm.memory[69] = make_cmd(	cmd_enn5, 5, 3);
+	vm.memory[70] = make_cmd(	cmd_enn6, 6, 3);
+	
+	
+	vm.memory[71] = make_cmd(	cmd_hlt);
 	
 	vm.memory[150] = make_word(POS_SIGN, 8, 0, 3, 5, 4);
 	vm.memory[151] = make_word(POS_SIGN, 0, 0, 0, 11, 11);

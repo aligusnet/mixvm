@@ -98,14 +98,14 @@ namespace mix
 			&Machine::nothing,
 			&Machine::nothing,
 			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,	//50
-			&Machine::nothing, 
-			&Machine::nothing, 
-			&Machine::nothing, 
-			&Machine::nothing,
-			&Machine::nothing,
+			&Machine::ena,
+			&Machine::en1,
+			&Machine::en2,	//50
+			&Machine::en3, 
+			&Machine::en4, 
+			&Machine::en5, 
+			&Machine::en6,
+			&Machine::enx,
 			&Machine::nothing,
 			&Machine::nothing,
 			&Machine::nothing,
@@ -483,6 +483,286 @@ namespace mix
 		memset(&zero, 0, sizeof(zero));
 		set_value(zero, data.bytes[byte_f], memory[addr]);
 		
+	}
+	
+	void Machine::ena(const word &data) //48
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 2:
+				enta(data);
+				break;
+			case 3:
+				enna(data);
+				break;
+			default:
+				nothing(data);
+				break;
+		};
+	}
+	
+	void Machine::en1(const word &data) //49
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 2:
+				ent1(data);
+				break;
+			case 3:
+				enn1(data);
+				break;
+			default:
+				nothing(data);
+				break;
+		};
+	}
+	
+	void Machine::en2(const word &data) //50
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 2:
+				ent2(data);
+				break;
+			case 3:
+				enn2(data);
+				break;
+			default:
+				nothing(data);
+				break;
+		};
+	}
+	
+	void Machine::en3(const word &data) //51
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 2:
+				ent3(data);
+				break;
+			case 3:
+				enn3(data);
+				break;
+			default:
+				nothing(data);
+				break;
+		};
+	}
+	
+	void Machine::en4(const word &data) //52
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 2:
+				ent4(data);
+				break;
+			case 3:
+				enn4(data);
+				break;
+			default:
+				nothing(data);
+				break;
+		};
+	}
+	
+	void Machine::en5(const word &data) //53
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 2:
+				ent5(data);
+				break;
+			case 3:
+				enn5(data);
+				break;
+			default:
+				nothing(data);
+				break;
+		};
+	}
+	
+	void Machine::en6(const word &data) //54
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 2:
+				ent6(data);
+				break;
+			case 3:
+				enn6(data);
+				break;
+			default:
+				nothing(data);
+				break;
+		};
+	}
+	
+	void Machine::enx(const word &data) //55
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 2:
+				entx(data);
+				break;
+			case 3:
+				ennx(data);
+				break;
+			default:
+				nothing(data);
+				break;
+		};
+	}
+	
+	void Machine::enta(const word &data) //48, 2
+	{
+		print_command(std::cout, data, "enta");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_a, override);
+	}
+	
+	void Machine::ent1(const word &data) //49, 2
+	{
+		print_command(std::cout, data, "ent1");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[0], override);
+	}
+	
+	void Machine::ent2(const word &data) //50, 2
+	{
+		print_command(std::cout, data, "ent2");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[1], override);
+	}
+	
+	void Machine::ent3(const word &data) //51, 2
+	{
+		print_command(std::cout, data, "ent3");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[2], override);
+	}
+	
+	void Machine::ent4(const word &data) //52, 2
+	{
+		print_command(std::cout, data, "ent4");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[3], override);
+	}
+	
+	void Machine::ent5(const word &data) //53, 2
+	{
+		print_command(std::cout, data, "ent5");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[4], override);
+	}
+	
+	void Machine::ent6(const word &data) //54, 2
+	{
+		print_command(std::cout, data, "ent6");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[5], override);
+	}
+	
+	void Machine::entx(const word &data) //55, 2
+	{
+		print_command(std::cout, data, "entx");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_x, override);
+	}
+	
+	void Machine::enna(const word &data) //48, 3
+	{
+		print_command(std::cout, data, "enna");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_a, override);
+		reg_a.sign = !reg_a.sign;
+	}
+	
+	void Machine::enn1(const word &data) //49, 3
+	{
+		print_command(std::cout, data, "enn1");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[0], override);
+		reg_i[0].sign = !reg_i[0].sign;
+	}
+	
+	void Machine::enn2(const word &data) //50, 3
+	{
+		print_command(std::cout, data, "enn2");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[1], override);
+		reg_i[1].sign = !reg_i[1].sign;
+	}
+	
+	void Machine::enn3(const word &data) //51, 3
+	{
+		print_command(std::cout, data, "enn3");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[2], override);
+		reg_i[2].sign = !reg_i[2].sign;
+	}
+	
+	void Machine::enn4(const word &data) //52, 3
+	{
+		print_command(std::cout, data, "ent4");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[3], override);
+		reg_i[3].sign = !reg_i[3].sign;
+	}
+	
+	void Machine::enn5(const word &data) //53, 3
+	{
+		print_command(std::cout, data, "enn5");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[4], override);
+		reg_i[4].sign = !reg_i[4].sign;
+	}
+	
+	void Machine::enn6(const word &data) //54, 3
+	{
+		print_command(std::cout, data, "enn6");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_i[5], override);
+		reg_i[5].sign = !reg_i[5].sign;
+	}
+	
+	void Machine::ennx(const word &data) //55, 3
+	{
+		print_command(std::cout, data, "ennx");
+		std::cout << std::endl;
+		
+		value_type val = (value_type)get_address(data);
+		set_value(val, reg_x, override);
+		reg_x.sign = !reg_x.sign;
 	}
 	
 	void Machine::run(short initial_address)
