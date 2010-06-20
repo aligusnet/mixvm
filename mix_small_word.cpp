@@ -22,7 +22,7 @@ namespace mix
 		{
 			++sreg.bytes[1];
 		}
-		else if(sreg.bytes[1] < VALUES_IN_BYTE-1)
+		else if(sreg.bytes[0] < VALUES_IN_BYTE-1)
 		{
 			sreg.bytes[1] = 0;
 			++sreg.bytes[0];
