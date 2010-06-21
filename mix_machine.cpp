@@ -106,7 +106,7 @@ namespace mix
 			&Machine::nothing,
 			&Machine::nothing,
 			&Machine::nothing,
-			&Machine::nothing,
+			&Machine::jump,
 			&Machine::nothing,	//40
 			&Machine::nothing, 
 			&Machine::nothing, 
@@ -501,6 +501,160 @@ namespace mix
 		set_value(zero, data.bytes[byte_f], memory[addr]);
 		
 	}
+	
+	void Machine::jump(const word &data) //39
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 0:
+				jmp(data);
+				break;
+			case 1:
+				jsj(data);
+				break;
+			case 2:
+				jov(data);
+				break;
+			case 3:
+				jnov(data);
+				break;
+			case 4:
+				jl(data);
+				break;
+			case 5:
+				je(data);
+				break;
+			case 6:
+				jg(data);
+				break;
+			case 7:
+				jge(data);
+				break;
+			case 8:
+				jne(data);
+				break;
+			case 9:
+				jle(data);
+				break;
+		};
+		
+	}
+	
+	void Machine::jmp(const word &data) //39, 0
+	{
+		print_command(std::cout, data, "jmp");
+		std::cout << std::endl;
+		
+		value_type addr = get_address(data);
+		set_value(addr, reg_j, override);
+	}
+	
+	void Machine::jsj(const word &data) //39, 1
+	{
+		print_command(std::cout, data, "jsj???");
+		std::cout << std::endl;
+		
+		//int addr = get_address(data);
+		//set_value(addr, reg_j);
+	}
+	
+	void Machine::jov(const word &data) //39, 2
+	{
+		print_command(std::cout, data, "jov");
+		std::cout << std::endl;
+		
+		if (override)
+		{
+			override = false;
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jnov(const word &data) //39, 3
+	{
+		print_command(std::cout, data, "jnov");
+		std::cout << std::endl;
+		
+		if (!override)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jl(const word &data) //39, 4
+	{
+		print_command(std::cout, data, "jl");
+		std::cout << std::endl;
+		
+		if (compare_flag == cmp_less)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::je(const word &data) //39, 5
+	{
+		print_command(std::cout, data, "je");
+		std::cout << std::endl;
+		
+		if (compare_flag == cmp_equal)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jg(const word &data) //39, 6
+	{
+		print_command(std::cout, data, "jg");
+		std::cout << std::endl;
+		
+		if (compare_flag == cmp_greater)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jge(const word &data) //39, 7
+	{
+		print_command(std::cout, data, "jge");
+		std::cout << std::endl;
+		
+		if (compare_flag != cmp_less)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jne(const word &data) //39, 8
+	{
+		print_command(std::cout, data, "jne");
+		std::cout << std::endl;
+		
+		if (compare_flag != cmp_equal)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jle(const word &data) //39, 9
+	{
+		print_command(std::cout, data, "jle");
+		std::cout << std::endl;
+		
+		if (compare_flag != cmp_greater)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
 	
 	void Machine::ena(const word &data) //48
 	{
