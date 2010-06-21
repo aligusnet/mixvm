@@ -13,6 +13,23 @@
 
 namespace mix
 {	
+	compare_t compare(value_type lhs, value_type rhs)
+	{
+		if (lhs < rhs)
+		{
+			return cmp_less;
+		}
+		else if(lhs > rhs)
+		{
+			return cmp_greater;
+		}
+		else
+		{
+			return cmp_equal;
+		}
+
+	}
+	
 	Machine::Machine()
 	{
 		memset(this, 0, sizeof(Machine));
@@ -106,14 +123,14 @@ namespace mix
 			&Machine::en5, 
 			&Machine::en6,
 			&Machine::enx,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,	//60
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing	//63
+			&Machine::cmpa,
+			&Machine::cmp1,
+			&Machine::cmp2,
+			&Machine::cmp3,
+			&Machine::cmp4,	//60
+			&Machine::cmp5,
+			&Machine::cmp6,
+			&Machine::cmpx	//63
 		};
 		
 		return &statements[data.bytes[byte_c]];
@@ -763,6 +780,94 @@ namespace mix
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_x, override);
 		reg_x.sign = !reg_x.sign;
+	}
+	
+	void Machine::cmpa(const word &data) //56
+	{
+		print_command(std::cout, data, "cmpa");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type lhs = get_value(reg_a, data.bytes[byte_f]);
+		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+		compare_flag = compare(lhs, rhs);
+	}
+	
+	void Machine::cmp1(const word &data) //57
+	{
+		print_command(std::cout, data, "cmp1");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type lhs = get_value(reg_i[0], data.bytes[byte_f]);
+		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+		compare_flag = compare(lhs, rhs);
+	}
+	
+	void Machine::cmp2(const word &data) //58
+	{
+		print_command(std::cout, data, "cmp2");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type lhs = get_value(reg_i[1], data.bytes[byte_f]);
+		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+		compare_flag = compare(lhs, rhs);
+	}
+	
+	void Machine::cmp3(const word &data) //59
+	{
+		print_command(std::cout, data, "cmp3");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type lhs = get_value(reg_i[2], data.bytes[byte_f]);
+		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+		compare_flag = compare(lhs, rhs);
+	}
+	
+	void Machine::cmp4(const word &data) //60
+	{
+		print_command(std::cout, data, "cmp4");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type lhs = get_value(reg_i[3], data.bytes[byte_f]);
+		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+		compare_flag = compare(lhs, rhs);
+	}
+	
+	void Machine::cmp5(const word &data) //61
+	{
+		print_command(std::cout, data, "cmp5");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type lhs = get_value(reg_i[4], data.bytes[byte_f]);
+		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+		compare_flag = compare(lhs, rhs);
+	}
+	
+	void Machine::cmp6(const word &data) //62
+	{
+		print_command(std::cout, data, "cmp6");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type lhs = get_value(reg_i[5], data.bytes[byte_f]);
+		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+		compare_flag = compare(lhs, rhs);
+	}
+	
+	void Machine::cmpx(const word &data) //63
+	{
+		print_command(std::cout, data, "cmpx");
+		std::cout << std::endl;
+		
+		int addr = get_address(data);
+		value_type lhs = get_value(reg_x, data.bytes[byte_f]);
+		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+		compare_flag = compare(lhs, rhs);
 	}
 	
 	void Machine::run(short initial_address)

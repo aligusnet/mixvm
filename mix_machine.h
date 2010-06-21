@@ -16,11 +16,11 @@
 
 namespace mix
 {
-	enum compare_enum
+	enum compare_t
 	{
-		compare_less,
-		compare_equal,
-		compare_greater
+		cmp_less = -1,
+		cmp_equal,
+		cmp_greater
 	};
 	
 	enum commands_t
@@ -72,7 +72,15 @@ namespace mix
 		cmd_enn4 = cmd_ent4,
 		cmd_enn5 = cmd_ent5,
 		cmd_enn6 = cmd_ent6,
-		cmd_ennx = cmd_entx
+		cmd_ennx = cmd_entx,
+		cmd_cmpa,
+		cmd_cmp1,
+		cmd_cmp2,
+		cmd_cmp3,
+		cmd_cmp4,
+		cmd_cmp5,
+		cmd_cmp6,
+		cmd_cmpx
 		
 	};
 	
@@ -91,7 +99,7 @@ namespace mix
 		small_register reg_i[SMALL_REGISTERS];
 		small_register reg_j;
 		bool override;
-		compare_enum compare_flag;
+		compare_t compare_flag;
 		bool halt;
 		
 		word memory[MEMORY_WORDS];
@@ -162,6 +170,15 @@ namespace mix
 		void enn5(const word &data);		//53, 3
 		void enn6(const word &data);		//54, 3
 		void ennx(const word &data);		//55, 3
+		
+		void cmpa(const word &data);		//56
+		void cmp1(const word &data);		//57
+		void cmp2(const word &data);		//58
+		void cmp3(const word &data);		//59
+		void cmp4(const word &data);		//60
+		void cmp5(const word &data);		//61
+		void cmp6(const word &data);		//62
+		void cmpx(const word &data);		//63
 		
 		void run(short initial_address);
 	};

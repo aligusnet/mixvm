@@ -11,6 +11,7 @@
 #define MIX_SMALL_REGISTER_H
 
 #include "mix_byte.h"
+#include "format_range.h"
 
 namespace mix
 {
@@ -23,7 +24,7 @@ namespace mix
 	
 	bool is_negative(const small_word &data);
 	void inc(small_word &sreg, bool &override);
-	int get_value(const small_word &data);
+	int get_value(const small_word &data, byte format = DEFAULT_FORMAT);
 	void set_value(value_type val, small_word &data, bool &override);
 }
 
