@@ -35,15 +35,31 @@ namespace mix
 		}
 	}
 	
-	int get_value(const small_word &data)
+	int get_value(const small_word &data, byte format)
 	{
+		static const int DIFF_IN_WORDS = 3;
+		format_range fmt = decode_format(format);
+		bool negative = false;
+		if(fmt.low == 0)
+		{
+			negative = data.sign == POS_SIGN ? false : true;
+		}
+		if (fmt.low < DIFF_IN_WORDS)
+		{
+			fmt.low = 0;
+		}
+		fmt.high -= DIFF_IN_WORDS;
+		if (fmt.high > DATA_BYTES_IN_SMALL_REGISTER)
+		{
+			fmt.high = DATA_BYTES_IN_SMALL_REGISTER;
+		}
 		int value = 0;
-		for (int i = 0; i < DATA_BYTES_IN_SMALL_REGISTER; ++i)
+		for (int i = fmt.low; i < fmt.high; ++i)
 		{
 			value *= VALUES_IN_BYTE;
 			value += data.bytes[i];
 		}
-		if(is_negative(data))
+		if(negative)
 		{
 			value *= -1;
 		}
