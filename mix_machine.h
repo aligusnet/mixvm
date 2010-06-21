@@ -57,6 +57,7 @@ namespace mix
 		cmd_stx,
 		cmd_stj,
 		cmd_stz,
+		cmd_jmp = 39,
 		cmd_enta = 48,
 		cmd_ent1,
 		cmd_ent2,
@@ -143,6 +144,18 @@ namespace mix
 		void stx(const word &data);		//31
 		void stj(const word &data);		//32
 		void stz(const word &data);		//33
+		
+		void jump(const word &data);	//39
+		void jmp(const word &data);		//39, 0
+		void jsj(const word &data);		//39, 1
+		void jov(const word &data);		//39, 2
+		void jnov(const word &data);	//39, 3
+		void jl(const word &data);		//39, 4
+		void je(const word &data);		//39, 5
+		void jg(const word &data);		//39, 6
+		void jge(const word &data);		//39, 7
+		void jne(const word &data);		//39, 8
+		void jle(const word &data);		//39, 9
 		
 		void ena(const word &data);		//48
 		void en1(const word &data);		//49

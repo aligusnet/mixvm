@@ -96,8 +96,11 @@ void test_vm()
 	vm.memory[71] = make_cmd(	cmd_cmpa, 150);
 	vm.memory[72] = make_cmd(	cmd_cmp1, 1500);
 	vm.memory[73] = make_cmd(	cmd_cmpx, 104);
-	
-	vm.memory[74] = make_cmd(	cmd_hlt);
+	vm.memory[74] = make_cmd(	cmd_jmp, 76, 0); //jmp
+	vm.memory[75] = make_cmd(	cmd_nop);
+	//vm.memory[76] = make_cmd(	cmd_jmp, 74, 7); //jge
+	vm.memory[76] = make_cmd(	cmd_jmp, 74, 2); //jov
+	vm.memory[77] = make_cmd(	cmd_hlt);
 	
 	vm.memory[150] = make_word(POS_SIGN, 8, 0, 3, 5, 4);
 	vm.memory[151] = make_word(POS_SIGN, 0, 0, 0, 11, 11);
