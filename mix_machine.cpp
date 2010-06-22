@@ -11,6 +11,10 @@
 #include <iostream>
 #include <math.h>
 
+#define LOG_COMMAND_NAME(data) \
+print_command(std::cout, (data), __FUNCTION__); \
+std::cout << std::endl;
+
 namespace mix
 {	
 	compare_t compare(value_type lhs, value_type rhs)
@@ -107,14 +111,14 @@ namespace mix
 			&Machine::nothing,
 			&Machine::nothing,
 			&Machine::jump,
-			&Machine::nothing,	//40
+			&Machine::ja,	//40
 			&Machine::nothing, 
 			&Machine::nothing, 
 			&Machine::nothing, 
 			&Machine::nothing,
 			&Machine::nothing,
 			&Machine::nothing,
-			&Machine::nothing,
+			&Machine::jx,
 			&Machine::ena,
 			&Machine::en1,
 			&Machine::en2,	//50
@@ -143,14 +147,12 @@ namespace mix
 	
 	void Machine::nop(const word &data)	//0
 	{
-		print_command(std::cout, data, "nop");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 	}
 	
 	void Machine::add(const word &data)	//1
 	{
-		print_command(std::cout, data, "add");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		
@@ -161,8 +163,7 @@ namespace mix
 	
 	void Machine::sub(const word &data)	//2
 	{
-		print_command(std::cout, data, "sub");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr], data.bytes[byte_f]) * -1;
@@ -172,8 +173,7 @@ namespace mix
 	
 	void Machine::mul(const word &data)	//3
 	{
-		print_command(std::cout, data, "mul");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		
@@ -185,8 +185,7 @@ namespace mix
 	
 	void Machine::div(const word &data)	//4
 	{
-		print_command(std::cout, data, "div");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		
@@ -211,16 +210,14 @@ namespace mix
 	
 	void Machine::hlt(const word &data)	//5
 	{
-		print_command(std::cout, data, "hlt");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		halt = true;
 	}
 	
 	
 	void Machine::lda(const word &data)	//8
 	{
-		print_command(std::cout, data, "lda");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		memset(&reg_a, 0, sizeof(reg_a));
 		set_value(memory[addr], data.bytes[byte_f], reg_a);
@@ -234,8 +231,7 @@ namespace mix
 	
 	void Machine::ld1(const word &data)	//9
 	{
-		print_command(std::cout, data, "ld1");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[0], override);
@@ -243,8 +239,7 @@ namespace mix
 	
 	void Machine::ld2(const word &data)	//10
 	{
-		print_command(std::cout, data, "ld2");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[1], override);
@@ -252,8 +247,7 @@ namespace mix
 	
 	void Machine::ld3(const word &data)	//11
 	{
-		print_command(std::cout, data, "ld3");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[2], override);
@@ -261,8 +255,7 @@ namespace mix
 	
 	void Machine::ld4(const word &data)	//12
 	{
-		print_command(std::cout, data, "ld4");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[3], override);
@@ -270,8 +263,7 @@ namespace mix
 	
 	void Machine::ld5(const word &data)	//13
 	{
-		print_command(std::cout, data, "ld5");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[4], override);
@@ -279,8 +271,7 @@ namespace mix
 	
 	void Machine::ld6(const word &data)	//14
 	{
-		print_command(std::cout, data, "ld6");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[5], override);
@@ -288,8 +279,7 @@ namespace mix
 	
 	void Machine::ldx(const word &data)	//15
 	{
-		print_command(std::cout, data, "ldx");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		memset(&reg_x, 0, sizeof(reg_x));
 		set_value(memory[addr], data.bytes[byte_f], reg_x);
@@ -303,8 +293,7 @@ namespace mix
 	
 	void Machine::ldan(const word &data)	//16
 	{
-		print_command(std::cout, data, "ldan");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		memset(&reg_a, 0, sizeof(reg_a));
 		set_value(memory[addr], data.bytes[byte_f], reg_a);
@@ -319,8 +308,7 @@ namespace mix
 	
 	void Machine::ld1n(const word &data)	//17
 	{
-		print_command(std::cout, data, "ld1n");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[0], override);
@@ -328,8 +316,7 @@ namespace mix
 	
 	void Machine::ld2n(const word &data)	//18
 	{
-		print_command(std::cout, data, "ld2n");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[1], override);
@@ -337,8 +324,7 @@ namespace mix
 	
 	void Machine::ld3n(const word &data)	//19
 	{
-		print_command(std::cout, data, "ld3n");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[2], override);
@@ -346,8 +332,7 @@ namespace mix
 	
 	void Machine::ld4n(const word &data)	//20
 	{
-		print_command(std::cout, data, "ld4n");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[3], override);
@@ -355,8 +340,7 @@ namespace mix
 	
 	void Machine::ld5n(const word &data)	//21
 	{
-		print_command(std::cout, data, "ld5n");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[4], override);
@@ -364,8 +348,7 @@ namespace mix
 	
 	void Machine::ld6n(const word &data)	//22
 	{
-		print_command(std::cout, data, "ld6n");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[5], override);
@@ -373,8 +356,7 @@ namespace mix
 	
 	void Machine::ldxn(const word &data)	//23
 	{
-		print_command(std::cout, data, "ldxn");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		memset(&reg_x, 0, sizeof(reg_x));
 		set_value(memory[addr], data.bytes[byte_f], reg_x);
@@ -389,8 +371,7 @@ namespace mix
 	
 	void Machine::sta(const word &data) //24
 	{
-		print_command(std::cout, data, "sta");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		int addr = get_address(data);
 		format_range fmt = decode_format(data.bytes[byte_f]);
 		int count = DATA_BYTES_IN_WORD - fmt.high;
@@ -405,8 +386,7 @@ namespace mix
 	
 	void Machine::st1(const word &data) //25
 	{
-		print_command(std::cout, data, "st1");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type val = get_value(reg_i[0]);
@@ -415,8 +395,7 @@ namespace mix
 	
 	void Machine::st2(const word &data) //26
 	{
-		print_command(std::cout, data, "st2");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type val = get_value(reg_i[1]);
@@ -425,8 +404,7 @@ namespace mix
 	
 	void Machine::st3(const word &data) //27
 	{
-		print_command(std::cout, data, "st3");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type val = get_value(reg_i[2]);
@@ -435,8 +413,7 @@ namespace mix
 	
 	void Machine::st4(const word &data) //28
 	{
-		print_command(std::cout, data, "st4");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type val = get_value(reg_i[3]);
@@ -445,8 +422,7 @@ namespace mix
 	
 	void Machine::st5(const word &data) //29
 	{
-		print_command(std::cout, data, "st5");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type val = get_value(reg_i[4]);
@@ -455,8 +431,7 @@ namespace mix
 	
 	void Machine::st6(const word &data) //30
 	{
-		print_command(std::cout, data, "st6");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type val = get_value(reg_i[5]);
@@ -465,8 +440,7 @@ namespace mix
 	
 	void Machine::stx(const word &data) //31
 	{
-		print_command(std::cout, data, "stx");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		format_range fmt = decode_format(data.bytes[byte_f]);
@@ -482,8 +456,7 @@ namespace mix
 	
 	void Machine::stj(const word &data) //32
 	{
-		print_command(std::cout, data, "stj");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type val = get_value(reg_j);
@@ -492,8 +465,7 @@ namespace mix
 	
 	void Machine::stz(const word &data) //33
 	{
-		print_command(std::cout, data, "stz");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		word zero;
@@ -542,8 +514,7 @@ namespace mix
 	
 	void Machine::jmp(const word &data) //39, 0
 	{
-		print_command(std::cout, data, "jmp");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type addr = get_address(data);
 		set_value(addr, reg_j, override);
@@ -551,8 +522,7 @@ namespace mix
 	
 	void Machine::jsj(const word &data) //39, 1
 	{
-		print_command(std::cout, data, "jsj???");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		//int addr = get_address(data);
 		//set_value(addr, reg_j);
@@ -560,8 +530,7 @@ namespace mix
 	
 	void Machine::jov(const word &data) //39, 2
 	{
-		print_command(std::cout, data, "jov");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		if (override)
 		{
@@ -573,8 +542,7 @@ namespace mix
 	
 	void Machine::jnov(const word &data) //39, 3
 	{
-		print_command(std::cout, data, "jnov");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		if (!override)
 		{
@@ -585,8 +553,7 @@ namespace mix
 	
 	void Machine::jl(const word &data) //39, 4
 	{
-		print_command(std::cout, data, "jl");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		if (compare_flag == cmp_less)
 		{
@@ -597,8 +564,7 @@ namespace mix
 	
 	void Machine::je(const word &data) //39, 5
 	{
-		print_command(std::cout, data, "je");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		if (compare_flag == cmp_equal)
 		{
@@ -609,8 +575,7 @@ namespace mix
 	
 	void Machine::jg(const word &data) //39, 6
 	{
-		print_command(std::cout, data, "jg");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		if (compare_flag == cmp_greater)
 		{
@@ -621,8 +586,7 @@ namespace mix
 	
 	void Machine::jge(const word &data) //39, 7
 	{
-		print_command(std::cout, data, "jge");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		if (compare_flag != cmp_less)
 		{
@@ -633,8 +597,7 @@ namespace mix
 	
 	void Machine::jne(const word &data) //39, 8
 	{
-		print_command(std::cout, data, "jne");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		if (compare_flag != cmp_equal)
 		{
@@ -645,8 +608,7 @@ namespace mix
 	
 	void Machine::jle(const word &data) //39, 9
 	{
-		print_command(std::cout, data, "jle");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		if (compare_flag != cmp_greater)
 		{
@@ -655,6 +617,193 @@ namespace mix
 		}
 	}
 	
+	void Machine::ja(const word &data) //40
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 0:
+				jan(data);
+				break;
+			case 1:
+				jaz(data);
+				break;
+			case 2:
+				jap(data);
+				break;
+			case 3:
+				jann(data);
+				break;
+			case 4:
+				janz(data);
+				break;
+			case 5:
+				janp(data);
+				break;
+		};
+		
+	}
+	
+	void Machine::jan(const word &data) //40, 0
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_a.sign == NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jaz(const word &data) //40, 1
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_a);
+		if (val == 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jap(const word &data) //40, 2
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_a.sign == POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jann(const word &data) //40, 3
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_a.sign != NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::janz(const word &data) //40, 4
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_a);
+		if (val != 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::janp(const word &data) //40, 5
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_a.sign != POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jx(const word &data) //47
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 0:
+				jxn(data);
+				break;
+			case 1:
+				jxz(data);
+				break;
+			case 2:
+				jxp(data);
+				break;
+			case 3:
+				jxnn(data);
+				break;
+			case 4:
+				jxnz(data);
+				break;
+			case 5:
+				jxnp(data);
+				break;
+		};
+		
+	}
+	
+	void Machine::jxn(const word &data) //47, 0
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_x.sign == NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jxz(const word &data) //47, 1
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_x);
+		if (val == 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jxp(const word &data) //47, 2
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_x.sign == POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jxnn(const word &data) //47, 3
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_x.sign != NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jxnz(const word &data) //47, 4
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_x);
+		if (val != 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::jxnp(const word &data) //47, 5
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_x.sign != POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}	
 	
 	void Machine::ena(const word &data) //48
 	{
@@ -786,8 +935,7 @@ namespace mix
 	
 	void Machine::enta(const word &data) //48, 2
 	{
-		print_command(std::cout, data, "enta");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_a, override);
@@ -795,8 +943,7 @@ namespace mix
 	
 	void Machine::ent1(const word &data) //49, 2
 	{
-		print_command(std::cout, data, "ent1");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[0], override);
@@ -804,8 +951,7 @@ namespace mix
 	
 	void Machine::ent2(const word &data) //50, 2
 	{
-		print_command(std::cout, data, "ent2");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[1], override);
@@ -813,8 +959,7 @@ namespace mix
 	
 	void Machine::ent3(const word &data) //51, 2
 	{
-		print_command(std::cout, data, "ent3");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[2], override);
@@ -822,8 +967,7 @@ namespace mix
 	
 	void Machine::ent4(const word &data) //52, 2
 	{
-		print_command(std::cout, data, "ent4");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[3], override);
@@ -831,8 +975,7 @@ namespace mix
 	
 	void Machine::ent5(const word &data) //53, 2
 	{
-		print_command(std::cout, data, "ent5");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[4], override);
@@ -840,8 +983,7 @@ namespace mix
 	
 	void Machine::ent6(const word &data) //54, 2
 	{
-		print_command(std::cout, data, "ent6");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[5], override);
@@ -849,8 +991,7 @@ namespace mix
 	
 	void Machine::entx(const word &data) //55, 2
 	{
-		print_command(std::cout, data, "entx");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_x, override);
@@ -858,8 +999,7 @@ namespace mix
 	
 	void Machine::enna(const word &data) //48, 3
 	{
-		print_command(std::cout, data, "enna");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_a, override);
@@ -868,8 +1008,7 @@ namespace mix
 	
 	void Machine::enn1(const word &data) //49, 3
 	{
-		print_command(std::cout, data, "enn1");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[0], override);
@@ -878,8 +1017,7 @@ namespace mix
 	
 	void Machine::enn2(const word &data) //50, 3
 	{
-		print_command(std::cout, data, "enn2");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[1], override);
@@ -888,8 +1026,7 @@ namespace mix
 	
 	void Machine::enn3(const word &data) //51, 3
 	{
-		print_command(std::cout, data, "enn3");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[2], override);
@@ -898,8 +1035,7 @@ namespace mix
 	
 	void Machine::enn4(const word &data) //52, 3
 	{
-		print_command(std::cout, data, "ent4");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[3], override);
@@ -908,8 +1044,7 @@ namespace mix
 	
 	void Machine::enn5(const word &data) //53, 3
 	{
-		print_command(std::cout, data, "enn5");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[4], override);
@@ -918,8 +1053,7 @@ namespace mix
 	
 	void Machine::enn6(const word &data) //54, 3
 	{
-		print_command(std::cout, data, "enn6");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_i[5], override);
@@ -928,8 +1062,7 @@ namespace mix
 	
 	void Machine::ennx(const word &data) //55, 3
 	{
-		print_command(std::cout, data, "ennx");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		value_type val = (value_type)get_address(data);
 		set_value(val, reg_x, override);
@@ -938,8 +1071,7 @@ namespace mix
 	
 	void Machine::cmpa(const word &data) //56
 	{
-		print_command(std::cout, data, "cmpa");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type lhs = get_value(reg_a, data.bytes[byte_f]);
@@ -949,8 +1081,7 @@ namespace mix
 	
 	void Machine::cmp1(const word &data) //57
 	{
-		print_command(std::cout, data, "cmp1");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type lhs = get_value(reg_i[0], data.bytes[byte_f]);
@@ -960,8 +1091,7 @@ namespace mix
 	
 	void Machine::cmp2(const word &data) //58
 	{
-		print_command(std::cout, data, "cmp2");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type lhs = get_value(reg_i[1], data.bytes[byte_f]);
@@ -971,8 +1101,7 @@ namespace mix
 	
 	void Machine::cmp3(const word &data) //59
 	{
-		print_command(std::cout, data, "cmp3");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type lhs = get_value(reg_i[2], data.bytes[byte_f]);
@@ -982,8 +1111,7 @@ namespace mix
 	
 	void Machine::cmp4(const word &data) //60
 	{
-		print_command(std::cout, data, "cmp4");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type lhs = get_value(reg_i[3], data.bytes[byte_f]);
@@ -993,8 +1121,7 @@ namespace mix
 	
 	void Machine::cmp5(const word &data) //61
 	{
-		print_command(std::cout, data, "cmp5");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type lhs = get_value(reg_i[4], data.bytes[byte_f]);
@@ -1004,8 +1131,7 @@ namespace mix
 	
 	void Machine::cmp6(const word &data) //62
 	{
-		print_command(std::cout, data, "cmp6");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type lhs = get_value(reg_i[5], data.bytes[byte_f]);
@@ -1015,8 +1141,7 @@ namespace mix
 	
 	void Machine::cmpx(const word &data) //63
 	{
-		print_command(std::cout, data, "cmpx");
-		std::cout << std::endl;
+		LOG_COMMAND_NAME(data)
 		
 		int addr = get_address(data);
 		value_type lhs = get_value(reg_x, data.bytes[byte_f]);

@@ -58,6 +58,8 @@ namespace mix
 		cmd_stj,
 		cmd_stz,
 		cmd_jmp = 39,
+		cmd_ja=40,
+		cmd_jx=47,
 		cmd_enta = 48,
 		cmd_ent1,
 		cmd_ent2,
@@ -156,6 +158,22 @@ namespace mix
 		void jge(const word &data);		//39, 7
 		void jne(const word &data);		//39, 8
 		void jle(const word &data);		//39, 9
+		
+		void ja(const word &data);		//40
+		void jan(const word &data);		//40, 0
+		void jaz(const word &data);		//40, 1
+		void jap(const word &data);		//40, 2
+		void jann(const word &data);	//40, 3
+		void janz(const word &data);	//40, 4
+		void janp(const word &data);	//40, 5
+		
+		void jx(const word &data);		//47
+		void jxn(const word &data);		//47, 0
+		void jxz(const word &data);		//47, 1
+		void jxp(const word &data);		//47, 2
+		void jxnn(const word &data);	//47, 3
+		void jxnz(const word &data);	//47, 4
+		void jxnp(const word &data);	//47, 5
 		
 		void ena(const word &data);		//48
 		void en1(const word &data);		//49
