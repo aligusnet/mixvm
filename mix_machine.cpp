@@ -112,12 +112,12 @@ namespace mix
 			&Machine::nothing,
 			&Machine::jump,
 			&Machine::ja,	//40
-			&Machine::nothing, 
-			&Machine::nothing, 
-			&Machine::nothing, 
-			&Machine::nothing,
-			&Machine::nothing,
-			&Machine::nothing,
+			&Machine::j1, 
+			&Machine::j2, 
+			&Machine::j3, 
+			&Machine::j4,
+			&Machine::j5,
+			&Machine::j6,
 			&Machine::jx,
 			&Machine::ena,
 			&Machine::en1,
@@ -705,6 +705,570 @@ namespace mix
 		LOG_COMMAND_NAME(data)
 		
 		if (reg_a.sign != POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j1(const word &data) //41
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 0:
+				j1n(data);
+				break;
+			case 1:
+				j1z(data);
+				break;
+			case 2:
+				j1p(data);
+				break;
+			case 3:
+				j1nn(data);
+				break;
+			case 4:
+				j1nz(data);
+				break;
+			case 5:
+				j1np(data);
+				break;
+		};
+		
+	}
+	
+	void Machine::j1n(const word &data) //41, 0
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[0].sign == NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j1z(const word &data) //41, 1
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[0]);
+		if (val == 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j1p(const word &data) //41, 2
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[0].sign == POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j1nn(const word &data) //41, 3
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[0].sign != NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j1nz(const word &data) //41, 4
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[0]);
+		if (val != 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j1np(const word &data) //41, 5
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[0].sign != POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}	
+	
+	void Machine::j2(const word &data) //41
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 0:
+				j2n(data);
+				break;
+			case 1:
+				j2z(data);
+				break;
+			case 2:
+				j2p(data);
+				break;
+			case 3:
+				j2nn(data);
+				break;
+			case 4:
+				j2nz(data);
+				break;
+			case 5:
+				j2np(data);
+				break;
+		};
+		
+	}
+	
+	void Machine::j2n(const word &data) //42, 0
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[1].sign == NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j2z(const word &data) //42, 1
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[1]);
+		if (val == 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j2p(const word &data) //42, 2
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[1].sign == POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j2nn(const word &data) //42, 3
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[1].sign != NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j2nz(const word &data) //42, 4
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[1]);
+		if (val != 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j2np(const word &data) //42, 5
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[1].sign != POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}	
+	
+	void Machine::j3(const word &data) //43
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 0:
+				j3n(data);
+				break;
+			case 1:
+				j3z(data);
+				break;
+			case 2:
+				j3p(data);
+				break;
+			case 3:
+				j3nn(data);
+				break;
+			case 4:
+				j3nz(data);
+				break;
+			case 5:
+				j3np(data);
+				break;
+		};
+		
+	}
+	
+	void Machine::j3n(const word &data) //43, 0
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[2].sign == NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j3z(const word &data) //43, 1
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[2]);
+		if (val == 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j3p(const word &data) //43, 2
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[2].sign == POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j3nn(const word &data) //43, 3
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[2].sign != NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j3nz(const word &data) //43, 4
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[2]);
+		if (val != 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j3np(const word &data) //43, 5
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[2].sign != POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}	
+	
+	void Machine::j4(const word &data) //44
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 0:
+				j4n(data);
+				break;
+			case 1:
+				j4z(data);
+				break;
+			case 2:
+				j4p(data);
+				break;
+			case 3:
+				j4nn(data);
+				break;
+			case 4:
+				j4nz(data);
+				break;
+			case 5:
+				j4np(data);
+				break;
+		};
+		
+	}
+	
+	void Machine::j4n(const word &data) //44, 0
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[3].sign == NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j4z(const word &data) //44, 1
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[3]);
+		if (val == 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j4p(const word &data) //44, 2
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[3].sign == POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j4nn(const word &data) //44, 3
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[3].sign != NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j4nz(const word &data) //44, 4
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[3]);
+		if (val != 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j4np(const word &data) //44, 5
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[3].sign != POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}	
+	
+	void Machine::j5(const word &data) //45
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 0:
+				j5n(data);
+				break;
+			case 1:
+				j5z(data);
+				break;
+			case 2:
+				j5p(data);
+				break;
+			case 3:
+				j5nn(data);
+				break;
+			case 4:
+				j5nz(data);
+				break;
+			case 5:
+				j5np(data);
+				break;
+		};
+		
+	}
+	
+	void Machine::j5n(const word &data) //45, 0
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[4].sign == NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j5z(const word &data) //45, 1
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[4]);
+		if (val == 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j5p(const word &data) //45, 2
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[4].sign == POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j5nn(const word &data) //45, 3
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[4].sign != NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j5nz(const word &data) //45, 4
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[4]);
+		if (val != 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j5np(const word &data) //45, 5
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[4].sign != POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}	
+	
+	void Machine::j6(const word &data) //46
+	{
+		switch (data.bytes[byte_f])
+		{
+			case 0:
+				j6n(data);
+				break;
+			case 1:
+				j6z(data);
+				break;
+			case 2:
+				j6p(data);
+				break;
+			case 3:
+				j6nn(data);
+				break;
+			case 4:
+				j6nz(data);
+				break;
+			case 5:
+				j6np(data);
+				break;
+		};
+		
+	}
+	
+	void Machine::j6n(const word &data) //46, 0
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[5].sign == NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j6z(const word &data) //46, 1
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[5]);
+		if (val == 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j6p(const word &data) //46, 2
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[5].sign == POS_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j6nn(const word &data) //46, 3
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[5].sign != NEG_SIGN)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j6nz(const word &data) //46, 4
+	{
+		LOG_COMMAND_NAME(data)
+		
+		value_type val = get_value(reg_i[5]);
+		if (val != 0)
+		{
+			int addr = get_address(data);
+			set_value(addr, reg_j, override);
+		}
+	}
+	
+	void Machine::j6np(const word &data) //46, 5
+	{
+		LOG_COMMAND_NAME(data)
+		
+		if (reg_i[5].sign != POS_SIGN)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);

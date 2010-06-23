@@ -115,8 +115,50 @@ void test_vm()
 	vm.memory[85] = make_cmd(	cmd_ldx, 2000);
 	vm.memory[86] = make_cmd(	cmd_jx, 82, 3); //jxnn
 	
+	//jump reg_i1
+	vm.memory[87] = make_cmd(	cmd_j1, 92, 1); //j1z
+	vm.memory[88] = make_cmd(	cmd_j1, 90, 4); //j1nz
+	vm.memory[89] = make_cmd(	cmd_nop);
+	vm.memory[90] = make_cmd(	cmd_ld1, 2000);
+	vm.memory[91] = make_cmd(	cmd_j1, 87, 3); //j1nn
 	
-	vm.memory[87] = make_cmd(	cmd_hlt);
+	//jump reg_i2
+	vm.memory[87] = make_cmd(	cmd_j2, 92, 1); //j2z
+	vm.memory[88] = make_cmd(	cmd_j2, 90, 4); //j2nz
+	vm.memory[89] = make_cmd(	cmd_nop);
+	vm.memory[90] = make_cmd(	cmd_ld2, 2000);
+	vm.memory[91] = make_cmd(	cmd_j2, 87, 3); //j2nn
+	
+	//jump reg_i3
+	vm.memory[87] = make_cmd(	cmd_j3, 92, 1); //j3z
+	vm.memory[88] = make_cmd(	cmd_j3, 90, 4); //j3nz
+	vm.memory[89] = make_cmd(	cmd_nop);
+	vm.memory[90] = make_cmd(	cmd_ld3, 2000);
+	vm.memory[91] = make_cmd(	cmd_j3, 87, 3); //j3nn
+	
+	//jump reg_i4
+	vm.memory[87] = make_cmd(	cmd_j4, 92, 1); //j4z
+	vm.memory[88] = make_cmd(	cmd_j4, 90, 4); //j4nz
+	vm.memory[89] = make_cmd(	cmd_nop);
+	vm.memory[90] = make_cmd(	cmd_ld4, 2000);
+	vm.memory[91] = make_cmd(	cmd_j4, 87, 3); //j4nn
+	
+	//jump reg_i5
+	vm.memory[87] = make_cmd(	cmd_j5, 92, 1); //j5z
+	vm.memory[88] = make_cmd(	cmd_j5, 90, 4); //j5nz
+	vm.memory[89] = make_cmd(	cmd_nop);
+	vm.memory[90] = make_cmd(	cmd_ld5, 2000);
+	vm.memory[91] = make_cmd(	cmd_j5, 87, 3); //j5nn
+	
+	//jump reg_i6
+	vm.memory[87] = make_cmd(	cmd_j6, 92, 1); //j6z
+	vm.memory[88] = make_cmd(	cmd_j6, 90, 4); //j6nz
+	vm.memory[89] = make_cmd(	cmd_nop);
+	vm.memory[90] = make_cmd(	cmd_ld6, 2000);
+	vm.memory[91] = make_cmd(	cmd_j6, 87, 3); //j6nn
+	
+	
+	vm.memory[92] = make_cmd(	cmd_hlt);
 	
 	vm.memory[150] = make_word(POS_SIGN, 8, 0, 3, 5, 4);
 	vm.memory[151] = make_word(POS_SIGN, 0, 0, 0, 11, 11);
