@@ -59,6 +59,12 @@ namespace mix
 		cmd_stz,
 		cmd_jmp = 39,
 		cmd_ja=40,
+		cmd_j1,
+		cmd_j2,
+		cmd_j3,
+		cmd_j4,
+		cmd_j5,
+		cmd_j6,
 		cmd_jx=47,
 		cmd_enta = 48,
 		cmd_ent1,
@@ -166,6 +172,54 @@ namespace mix
 		void jann(const word &data);	//40, 3
 		void janz(const word &data);	//40, 4
 		void janp(const word &data);	//40, 5
+		
+		void j1(const word &data);		//41
+		void j1n(const word &data);		//41, 0
+		void j1z(const word &data);		//41, 1
+		void j1p(const word &data);		//41, 2
+		void j1nn(const word &data);	//41, 3
+		void j1nz(const word &data);	//41, 4
+		void j1np(const word &data);	//41, 5
+		
+		void j2(const word &data);		//42
+		void j2n(const word &data);		//42, 0
+		void j2z(const word &data);		//42, 1
+		void j2p(const word &data);		//42, 2
+		void j2nn(const word &data);	//42, 3
+		void j2nz(const word &data);	//42, 4
+		void j2np(const word &data);	//42, 5
+		
+		void j3(const word &data);		//43
+		void j3n(const word &data);		//43, 0
+		void j3z(const word &data);		//43, 1
+		void j3p(const word &data);		//43, 2
+		void j3nn(const word &data);	//43, 3
+		void j3nz(const word &data);	//43, 4
+		void j3np(const word &data);	//43, 5
+		
+		void j4(const word &data);		//44
+		void j4n(const word &data);		//44, 0
+		void j4z(const word &data);		//44, 1
+		void j4p(const word &data);		//44, 2
+		void j4nn(const word &data);	//44, 3
+		void j4nz(const word &data);	//44, 4
+		void j4np(const word &data);	//44, 5
+		
+		void j5(const word &data);		//45
+		void j5n(const word &data);		//45, 0
+		void j5z(const word &data);		//45, 1
+		void j5p(const word &data);		//45, 2
+		void j5nn(const word &data);	//45, 3
+		void j5nz(const word &data);	//45, 4
+		void j5np(const word &data);	//45, 5
+		
+		void j6(const word &data);		//46
+		void j6n(const word &data);		//46, 0
+		void j6z(const word &data);		//46, 1
+		void j6p(const word &data);		//46, 2
+		void j6nn(const word &data);	//46, 3
+		void j6nz(const word &data);	//46, 4
+		void j6np(const word &data);	//46, 5
 		
 		void jx(const word &data);		//47
 		void jxn(const word &data);		//47, 0
