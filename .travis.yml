@@ -1,14 +1,6 @@
 sudo: false
 language: cpp
 
-addons:
-  apt:
-    sources:
-      - george-edison55-precise-backports
-    packages:
-      - cmake-data
-      - cmake
-
 script:
 - mkdir -p build
 - cd build
