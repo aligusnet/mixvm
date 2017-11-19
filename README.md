@@ -1,5 +1,7 @@
 # mixvm
 
+[![Build Status](https://travis-ci.org/Alexander-Ignatyev/mixvm.svg?branch=master)](https://travis-ci.org/Alexander-Ignatyev/mixvm)
+
 Implementation of MIX Virtual Machine.
 
 ## building
