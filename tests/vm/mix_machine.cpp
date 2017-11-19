@@ -135,5 +135,61 @@ TEST_F(MixMachineTestSuite, ldx) {
   EXPECT_EQ(-18, get_value(machine.reg_x));
 }
 
+TEST_F(MixMachineTestSuite, ldan) {
+  bool isOverflowed;
+  set_value(-73, machine.memory[152], isOverflowed);
+  machine.ldan(make_cmd(cmd_ldan, 152));
+
+  EXPECT_EQ(73, get_value(machine.reg_a));
+}
+
+TEST_F(MixMachineTestSuite, ld1n) {
+  bool isOverflowed;
+  set_value(11, machine.memory[152], isOverflowed);
+  machine.ld1n(make_cmd(cmd_ld1n, 152));
+
+  EXPECT_EQ(-11, get_value(machine.reg_i[0]));
+}
+
+TEST_F(MixMachineTestSuite, ld2n) {
+  bool isOverflowed;
+  set_value(12, machine.memory[152], isOverflowed);
+  machine.ld2n(make_cmd(cmd_ld2n, 152));
+
+  EXPECT_EQ(-12, get_value(machine.reg_i[1]));
+}
+
+TEST_F(MixMachineTestSuite, ld3n) {
+  bool isOverflowed;
+  set_value(13, machine.memory[152], isOverflowed);
+  machine.ld3n(make_cmd(cmd_ld3n, 152));
+
+  EXPECT_EQ(-13, get_value(machine.reg_i[2]));
+}
+
+TEST_F(MixMachineTestSuite, ld4n) {
+  bool isOverflowed;
+  set_value(14, machine.memory[152], isOverflowed);
+  machine.ld4n(make_cmd(cmd_ld4n, 152));
+
+  EXPECT_EQ(-14, get_value(machine.reg_i[3]));
+}
+
+TEST_F(MixMachineTestSuite, ld5n) {
+  bool isOverflowed;
+  set_value(15, machine.memory[152], isOverflowed);
+  machine.ld5n(make_cmd(cmd_ld5n, 152));
+
+  EXPECT_EQ(-15, get_value(machine.reg_i[4]));
+}
+
+TEST_F(MixMachineTestSuite, ldxn) {
+  bool isOverflowed;
+  set_value(18, machine.memory[152], isOverflowed);
+  machine.ldxn(make_cmd(cmd_ldxn, 152));
+
+  EXPECT_EQ(-18, get_value(machine.reg_x));
+}
+
 
 }
