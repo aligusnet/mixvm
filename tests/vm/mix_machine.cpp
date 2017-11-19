@@ -247,4 +247,20 @@ TEST_F(MixMachineTestSuite, stx) {
   EXPECT_EQ(-18, get_value(machine.memory[152]));
 }
 
+TEST_F(MixMachineTestSuite, stj) {
+  bool isOverflowed;
+  set_value(99, machine.reg_j, isOverflowed);
+  machine.stj(make_cmd(cmd_stj, 152));
+
+  EXPECT_EQ(99, get_value(machine.memory[152]));
+}
+
+TEST_F(MixMachineTestSuite, stz) {
+  bool isOverflowed;
+  set_value(-75, machine.memory[152], isOverflowed);
+  machine.stz(make_cmd(cmd_stz, 152));
+
+  EXPECT_EQ(0, get_value(machine.memory[152]));
+}
+
 }
