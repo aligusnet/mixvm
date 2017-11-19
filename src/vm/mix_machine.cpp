@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define LOG_COMMAND_NAME(data) \
 print_command(std::cout, (data), __FUNCTION__); \
