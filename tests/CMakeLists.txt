@@ -2,7 +2,7 @@ enable_testing()
 
 include(gtest.cmake)
 
-file(GLOB SRCS vm/*.cpp)
+file(GLOB SRCS "vm/*.h" "vm/*.cpp")
 
 add_executable(tests ${SRCS})
 
