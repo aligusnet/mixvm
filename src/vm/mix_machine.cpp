@@ -663,7 +663,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_a.sign == POS_SIGN)
+        value_type val = get_value(reg_a);
+		if (val > 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -697,7 +698,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_a.sign != POS_SIGN)
+        value_type val = get_value(reg_a);
+		if (val <= 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
