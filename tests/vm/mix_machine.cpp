@@ -263,4 +263,144 @@ TEST_F(MixMachineTestSuite, stz) {
   EXPECT_EQ(0, get_value(machine.memory[152]));
 }
 
+TEST_F(MixMachineTestSuite, jmp) {
+  machine.jmp(make_cmd(cmd_jmp, 10));
+
+  EXPECT_EQ(10, get_value(machine.reg_j));
 }
+    
+TEST_F(MixMachineTestSuite, jov_jump_if_overflowed) {
+  machine.override = true;
+  machine.jov(make_cmd(cmd_jmp, 11));
+  
+  EXPECT_EQ(11, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jov_do_nothing_if_not_overflowed) {
+  machine.override = false;
+  machine.jov(make_cmd(cmd_jmp, 11));
+  
+  EXPECT_EQ(0, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jnov_jump_if_overflowed) {
+  machine.override = true;
+  machine.jnov(make_cmd(cmd_jmp, 12));
+  
+  EXPECT_EQ(0, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jnov_do_nothing_if_not_overflowed) {
+  machine.override = false;
+  machine.jnov(make_cmd(cmd_jmp, 12));
+  
+  EXPECT_EQ(12, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jl_jump_if_less) {
+  machine.compare_flag = cmp_less;
+  machine.jl(make_cmd(cmd_jmp, 13));
+  
+  EXPECT_EQ(13, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jl_not_jump_if_not_less) {
+  machine.compare_flag = cmp_equal;
+  machine.jl(make_cmd(cmd_jmp, 13));
+  
+  EXPECT_EQ(0, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, je_jump_if_equal) {
+  machine.compare_flag = cmp_equal;
+  machine.je(make_cmd(cmd_jmp, 13));
+  
+  EXPECT_EQ(13, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, je_not_jump_if_not_equal) {
+  machine.compare_flag = cmp_less;
+  machine.je(make_cmd(cmd_jmp, 13));
+  
+  EXPECT_EQ(0, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jg_jump_if_greater) {
+  machine.compare_flag = cmp_greater;
+  machine.jg(make_cmd(cmd_jmp, 14));
+  
+  EXPECT_EQ(14, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jg_not_jump_if_not_greater) {
+  machine.compare_flag = cmp_equal;
+  machine.jg(make_cmd(cmd_jmp, 15));
+  
+  EXPECT_EQ(0, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jge_jump_if_greater) {
+  machine.compare_flag = cmp_greater;
+  machine.jge(make_cmd(cmd_jmp, 16));
+  
+  EXPECT_EQ(16, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jge_jump_if_equal) {
+  machine.compare_flag = cmp_equal;
+  machine.jge(make_cmd(cmd_jmp, 17));
+  
+  EXPECT_EQ(17, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jge_not_jump_if_less) {
+  machine.compare_flag = cmp_less;
+  machine.jge(make_cmd(cmd_jmp, 18));
+  
+  EXPECT_EQ(0, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jne_jump_if_less) {
+  machine.compare_flag = cmp_less;
+  machine.jne(make_cmd(cmd_jmp, 19));
+  
+  EXPECT_EQ(19, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jle_not_jump_if_equal) {
+  machine.compare_flag = cmp_equal;
+  machine.jne(make_cmd(cmd_jmp, 20));
+  
+  EXPECT_EQ(0, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jle_jump_if_greater) {
+  machine.compare_flag = cmp_greater;
+  machine.jne(make_cmd(cmd_jmp, 21));
+  
+  EXPECT_EQ(21, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jle_jump_if_less) {
+  machine.compare_flag = cmp_less;
+  machine.jle(make_cmd(cmd_jmp, 22));
+  
+  EXPECT_EQ(22, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jle_jump_if_equal) {
+  machine.compare_flag = cmp_equal;
+  machine.jle(make_cmd(cmd_jmp, 23));
+  
+  EXPECT_EQ(23, get_value(machine.reg_j));
+}
+
+TEST_F(MixMachineTestSuite, jle_not_jump_if_greater) {
+  machine.compare_flag = cmp_greater;
+  machine.jle(make_cmd(cmd_jmp, 24));
+  
+  EXPECT_EQ(0, get_value(machine.reg_j));
+}
+
+}
+
