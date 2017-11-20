@@ -11,13 +11,13 @@ protected:
   Machine machine;
   bool isOverflowed;
   
-  int getNextInstructionAddress() {
+  int get_next_instruction_address() {
     return get_value(machine.reg_j);
   }
   
-  bool isNextInstructionAddressUnchanged() {
+  bool is_next_instruction_address_unchanged() {
     const int NEXT_INSTRUCTION_DEFAULT_ADDRESS = 0;
-    return getNextInstructionAddress() == NEXT_INSTRUCTION_DEFAULT_ADDRESS;
+    return get_next_instruction_address() == NEXT_INSTRUCTION_DEFAULT_ADDRESS;
   }
   
   void set_memory_value(int address, int value) {
@@ -43,16 +43,24 @@ protected:
   int get_reg_x_value() {
     return get_value(machine.reg_x);
   }
+  
+  void set_reg_i_value(int index, int value) {
+    set_value(value, machine.reg_i[index-1], isOverflowed);
+  }
+  
+  int get_reg_i_value(int index) {
+    return get_value(machine.reg_i[index-1]);
+  }
 };
 
 TEST_F(MixMachineTestSuite, start_state) {
   EXPECT_EQ(0, get_reg_a_value());
   EXPECT_EQ(0, get_reg_x_value());
-  EXPECT_EQ(0, get_value(machine.reg_i[0]));
-  EXPECT_EQ(0, get_value(machine.reg_i[1]));
-  EXPECT_EQ(0, get_value(machine.reg_i[2]));
-  EXPECT_EQ(0, get_value(machine.reg_i[3]));
-  EXPECT_EQ(0, get_value(machine.reg_i[4]));
+  EXPECT_EQ(0, get_reg_i_value(1));
+  EXPECT_EQ(0, get_reg_i_value(2));
+  EXPECT_EQ(0, get_reg_i_value(3));
+  EXPECT_EQ(0, get_reg_i_value(4));
+  EXPECT_EQ(0, get_reg_i_value(5));
 }
 
 TEST_F(MixMachineTestSuite, add) {
@@ -111,52 +119,52 @@ TEST_F(MixMachineTestSuite, hlt) {
 }
 
 TEST_F(MixMachineTestSuite, lda) {
-  set_value(-73, machine.memory[152], isOverflowed);
+  set_memory_value(152, -73);
   machine.lda(make_cmd(cmd_lda, 152));
 
-  EXPECT_EQ(-73, get_value(machine.reg_a));
+  EXPECT_EQ(-73, get_reg_a_value());
 }
 
 TEST_F(MixMachineTestSuite, ld1) {
-  set_value(11, machine.memory[152], isOverflowed);
+  set_memory_value(152, 11);
   machine.ld1(make_cmd(cmd_ld1, 152));
 
-  EXPECT_EQ(11, get_value(machine.reg_i[0]));
+  EXPECT_EQ(11, get_reg_i_value(1));
 }
 
 TEST_F(MixMachineTestSuite, ld2) {
-  set_value(12, machine.memory[152], isOverflowed);
-  machine.ld2(make_cmd(cmd_ld1, 152));
+  set_memory_value(152, 12);
+  machine.ld2(make_cmd(cmd_ld2, 152));
 
-  EXPECT_EQ(12, get_value(machine.reg_i[1]));
+  EXPECT_EQ(12, get_reg_i_value(2));
 }
 
 TEST_F(MixMachineTestSuite, ld3) {
-  set_value(13, machine.memory[152], isOverflowed);
-  machine.ld3(make_cmd(cmd_ld1, 152));
+  set_memory_value(152, 13);
+  machine.ld3(make_cmd(cmd_ld3, 152));
 
-  EXPECT_EQ(13, get_value(machine.reg_i[2]));
+  EXPECT_EQ(13, get_reg_i_value(3));
 }
 
 TEST_F(MixMachineTestSuite, ld4) {
-  set_value(14, machine.memory[152], isOverflowed);
-  machine.ld4(make_cmd(cmd_ld1, 152));
+  set_memory_value(152, 14);
+  machine.ld4(make_cmd(cmd_ld4, 152));
 
-  EXPECT_EQ(14, get_value(machine.reg_i[3]));
+  EXPECT_EQ(14, get_reg_i_value(4));
 }
 
 TEST_F(MixMachineTestSuite, ld5) {
-  set_value(15, machine.memory[152], isOverflowed);
-  machine.ld5(make_cmd(cmd_ld1, 152));
+  set_memory_value(152, 15);
+  machine.ld5(make_cmd(cmd_ld5, 152));
 
-  EXPECT_EQ(15, get_value(machine.reg_i[4]));
+  EXPECT_EQ(15, get_reg_i_value(5));
 }
 
 TEST_F(MixMachineTestSuite, ldx) {
-  set_value(-18, machine.memory[152], isOverflowed);
+  set_memory_value(152, -18);
   machine.ldx(make_cmd(cmd_ldx, 152));
 
-  EXPECT_EQ(-18, get_value(machine.reg_x));
+  EXPECT_EQ(-18, get_reg_x_value());
 }
 
 TEST_F(MixMachineTestSuite, ldan) {
@@ -274,266 +282,266 @@ TEST_F(MixMachineTestSuite, stz) {
 TEST_F(MixMachineTestSuite, jmp) {
   machine.jmp(make_cmd(cmd_jmp, 10));
 
-  EXPECT_EQ(10, getNextInstructionAddress());
+  EXPECT_EQ(10, get_next_instruction_address());
 }
     
 TEST_F(MixMachineTestSuite, jov_jump_if_overflowed) {
   machine.override = true;
   machine.jov(make_cmd(cmd_jmp, 11));
   
-  EXPECT_EQ(11, getNextInstructionAddress());
+  EXPECT_EQ(11, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jov_do_nothing_if_not_overflowed) {
   machine.override = false;
   machine.jov(make_cmd(cmd_jmp, 11));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jnov_jump_if_overflowed) {
   machine.override = true;
   machine.jnov(make_cmd(cmd_jmp, 12));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jnov_do_nothing_if_not_overflowed) {
   machine.override = false;
   machine.jnov(make_cmd(cmd_jmp, 12));
   
-  EXPECT_EQ(12, getNextInstructionAddress());
+  EXPECT_EQ(12, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jl_jump_if_less) {
   machine.compare_flag = cmp_less;
   machine.jl(make_cmd(cmd_jmp, 13));
   
-  EXPECT_EQ(13, getNextInstructionAddress());
+  EXPECT_EQ(13, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jl_not_jump_if_not_less) {
   machine.compare_flag = cmp_equal;
   machine.jl(make_cmd(cmd_jmp, 13));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, je_jump_if_equal) {
   machine.compare_flag = cmp_equal;
   machine.je(make_cmd(cmd_jmp, 13));
   
-  EXPECT_EQ(13, getNextInstructionAddress());
+  EXPECT_EQ(13, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, je_not_jump_if_not_equal) {
   machine.compare_flag = cmp_less;
   machine.je(make_cmd(cmd_jmp, 13));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jg_jump_if_greater) {
   machine.compare_flag = cmp_greater;
   machine.jg(make_cmd(cmd_jmp, 14));
   
-  EXPECT_EQ(14, getNextInstructionAddress());
+  EXPECT_EQ(14, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jg_not_jump_if_not_greater) {
   machine.compare_flag = cmp_equal;
   machine.jg(make_cmd(cmd_jmp, 15));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jge_jump_if_greater) {
   machine.compare_flag = cmp_greater;
   machine.jge(make_cmd(cmd_jmp, 16));
   
-  EXPECT_EQ(16, getNextInstructionAddress());
+  EXPECT_EQ(16, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jge_jump_if_equal) {
   machine.compare_flag = cmp_equal;
   machine.jge(make_cmd(cmd_jmp, 17));
   
-  EXPECT_EQ(17, getNextInstructionAddress());
+  EXPECT_EQ(17, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jge_not_jump_if_less) {
   machine.compare_flag = cmp_less;
   machine.jge(make_cmd(cmd_jmp, 18));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jne_jump_if_less) {
   machine.compare_flag = cmp_less;
   machine.jne(make_cmd(cmd_jmp, 19));
   
-  EXPECT_EQ(19, getNextInstructionAddress());
+  EXPECT_EQ(19, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jle_not_jump_if_equal) {
   machine.compare_flag = cmp_equal;
   machine.jne(make_cmd(cmd_jmp, 20));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jle_jump_if_greater) {
   machine.compare_flag = cmp_greater;
   machine.jne(make_cmd(cmd_jmp, 21));
   
-  EXPECT_EQ(21, getNextInstructionAddress());
+  EXPECT_EQ(21, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jle_jump_if_less) {
   machine.compare_flag = cmp_less;
   machine.jle(make_cmd(cmd_jmp, 22));
   
-  EXPECT_EQ(22, getNextInstructionAddress());
+  EXPECT_EQ(22, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jle_jump_if_equal) {
   machine.compare_flag = cmp_equal;
   machine.jle(make_cmd(cmd_jmp, 23));
   
-  EXPECT_EQ(23, getNextInstructionAddress());
+  EXPECT_EQ(23, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jle_not_jump_if_greater) {
   machine.compare_flag = cmp_greater;
   machine.jle(make_cmd(cmd_jmp, 24));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jan_jump_if_ra_negative) {
   set_value(-1, machine.reg_a, isOverflowed);
   machine.jan(make_cmd(cmd_ja, 25));
   
-  EXPECT_EQ(25, getNextInstructionAddress());
+  EXPECT_EQ(25, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jan_not_jump_if_ra_zero) {
   set_value(0, machine.reg_a, isOverflowed);
   machine.jan(make_cmd(cmd_ja, 26));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jan_not_jump_if_ra_positive) {
   set_value(1, machine.reg_a, isOverflowed);
   machine.jan(make_cmd(cmd_ja, 27));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jaz_not_jump_if_ra_negative) {
   set_value(-1, machine.reg_a, isOverflowed);
   machine.jaz(make_cmd(cmd_ja, 28));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jaz_jump_if_ra_zero) {
   set_value(0, machine.reg_a, isOverflowed);
   machine.jaz(make_cmd(cmd_ja, 29));
   
-  EXPECT_EQ(29, getNextInstructionAddress());
+  EXPECT_EQ(29, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jaz_not_jump_if_ra_positive) {
   set_value(1, machine.reg_a, isOverflowed);
   machine.jaz(make_cmd(cmd_ja, 30));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jap_not_jump_if_ra_negative) {
   set_value(-1, machine.reg_a, isOverflowed);
   machine.jap(make_cmd(cmd_ja, 31));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jap_not_jump_if_ra_zero) {
   set_value(0, machine.reg_a, isOverflowed);
   machine.jap(make_cmd(cmd_ja, 32));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jap_jump_if_ra_positive) {
   set_value(1, machine.reg_a, isOverflowed);
   machine.jap(make_cmd(cmd_ja, 33));
   
-  EXPECT_EQ(33, getNextInstructionAddress());
+  EXPECT_EQ(33, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jann_not_jump_if_ra_negative) {
   set_value(-1, machine.reg_a, isOverflowed);
   machine.jann(make_cmd(cmd_ja, 34));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, jann_jump_if_ra_zero) {
   set_value(0, machine.reg_a, isOverflowed);
   machine.jann(make_cmd(cmd_ja, 35));
   
-  EXPECT_EQ(35, getNextInstructionAddress());
+  EXPECT_EQ(35, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, jann_jump_if_ra_positive) {
   set_value(1, machine.reg_a, isOverflowed);
   machine.jann(make_cmd(cmd_ja, 36));
   
-  EXPECT_EQ(36, getNextInstructionAddress());
+  EXPECT_EQ(36, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, janz_jump_if_ra_negative) {
   set_value(-1, machine.reg_a, isOverflowed);
   machine.janz(make_cmd(cmd_ja, 37));
   
-  EXPECT_EQ(37, getNextInstructionAddress());
+  EXPECT_EQ(37, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, janz_not_jump_if_ra_zero) {
   set_value(0, machine.reg_a, isOverflowed);
   machine.janz(make_cmd(cmd_ja, 38));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MixMachineTestSuite, janz_jump_if_ra_positive) {
   set_value(1, machine.reg_a, isOverflowed);
   machine.janz(make_cmd(cmd_ja, 39));
   
-  EXPECT_EQ(39, getNextInstructionAddress());
+  EXPECT_EQ(39, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, janp_jump_if_ra_negative) {
   set_value(-1, machine.reg_a, isOverflowed);
   machine.janp(make_cmd(cmd_ja, 40));
   
-  EXPECT_EQ(40, getNextInstructionAddress());
+  EXPECT_EQ(40, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, janp_jump_if_ra_zero) {
   set_value(0, machine.reg_a, isOverflowed);
   machine.janp(make_cmd(cmd_ja, 41));
   
-  EXPECT_EQ(41, getNextInstructionAddress());
+  EXPECT_EQ(41, get_next_instruction_address());
 }
 
 TEST_F(MixMachineTestSuite, janp_not_jump_if_ra_positive) {
   set_value(1, machine.reg_a, isOverflowed);
   machine.janp(make_cmd(cmd_ja, 42));
   
-  EXPECT_TRUE(isNextInstructionAddressUnchanged());
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 }
