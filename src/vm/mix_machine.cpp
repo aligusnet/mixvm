@@ -759,7 +759,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[0].sign == POS_SIGN)
+    value_type val = get_value(reg_i[0]);
+		if (val > 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -793,7 +794,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[0].sign != POS_SIGN)
+    value_type val = get_value(reg_i[0]);
+		if (val <= 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -853,7 +855,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[1].sign == POS_SIGN)
+    value_type val = get_value(reg_i[1]);
+		if (val > 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -887,7 +890,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[1].sign != POS_SIGN)
+    value_type val = get_value(reg_i[1]);
+		if (val <= 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -947,7 +951,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[2].sign == POS_SIGN)
+    value_type val = get_value(reg_i[2]);
+		if (val > 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -981,7 +986,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[2].sign != POS_SIGN)
+    value_type val = get_value(reg_i[2]);
+		if (val <= 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -1041,7 +1047,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[3].sign == POS_SIGN)
+    value_type val = get_value(reg_i[3]);
+		if (val > 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -1075,7 +1082,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[3].sign != POS_SIGN)
+    value_type val = get_value(reg_i[3]);
+		if (val <= 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -1135,7 +1143,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[4].sign == POS_SIGN)
+    value_type val = get_value(reg_i[4]);
+		if (val > 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -1169,7 +1178,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[4].sign != POS_SIGN)
+    value_type val = get_value(reg_i[4]);
+		if (val <= 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -1229,7 +1239,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[5].sign == POS_SIGN)
+    value_type val = get_value(reg_i[5]);
+		if (val > 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -1263,7 +1274,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_i[5].sign != POS_SIGN)
+    value_type val = get_value(reg_i[5]);
+		if (val <= 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -1323,7 +1335,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_x.sign == POS_SIGN)
+    value_type val = get_value(reg_x);
+		if (val > 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);
@@ -1357,7 +1370,8 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		if (reg_x.sign != POS_SIGN)
+    value_type val = get_value(reg_x);
+		if (val <= 0)
 		{
 			int addr = get_address(data);
 			set_value(addr, reg_j, override);

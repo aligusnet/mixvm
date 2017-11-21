@@ -267,5 +267,888 @@ TEST_F(MachineJumpsTestSuite, janp_not_jump_if_ra_positive) {
   
   EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
+
+TEST_F(MachineJumpsTestSuite, j1n_jump_if_ra_negative) {
+  set_reg_i_value(1, -1);
+  machine.j1n(make_cmd(cmd_j1, 25));
+  
+  EXPECT_EQ(25, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j1n_not_jump_if_ra_zero) {
+  set_reg_i_value(1, 0);
+  machine.j1n(make_cmd(cmd_j1, 26));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j1n_not_jump_if_ra_positive) {
+  set_reg_i_value(1, 1);
+  machine.j1n(make_cmd(cmd_j1, 27));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j1z_not_jump_if_ra_negative) {
+  set_reg_i_value(1, -1);
+  machine.j1z(make_cmd(cmd_j1, 28));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j1z_jump_if_ra_zero) {
+  set_reg_i_value(1, 0);
+  machine.j1z(make_cmd(cmd_j1, 29));
+  
+  EXPECT_EQ(29, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j1z_not_jump_if_ra_positive) {
+  set_reg_i_value(1, 1);
+  machine.j1z(make_cmd(cmd_j1, 30));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j1p_not_jump_if_ra_negative) {
+  set_reg_i_value(1, -1);
+  machine.j1p(make_cmd(cmd_j1, 31));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j1p_not_jump_if_ra_zero) {
+  set_reg_i_value(1, 0);
+  machine.j1p(make_cmd(cmd_j1, 32));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j1p_jump_if_ra_positive) {
+  set_reg_i_value(1, 1);
+  machine.j1p(make_cmd(cmd_j1, 33));
+  
+  EXPECT_EQ(33, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j1nn_not_jump_if_ra_negative) {
+  set_reg_i_value(1, -1);
+  machine.j1nn(make_cmd(cmd_j1, 34));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j1nn_jump_if_ra_zero) {
+  set_reg_i_value(1, 0);
+  machine.j1nn(make_cmd(cmd_j1, 35));
+  
+  EXPECT_EQ(35, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j1nn_jump_if_ra_positive) {
+  set_reg_i_value(1, 1);
+  machine.j1nn(make_cmd(cmd_j1, 36));
+  
+  EXPECT_EQ(36, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j1nz_jump_if_ra_negative) {
+  set_reg_i_value(1, -1);
+  machine.j1nz(make_cmd(cmd_j1, 37));
+  
+  EXPECT_EQ(37, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j1nz_not_jump_if_ra_zero) {
+  set_reg_i_value(1, 0);
+  machine.j1nz(make_cmd(cmd_j1, 38));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j1nz_jump_if_ra_positive) {
+  set_reg_i_value(1, 1);
+  machine.j1nz(make_cmd(cmd_j1, 39));
+  
+  EXPECT_EQ(39, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j1np_jump_if_ra_negative) {
+  set_reg_i_value(1, -1);
+  machine.j1np(make_cmd(cmd_j1, 40));
+  
+  EXPECT_EQ(40, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j1np_jump_if_ra_zero) {
+  set_reg_i_value(1, 0);
+  machine.j1np(make_cmd(cmd_j1, 41));
+  
+  EXPECT_EQ(41, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j1np_not_jump_if_ra_positive) {
+  set_reg_i_value(1, 1);
+  machine.j1np(make_cmd(cmd_j1, 42));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j2n_jump_if_ra_negative) {
+  set_reg_i_value(2, -1);
+  machine.j2n(make_cmd(cmd_j2, 25));
+  
+  EXPECT_EQ(25, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j2n_not_jump_if_ra_zero) {
+  set_reg_i_value(2, 0);
+  machine.j2n(make_cmd(cmd_j2, 26));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j2n_not_jump_if_ra_positive) {
+  set_reg_i_value(2, 1);
+  machine.j2n(make_cmd(cmd_j2, 27));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j2z_not_jump_if_ra_negative) {
+  set_reg_i_value(2, -1);
+  machine.j2z(make_cmd(cmd_j2, 28));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j2z_jump_if_ra_zero) {
+  set_reg_i_value(2, 0);
+  machine.j2z(make_cmd(cmd_j2, 29));
+  
+  EXPECT_EQ(29, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j2z_not_jump_if_ra_positive) {
+  set_reg_i_value(2, 1);
+  machine.j2z(make_cmd(cmd_j2, 30));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j2p_not_jump_if_ra_negative) {
+  set_reg_i_value(2, -1);
+  machine.j2p(make_cmd(cmd_j2, 31));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j2p_not_jump_if_ra_zero) {
+  set_reg_i_value(2, 0);
+  machine.j2p(make_cmd(cmd_j2, 32));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j2p_jump_if_ra_positive) {
+  set_reg_i_value(2, 1);
+  machine.j2p(make_cmd(cmd_j2, 33));
+  
+  EXPECT_EQ(33, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j2nn_not_jump_if_ra_negative) {
+  set_reg_i_value(2, -1);
+  machine.j2nn(make_cmd(cmd_j2, 34));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j2nn_jump_if_ra_zero) {
+  set_reg_i_value(2, 0);
+  machine.j2nn(make_cmd(cmd_j2, 35));
+  
+  EXPECT_EQ(35, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j2nn_jump_if_ra_positive) {
+  set_reg_i_value(2, 1);
+  machine.j2nn(make_cmd(cmd_j2, 36));
+  
+  EXPECT_EQ(36, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j2nz_jump_if_ra_negative) {
+  set_reg_i_value(2, -1);
+  machine.j2nz(make_cmd(cmd_j2, 37));
+  
+  EXPECT_EQ(37, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j2nz_not_jump_if_ra_zero) {
+  set_reg_i_value(2, 0);
+  machine.j2nz(make_cmd(cmd_j2, 38));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j2nz_jump_if_ra_positive) {
+  set_reg_i_value(2, 1);
+  machine.j2nz(make_cmd(cmd_j2, 39));
+  
+  EXPECT_EQ(39, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j2np_jump_if_ra_negative) {
+  set_reg_i_value(2, -1);
+  machine.j2np(make_cmd(cmd_j2, 40));
+  
+  EXPECT_EQ(40, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j2np_jump_if_ra_zero) {
+  set_reg_i_value(2, 0);
+  machine.j2np(make_cmd(cmd_j2, 41));
+  
+  EXPECT_EQ(41, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j2np_not_jump_if_ra_positive) {
+  set_reg_i_value(2, 1);
+  machine.j2np(make_cmd(cmd_j2, 42));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j3n_jump_if_ra_negative) {
+  set_reg_i_value(3, -1);
+  machine.j3n(make_cmd(cmd_j3, 25));
+  
+  EXPECT_EQ(25, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j3n_not_jump_if_ra_zero) {
+  set_reg_i_value(3, 0);
+  machine.j3n(make_cmd(cmd_j3, 26));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j3n_not_jump_if_ra_positive) {
+  set_reg_i_value(3, 1);
+  machine.j3n(make_cmd(cmd_j3, 27));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j3z_not_jump_if_ra_negative) {
+  set_reg_i_value(3, -1);
+  machine.j3z(make_cmd(cmd_j3, 28));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j3z_jump_if_ra_zero) {
+  set_reg_i_value(3, 0);
+  machine.j3z(make_cmd(cmd_j3, 29));
+  
+  EXPECT_EQ(29, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j3z_not_jump_if_ra_positive) {
+  set_reg_i_value(3, 1);
+  machine.j3z(make_cmd(cmd_j3, 30));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j3p_not_jump_if_ra_negative) {
+  set_reg_i_value(3, -1);
+  machine.j3p(make_cmd(cmd_j3, 31));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j3p_not_jump_if_ra_zero) {
+  set_reg_i_value(3, 0);
+  machine.j3p(make_cmd(cmd_j3, 32));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j3p_jump_if_ra_positive) {
+  set_reg_i_value(3, 1);
+  machine.j3p(make_cmd(cmd_j3, 33));
+  
+  EXPECT_EQ(33, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j3nn_not_jump_if_ra_negative) {
+  set_reg_i_value(3, -1);
+  machine.j3nn(make_cmd(cmd_j3, 34));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j3nn_jump_if_ra_zero) {
+  set_reg_i_value(3, 0);
+  machine.j3nn(make_cmd(cmd_j3, 35));
+  
+  EXPECT_EQ(35, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j3nn_jump_if_ra_positive) {
+  set_reg_i_value(3, 1);
+  machine.j3nn(make_cmd(cmd_j3, 36));
+  
+  EXPECT_EQ(36, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j3nz_jump_if_ra_negative) {
+  set_reg_i_value(3, -1);
+  machine.j3nz(make_cmd(cmd_j3, 37));
+  
+  EXPECT_EQ(37, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j3nz_not_jump_if_ra_zero) {
+  set_reg_i_value(3, 0);
+  machine.j3nz(make_cmd(cmd_j3, 38));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j3nz_jump_if_ra_positive) {
+  set_reg_i_value(3, 1);
+  machine.j3nz(make_cmd(cmd_j3, 39));
+  
+  EXPECT_EQ(39, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j3np_jump_if_ra_negative) {
+  set_reg_i_value(3, -1);
+  machine.j3np(make_cmd(cmd_j3, 40));
+  
+  EXPECT_EQ(40, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j3np_jump_if_ra_zero) {
+  set_reg_i_value(3, 0);
+  machine.j3np(make_cmd(cmd_j3, 41));
+  
+  EXPECT_EQ(41, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j3np_not_jump_if_ra_positive) {
+  set_reg_i_value(3, 1);
+  machine.j3np(make_cmd(cmd_j3, 42));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j4n_jump_if_ra_negative) {
+  set_reg_i_value(4, -1);
+  machine.j4n(make_cmd(cmd_j4, 25));
+  
+  EXPECT_EQ(25, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j4n_not_jump_if_ra_zero) {
+  set_reg_i_value(4, 0);
+  machine.j4n(make_cmd(cmd_j4, 26));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j4n_not_jump_if_ra_positive) {
+  set_reg_i_value(4, 1);
+  machine.j4n(make_cmd(cmd_j4, 27));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j4z_not_jump_if_ra_negative) {
+  set_reg_i_value(4, -1);
+  machine.j4z(make_cmd(cmd_j4, 28));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j4z_jump_if_ra_zero) {
+  set_reg_i_value(4, 0);
+  machine.j4z(make_cmd(cmd_j4, 29));
+  
+  EXPECT_EQ(29, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j4z_not_jump_if_ra_positive) {
+  set_reg_i_value(4, 1);
+  machine.j4z(make_cmd(cmd_j4, 30));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j4p_not_jump_if_ra_negative) {
+  set_reg_i_value(4, -1);
+  machine.j4p(make_cmd(cmd_j4, 31));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j4p_not_jump_if_ra_zero) {
+  set_reg_i_value(4, 0);
+  machine.j4p(make_cmd(cmd_j4, 32));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j4p_jump_if_ra_positive) {
+  set_reg_i_value(4, 1);
+  machine.j4p(make_cmd(cmd_j4, 33));
+  
+  EXPECT_EQ(33, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j4nn_not_jump_if_ra_negative) {
+  set_reg_i_value(4, -1);
+  machine.j4nn(make_cmd(cmd_j4, 34));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j4nn_jump_if_ra_zero) {
+  set_reg_i_value(4, 0);
+  machine.j4nn(make_cmd(cmd_j4, 35));
+  
+  EXPECT_EQ(35, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j4nn_jump_if_ra_positive) {
+  set_reg_i_value(4, 1);
+  machine.j4nn(make_cmd(cmd_j4, 36));
+  
+  EXPECT_EQ(36, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j4nz_jump_if_ra_negative) {
+  set_reg_i_value(4, -1);
+  machine.j4nz(make_cmd(cmd_j4, 37));
+  
+  EXPECT_EQ(37, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j4nz_not_jump_if_ra_zero) {
+  set_reg_i_value(4, 0);
+  machine.j4nz(make_cmd(cmd_j4, 38));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j4nz_jump_if_ra_positive) {
+  set_reg_i_value(4, 1);
+  machine.j4nz(make_cmd(cmd_j4, 39));
+  
+  EXPECT_EQ(39, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j4np_jump_if_ra_negative) {
+  set_reg_i_value(4, -1);
+  machine.j4np(make_cmd(cmd_j4, 40));
+  
+  EXPECT_EQ(40, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j4np_jump_if_ra_zero) {
+  set_reg_i_value(4, 0);
+  machine.j4np(make_cmd(cmd_j4, 41));
+  
+  EXPECT_EQ(41, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j4np_not_jump_if_ra_positive) {
+  set_reg_i_value(4, 1);
+  machine.j4np(make_cmd(cmd_j4, 42));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j5n_jump_if_ra_negative) {
+  set_reg_i_value(5, -1);
+  machine.j5n(make_cmd(cmd_j5, 25));
+  
+  EXPECT_EQ(25, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j5n_not_jump_if_ra_zero) {
+  set_reg_i_value(5, 0);
+  machine.j5n(make_cmd(cmd_j5, 26));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j5n_not_jump_if_ra_positive) {
+  set_reg_i_value(5, 1);
+  machine.j5n(make_cmd(cmd_j5, 27));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j5z_not_jump_if_ra_negative) {
+  set_reg_i_value(5, -1);
+  machine.j5z(make_cmd(cmd_j5, 28));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j5z_jump_if_ra_zero) {
+  set_reg_i_value(5, 0);
+  machine.j5z(make_cmd(cmd_j5, 29));
+  
+  EXPECT_EQ(29, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j5z_not_jump_if_ra_positive) {
+  set_reg_i_value(5, 1);
+  machine.j5z(make_cmd(cmd_j5, 30));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j5p_not_jump_if_ra_negative) {
+  set_reg_i_value(5, -1);
+  machine.j5p(make_cmd(cmd_j5, 31));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j5p_not_jump_if_ra_zero) {
+  set_reg_i_value(5, 0);
+  machine.j5p(make_cmd(cmd_j5, 32));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j5p_jump_if_ra_positive) {
+  set_reg_i_value(5, 1);
+  machine.j5p(make_cmd(cmd_j5, 33));
+  
+  EXPECT_EQ(33, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j5nn_not_jump_if_ra_negative) {
+  set_reg_i_value(5, -1);
+  machine.j5nn(make_cmd(cmd_j5, 34));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j5nn_jump_if_ra_zero) {
+  set_reg_i_value(5, 0);
+  machine.j5nn(make_cmd(cmd_j5, 35));
+  
+  EXPECT_EQ(35, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j5nn_jump_if_ra_positive) {
+  set_reg_i_value(5, 1);
+  machine.j5nn(make_cmd(cmd_j5, 36));
+  
+  EXPECT_EQ(36, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j5nz_jump_if_ra_negative) {
+  set_reg_i_value(5, -1);
+  machine.j5nz(make_cmd(cmd_j5, 37));
+  
+  EXPECT_EQ(37, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j5nz_not_jump_if_ra_zero) {
+  set_reg_i_value(5, 0);
+  machine.j5nz(make_cmd(cmd_j5, 38));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j5nz_jump_if_ra_positive) {
+  set_reg_i_value(5, 1);
+  machine.j5nz(make_cmd(cmd_j5, 39));
+  
+  EXPECT_EQ(39, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j5np_jump_if_ra_negative) {
+  set_reg_i_value(5, -1);
+  machine.j5np(make_cmd(cmd_j5, 40));
+  
+  EXPECT_EQ(40, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j5np_jump_if_ra_zero) {
+  set_reg_i_value(5, 0);
+  machine.j5np(make_cmd(cmd_j5, 41));
+  
+  EXPECT_EQ(41, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j5np_not_jump_if_ra_positive) {
+  set_reg_i_value(5, 1);
+  machine.j5np(make_cmd(cmd_j5, 42));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j6n_jump_if_ra_negative) {
+  set_reg_i_value(6, -1);
+  machine.j6n(make_cmd(cmd_j6, 25));
+  
+  EXPECT_EQ(25, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j6n_not_jump_if_ra_zero) {
+  set_reg_i_value(6, 0);
+  machine.j6n(make_cmd(cmd_j6, 26));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j6n_not_jump_if_ra_positive) {
+  set_reg_i_value(6, 1);
+  machine.j6n(make_cmd(cmd_j6, 27));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j6z_not_jump_if_ra_negative) {
+  set_reg_i_value(6, -1);
+  machine.j6z(make_cmd(cmd_j6, 28));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j6z_jump_if_ra_zero) {
+  set_reg_i_value(6, 0);
+  machine.j6z(make_cmd(cmd_j6, 29));
+  
+  EXPECT_EQ(29, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j6z_not_jump_if_ra_positive) {
+  set_reg_i_value(6, 1);
+  machine.j6z(make_cmd(cmd_j6, 30));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j6p_not_jump_if_ra_negative) {
+  set_reg_i_value(6, -1);
+  machine.j6p(make_cmd(cmd_j6, 31));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j6p_not_jump_if_ra_zero) {
+  set_reg_i_value(6, 0);
+  machine.j6p(make_cmd(cmd_j6, 32));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j6p_jump_if_ra_positive) {
+  set_reg_i_value(6, 1);
+  machine.j6p(make_cmd(cmd_j6, 33));
+  
+  EXPECT_EQ(33, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j6nn_not_jump_if_ra_negative) {
+  set_reg_i_value(6, -1);
+  machine.j6nn(make_cmd(cmd_j6, 34));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j6nn_jump_if_ra_zero) {
+  set_reg_i_value(6, 0);
+  machine.j6nn(make_cmd(cmd_j6, 35));
+  
+  EXPECT_EQ(35, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j6nn_jump_if_ra_positive) {
+  set_reg_i_value(6, 1);
+  machine.j6nn(make_cmd(cmd_j6, 36));
+  
+  EXPECT_EQ(36, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j6nz_jump_if_ra_negative) {
+  set_reg_i_value(6, -1);
+  machine.j6nz(make_cmd(cmd_j6, 37));
+  
+  EXPECT_EQ(37, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j6nz_not_jump_if_ra_zero) {
+  set_reg_i_value(6, 0);
+  machine.j6nz(make_cmd(cmd_j6, 38));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, j6nz_jump_if_ra_positive) {
+  set_reg_i_value(6, 1);
+  machine.j6nz(make_cmd(cmd_j6, 39));
+  
+  EXPECT_EQ(39, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j6np_jump_if_ra_negative) {
+  set_reg_i_value(6, -1);
+  machine.j6np(make_cmd(cmd_j6, 40));
+  
+  EXPECT_EQ(40, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j6np_jump_if_ra_zero) {
+  set_reg_i_value(6, 0);
+  machine.j6np(make_cmd(cmd_j6, 41));
+  
+  EXPECT_EQ(41, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, j6np_not_jump_if_ra_positive) {
+  set_reg_i_value(6, 1);
+  machine.j6np(make_cmd(cmd_j6, 42));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, jxn_jump_if_ra_negative) {
+  set_reg_x_value(-1);
+  machine.jxn(make_cmd(cmd_jx, 25));
+  
+  EXPECT_EQ(25, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, jxn_not_jump_if_ra_zero) {
+  set_reg_x_value(0);
+  machine.jxn(make_cmd(cmd_jx, 26));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, jxn_not_jump_if_ra_positive) {
+  set_reg_x_value(1);
+  machine.jxn(make_cmd(cmd_jx, 27));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, jxz_not_jump_if_ra_negative) {
+  set_reg_x_value(-1);
+  machine.jxz(make_cmd(cmd_jx, 28));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, jxz_jump_if_ra_zero) {
+  set_reg_x_value(0);
+  machine.jxz(make_cmd(cmd_jx, 29));
+  
+  EXPECT_EQ(29, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, jxz_not_jump_if_ra_positive) {
+  set_reg_x_value(1);
+  machine.jxz(make_cmd(cmd_jx, 30));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, jxp_not_jump_if_ra_negative) {
+  set_reg_x_value(-1);
+  machine.jxp(make_cmd(cmd_jx, 31));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, jxp_not_jump_if_ra_zero) {
+  set_reg_x_value(0);
+  machine.jxp(make_cmd(cmd_jx, 32));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, jxp_jump_if_ra_positive) {
+  set_reg_x_value(1);
+  machine.jxp(make_cmd(cmd_jx, 33));
+  
+  EXPECT_EQ(33, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, jxnn_not_jump_if_ra_negative) {
+  set_reg_x_value(-1);
+  machine.jxnn(make_cmd(cmd_jx, 34));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, jxnn_jump_if_ra_zero) {
+  set_reg_x_value(0);
+  machine.jxnn(make_cmd(cmd_jx, 35));
+  
+  EXPECT_EQ(35, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, jxnn_jump_if_ra_positive) {
+  set_reg_x_value(1);
+  machine.jxnn(make_cmd(cmd_jx, 36));
+  
+  EXPECT_EQ(36, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, jxnz_jump_if_ra_negative) {
+  set_reg_x_value(-1);
+  machine.jxnz(make_cmd(cmd_jx, 37));
+  
+  EXPECT_EQ(37, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, jxnz_not_jump_if_ra_zero) {
+  set_reg_x_value(0);
+  machine.jxnz(make_cmd(cmd_jx, 38));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
+TEST_F(MachineJumpsTestSuite, jxnz_jump_if_ra_positive) {
+  set_reg_x_value(1);
+  machine.jxnz(make_cmd(cmd_jx, 39));
+  
+  EXPECT_EQ(39, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, jxnp_jump_if_ra_negative) {
+  set_reg_x_value(-1);
+  machine.jxnp(make_cmd(cmd_jx, 40));
+  
+  EXPECT_EQ(40, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, jxnp_jump_if_ra_zero) {
+  set_reg_x_value(0);
+  machine.jxnp(make_cmd(cmd_jx, 41));
+  
+  EXPECT_EQ(41, get_next_instruction_address());
+}
+
+TEST_F(MachineJumpsTestSuite, jxnp_not_jump_if_ra_positive) {
+  set_reg_x_value(1);
+  machine.jxnp(make_cmd(cmd_jx, 42));
+  
+  EXPECT_TRUE(is_next_instruction_address_unchanged());
+}
+
 }  // namespace mix
 
