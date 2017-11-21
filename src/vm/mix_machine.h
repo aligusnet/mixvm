@@ -266,6 +266,8 @@ namespace mix
 		void cmpx(const word &data);		//63
 		
 		void run(short initial_address);
+  
+    unsigned short extract_address(const word &instruction);
 	};
 	
 }

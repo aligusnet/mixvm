@@ -147,7 +147,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 
 		value_type val = get_value(memory[addr], data.bytes[byte_f]);
 		val += get_value(reg_a);
@@ -158,7 +158,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr], data.bytes[byte_f]) * -1;
 		val += get_value(reg_a);
 		set_value(val, reg_a, override);
@@ -168,7 +168,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 
 		long_value_type val1 = get_value(reg_a);
 		long_value_type val2 = get_value(memory[addr], data.bytes[byte_f]);
@@ -180,7 +180,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 
 		value_type val_reg_a = get_value(reg_a);
 		value_type val_mem = get_value(memory[addr], data.bytes[byte_f]);
@@ -211,7 +211,7 @@ namespace mix
 	void Machine::lda(const word &data)	//8
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		memset(&reg_a, 0, sizeof(reg_a));
 		set_value(memory[addr], data.bytes[byte_f], reg_a);
 		format_range fmt = decode_format(data.bytes[byte_f]);
@@ -225,7 +225,7 @@ namespace mix
 	void Machine::ld1(const word &data)	//9
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[0], override);
 	}
@@ -233,7 +233,7 @@ namespace mix
 	void Machine::ld2(const word &data)	//10
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[1], override);
 	}
@@ -241,7 +241,7 @@ namespace mix
 	void Machine::ld3(const word &data)	//11
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[2], override);
 	}
@@ -249,7 +249,7 @@ namespace mix
 	void Machine::ld4(const word &data)	//12
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[3], override);
 	}
@@ -257,7 +257,7 @@ namespace mix
 	void Machine::ld5(const word &data)	//13
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[4], override);
 	}
@@ -265,7 +265,7 @@ namespace mix
 	void Machine::ld6(const word &data)	//14
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val, reg_i[5], override);
 	}
@@ -273,7 +273,7 @@ namespace mix
 	void Machine::ldx(const word &data)	//15
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		memset(&reg_x, 0, sizeof(reg_x));
 		set_value(memory[addr], data.bytes[byte_f], reg_x);
 		format_range fmt = decode_format(data.bytes[byte_f]);
@@ -287,7 +287,7 @@ namespace mix
 	void Machine::ldan(const word &data)	//16
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		memset(&reg_a, 0, sizeof(reg_a));
 		set_value(memory[addr], data.bytes[byte_f], reg_a);
 		format_range fmt = decode_format(data.bytes[byte_f]);
@@ -302,7 +302,7 @@ namespace mix
 	void Machine::ld1n(const word &data)	//17
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[0], override);
 	}
@@ -310,7 +310,7 @@ namespace mix
 	void Machine::ld2n(const word &data)	//18
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[1], override);
 	}
@@ -318,7 +318,7 @@ namespace mix
 	void Machine::ld3n(const word &data)	//19
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[2], override);
 	}
@@ -326,7 +326,7 @@ namespace mix
 	void Machine::ld4n(const word &data)	//20
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[3], override);
 	}
@@ -334,7 +334,7 @@ namespace mix
 	void Machine::ld5n(const word &data)	//21
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[4], override);
 	}
@@ -342,7 +342,7 @@ namespace mix
 	void Machine::ld6n(const word &data)	//22
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(memory[addr]);
 		set_value(val * -1, reg_i[5], override);
 	}
@@ -350,7 +350,7 @@ namespace mix
 	void Machine::ldxn(const word &data)	//23
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		memset(&reg_x, 0, sizeof(reg_x));
 		set_value(memory[addr], data.bytes[byte_f], reg_x);
 		format_range fmt = decode_format(data.bytes[byte_f]);
@@ -365,7 +365,7 @@ namespace mix
 	void Machine::sta(const word &data) //24
 	{
 		LOG_COMMAND_NAME(data)
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		format_range fmt = decode_format(data.bytes[byte_f]);
 		int count = DATA_BYTES_IN_WORD - fmt.high;
 		big_register tmp_reg = reg_a;
@@ -381,7 +381,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(reg_i[0]);
 		set_value(val, memory[addr], override);
 	}
@@ -390,7 +390,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(reg_i[1]);
 		set_value(val, memory[addr], override);
 	}
@@ -399,7 +399,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(reg_i[2]);
 		set_value(val, memory[addr], override);
 	}
@@ -408,7 +408,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(reg_i[3]);
 		set_value(val, memory[addr], override);
 	}
@@ -417,7 +417,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(reg_i[4]);
 		set_value(val, memory[addr], override);
 	}
@@ -426,7 +426,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(reg_i[5]);
 		set_value(val, memory[addr], override);
 	}
@@ -435,7 +435,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		format_range fmt = decode_format(data.bytes[byte_f]);
 		int count = DATA_BYTES_IN_WORD - fmt.high;
 		big_register tmp_reg = reg_x;
@@ -451,7 +451,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type val = get_value(reg_j);
 		set_value(val, memory[addr], override);
 	}
@@ -460,7 +460,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		word zero;
 		memset(&zero, 0, sizeof(zero));
 		set_value(zero, data.bytes[byte_f], memory[addr]);
@@ -509,7 +509,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type addr = get_address(data);
+		value_type addr = extract_address(data);
 		set_value(addr, reg_j, override);
 	}
 
@@ -517,7 +517,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		//int addr = get_address(data);
+		//int addr = extract_address(data);
 		//set_value(addr, reg_j);
 	}
 
@@ -528,7 +528,7 @@ namespace mix
 		if (override)
 		{
 			override = false;
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -539,7 +539,7 @@ namespace mix
 
 		if (!override)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -550,7 +550,7 @@ namespace mix
 
 		if (compare_flag == cmp_less)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -561,7 +561,7 @@ namespace mix
 
 		if (compare_flag == cmp_equal)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -572,7 +572,7 @@ namespace mix
 
 		if (compare_flag == cmp_greater)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -583,7 +583,7 @@ namespace mix
 
 		if (compare_flag != cmp_less)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -594,7 +594,7 @@ namespace mix
 
 		if (compare_flag != cmp_equal)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -605,7 +605,7 @@ namespace mix
 
 		if (compare_flag != cmp_greater)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -642,7 +642,7 @@ namespace mix
 
 		if (reg_a.sign == NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -654,7 +654,7 @@ namespace mix
 		value_type val = get_value(reg_a);
 		if (val == 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -666,7 +666,7 @@ namespace mix
         value_type val = get_value(reg_a);
 		if (val > 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -677,7 +677,7 @@ namespace mix
 
 		if (reg_a.sign != NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -689,7 +689,7 @@ namespace mix
 		value_type val = get_value(reg_a);
 		if (val != 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -701,7 +701,7 @@ namespace mix
         value_type val = get_value(reg_a);
 		if (val <= 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -738,7 +738,7 @@ namespace mix
 
 		if (reg_i[0].sign == NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -750,7 +750,7 @@ namespace mix
 		value_type val = get_value(reg_i[0]);
 		if (val == 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -762,7 +762,7 @@ namespace mix
     value_type val = get_value(reg_i[0]);
 		if (val > 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -773,7 +773,7 @@ namespace mix
 
 		if (reg_i[0].sign != NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -785,7 +785,7 @@ namespace mix
 		value_type val = get_value(reg_i[0]);
 		if (val != 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -797,7 +797,7 @@ namespace mix
     value_type val = get_value(reg_i[0]);
 		if (val <= 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -834,7 +834,7 @@ namespace mix
 
 		if (reg_i[1].sign == NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -846,7 +846,7 @@ namespace mix
 		value_type val = get_value(reg_i[1]);
 		if (val == 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -858,7 +858,7 @@ namespace mix
     value_type val = get_value(reg_i[1]);
 		if (val > 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -869,7 +869,7 @@ namespace mix
 
 		if (reg_i[1].sign != NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -881,7 +881,7 @@ namespace mix
 		value_type val = get_value(reg_i[1]);
 		if (val != 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -893,7 +893,7 @@ namespace mix
     value_type val = get_value(reg_i[1]);
 		if (val <= 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -930,7 +930,7 @@ namespace mix
 
 		if (reg_i[2].sign == NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -942,7 +942,7 @@ namespace mix
 		value_type val = get_value(reg_i[2]);
 		if (val == 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -954,7 +954,7 @@ namespace mix
     value_type val = get_value(reg_i[2]);
 		if (val > 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -965,7 +965,7 @@ namespace mix
 
 		if (reg_i[2].sign != NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -977,7 +977,7 @@ namespace mix
 		value_type val = get_value(reg_i[2]);
 		if (val != 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -989,7 +989,7 @@ namespace mix
     value_type val = get_value(reg_i[2]);
 		if (val <= 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1026,7 +1026,7 @@ namespace mix
 
 		if (reg_i[3].sign == NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1038,7 +1038,7 @@ namespace mix
 		value_type val = get_value(reg_i[3]);
 		if (val == 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1050,7 +1050,7 @@ namespace mix
     value_type val = get_value(reg_i[3]);
 		if (val > 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1061,7 +1061,7 @@ namespace mix
 
 		if (reg_i[3].sign != NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1073,7 +1073,7 @@ namespace mix
 		value_type val = get_value(reg_i[3]);
 		if (val != 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1085,7 +1085,7 @@ namespace mix
     value_type val = get_value(reg_i[3]);
 		if (val <= 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1122,7 +1122,7 @@ namespace mix
 
 		if (reg_i[4].sign == NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1134,7 +1134,7 @@ namespace mix
 		value_type val = get_value(reg_i[4]);
 		if (val == 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1146,7 +1146,7 @@ namespace mix
     value_type val = get_value(reg_i[4]);
 		if (val > 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1157,7 +1157,7 @@ namespace mix
 
 		if (reg_i[4].sign != NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1169,7 +1169,7 @@ namespace mix
 		value_type val = get_value(reg_i[4]);
 		if (val != 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1181,7 +1181,7 @@ namespace mix
     value_type val = get_value(reg_i[4]);
 		if (val <= 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1218,7 +1218,7 @@ namespace mix
 
 		if (reg_i[5].sign == NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1230,7 +1230,7 @@ namespace mix
 		value_type val = get_value(reg_i[5]);
 		if (val == 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1242,7 +1242,7 @@ namespace mix
     value_type val = get_value(reg_i[5]);
 		if (val > 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1253,7 +1253,7 @@ namespace mix
 
 		if (reg_i[5].sign != NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1265,7 +1265,7 @@ namespace mix
 		value_type val = get_value(reg_i[5]);
 		if (val != 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1277,7 +1277,7 @@ namespace mix
     value_type val = get_value(reg_i[5]);
 		if (val <= 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1314,7 +1314,7 @@ namespace mix
 
 		if (reg_x.sign == NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1326,7 +1326,7 @@ namespace mix
 		value_type val = get_value(reg_x);
 		if (val == 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1338,7 +1338,7 @@ namespace mix
     value_type val = get_value(reg_x);
 		if (val > 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1349,7 +1349,7 @@ namespace mix
 
 		if (reg_x.sign != NEG_SIGN)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1361,7 +1361,7 @@ namespace mix
 		value_type val = get_value(reg_x);
 		if (val != 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1373,7 +1373,7 @@ namespace mix
     value_type val = get_value(reg_x);
 		if (val <= 0)
 		{
-			int addr = get_address(data);
+			int addr = extract_address(data);
 			set_value(addr, reg_j, override);
 		}
 	}
@@ -1510,7 +1510,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_a, override);
 	}
 
@@ -1518,7 +1518,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[0], override);
 	}
 
@@ -1526,7 +1526,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[1], override);
 	}
 
@@ -1534,7 +1534,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[2], override);
 	}
 
@@ -1542,7 +1542,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[3], override);
 	}
 
@@ -1550,7 +1550,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[4], override);
 	}
 
@@ -1558,7 +1558,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[5], override);
 	}
 
@@ -1566,7 +1566,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_x, override);
 	}
 
@@ -1574,7 +1574,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_a, override);
 		reg_a.sign = !reg_a.sign;
 	}
@@ -1583,7 +1583,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[0], override);
 		reg_i[0].sign = !reg_i[0].sign;
 	}
@@ -1592,7 +1592,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[1], override);
 		reg_i[1].sign = !reg_i[1].sign;
 	}
@@ -1601,7 +1601,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[2], override);
 		reg_i[2].sign = !reg_i[2].sign;
 	}
@@ -1610,7 +1610,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[3], override);
 		reg_i[3].sign = !reg_i[3].sign;
 	}
@@ -1619,7 +1619,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[4], override);
 		reg_i[4].sign = !reg_i[4].sign;
 	}
@@ -1628,7 +1628,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_i[5], override);
 		reg_i[5].sign = !reg_i[5].sign;
 	}
@@ -1637,7 +1637,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		value_type val = (value_type)get_address(data);
+		value_type val = (value_type)extract_address(data);
 		set_value(val, reg_x, override);
 		reg_x.sign = !reg_x.sign;
 	}
@@ -1646,7 +1646,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type lhs = get_value(reg_a, data.bytes[byte_f]);
 		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
 		compare_flag = compare(lhs, rhs);
@@ -1656,7 +1656,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type lhs = get_value(reg_i[0], data.bytes[byte_f]);
 		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
 		compare_flag = compare(lhs, rhs);
@@ -1666,7 +1666,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type lhs = get_value(reg_i[1], data.bytes[byte_f]);
 		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
 		compare_flag = compare(lhs, rhs);
@@ -1676,7 +1676,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type lhs = get_value(reg_i[2], data.bytes[byte_f]);
 		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
 		compare_flag = compare(lhs, rhs);
@@ -1686,7 +1686,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type lhs = get_value(reg_i[3], data.bytes[byte_f]);
 		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
 		compare_flag = compare(lhs, rhs);
@@ -1696,7 +1696,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type lhs = get_value(reg_i[4], data.bytes[byte_f]);
 		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
 		compare_flag = compare(lhs, rhs);
@@ -1706,7 +1706,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type lhs = get_value(reg_i[5], data.bytes[byte_f]);
 		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
 		compare_flag = compare(lhs, rhs);
@@ -1716,7 +1716,7 @@ namespace mix
 	{
 		LOG_COMMAND_NAME(data)
 
-		int addr = get_address(data);
+		int addr = extract_address(data);
 		value_type lhs = get_value(reg_x, data.bytes[byte_f]);
 		value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
 		compare_flag = compare(lhs, rhs);
@@ -1734,4 +1734,15 @@ namespace mix
 			(this->*statement)(memory[command_addr]);
 		}
 	}
+ 
+ unsigned short Machine::extract_address(const word &instruction)
+ {
+    unsigned short address = get_address(instruction);
+    int index_modification = instruction.bytes[byte_i];
+    if (index_modification)
+    {
+      address += get_value(reg_i[index_modification-1]);
+    }
+    return address;
+ }
 }

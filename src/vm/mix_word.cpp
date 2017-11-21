@@ -26,7 +26,6 @@ namespace mix
 		{
 			address *= -1;
 		}
-		address += data.bytes[byte_i];
 		return address;
 	}
 	

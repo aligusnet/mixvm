@@ -12,6 +12,11 @@ protected:
   int build_negative_value(byte a1, byte a2, byte i, byte f, byte c) {
     return get_value(make_word(NEG_SIGN, a1, a2, i, f, c));
   }
+  
+  word set_index_specification(word instruction, byte index) {
+    instruction.bytes[byte_i] = index;
+    return instruction;
+  }
 };
 
 TEST_F(MachineLoadsTestSuite, lda) {
@@ -37,6 +42,26 @@ TEST_F(MachineLoadsTestSuite, lda_3_4_bytes) {
   machine.lda(make_cmd(cmd_lda, 152, encode_format(3, 4)));
 
   EXPECT_EQ(expected_value, get_reg_a_value());
+}
+
+TEST_F(MachineLoadsTestSuite, lda_with_index_specification) {
+  set_memory_value(152, -73);
+  set_memory_value(177, -173);
+  set_reg_i_value(2, 25);
+  word cmd = set_index_specification(make_cmd(cmd_lda, 152), 2);
+  machine.lda(cmd);
+
+  EXPECT_EQ(-173, get_reg_a_value());
+}
+
+TEST_F(MachineLoadsTestSuite, ld1_with_index_specification) {
+  set_memory_value(152, 11);
+  set_memory_value(100, 111);
+  set_reg_i_value(2, -52);
+  word cmd = set_index_specification(make_cmd(cmd_ld1, 152), 2);
+  machine.ld1(cmd);
+
+  EXPECT_EQ(111, get_reg_i_value(1));
 }
 
 TEST_F(MachineLoadsTestSuite, ld1) {
