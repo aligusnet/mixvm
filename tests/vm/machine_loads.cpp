@@ -45,6 +45,13 @@ TEST_F(MachineLoadsTestSuite, ld5) {
   EXPECT_EQ(15, get_reg_i_value(5));
 }
 
+TEST_F(MachineLoadsTestSuite, ld6) {
+  set_memory_value(152, 16);
+  machine.ld6(make_cmd(cmd_ld6, 152));
+
+  EXPECT_EQ(16, get_reg_i_value(6));
+}
+
 TEST_F(MachineLoadsTestSuite, ldx) {
   set_memory_value(152, -18);
   machine.ldx(make_cmd(cmd_ldx, 152));
@@ -92,6 +99,13 @@ TEST_F(MachineLoadsTestSuite, ld5n) {
   machine.ld5n(make_cmd(cmd_ld5n, 152));
 
   EXPECT_EQ(-15, get_reg_i_value(5));
+}
+
+TEST_F(MachineLoadsTestSuite, ld6n) {
+  set_memory_value(152, 16);
+  machine.ld6n(make_cmd(cmd_ld6n, 152));
+
+  EXPECT_EQ(-16, get_reg_i_value(6));
 }
 
 TEST_F(MachineLoadsTestSuite, ldxn) {

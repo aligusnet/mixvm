@@ -45,6 +45,13 @@ TEST_F(MachineStoresTestSuite, st5) {
   EXPECT_EQ(15, get_memory_value(152));
 }
 
+TEST_F(MachineStoresTestSuite, st6) {
+  set_reg_i_value(6, 16);
+  machine.st6(make_cmd(cmd_st6, 152));
+
+  EXPECT_EQ(16, get_memory_value(152));
+}
+
 TEST_F(MachineStoresTestSuite, stx) {
   set_reg_x_value(-18);
   machine.stx(make_cmd(cmd_stx, 152));
