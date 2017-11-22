@@ -27,6 +27,8 @@ protected:
   
   void set_reg_i_value(int index, int value);
   int get_reg_i_value(int index) const;
+  
+  void expect_eq(const word &expected, const word &actual) const;
 };
 }  // namespace mix
 
