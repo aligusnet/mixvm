@@ -8,33 +8,27 @@
  */
 
 #include "mix_printer.h"
-#include <iostream>
 #include "format_range.h"
+#include <iostream>
 
-namespace mix
-{
-	void print_small_word(std::ostream &os, const small_word &word)
-	{
-		os << (word.sign == POS_SIGN ? "+" : "-");
-		for(int i = 0; i < DATA_BYTES_IN_SMALL_REGISTER; ++i)
-		{
-			os << ", " << (int)word.bytes[i];
-		}
-	}
-	
-	void print_word(std::ostream &os, const word &word)
-	{
-		os << (word.sign == POS_SIGN ? "+" : "-");
-		for(int i = 0; i < DATA_BYTES_IN_WORD; ++i)
-		{
-			os << ", " << (int)word.bytes[i];
-		}
-	}
-	
-	void print_command(std::ostream &os, const word &command, const char *command_name)
-	{
-		os << command_name << "\t" << (unsigned)get_address(command) << "," << (unsigned)command.bytes[byte_i];
-		format_range fmt = decode_format(command.bytes[byte_f]);
-		os << "(" << (int)fmt.low << ":" << (int)fmt.high << ")";
-	}
+namespace mix {
+void print_small_word(std::ostream &os, const small_word &word) {
+  os << (word.sign == POS_SIGN ? "+" : "-");
+  for (int i = 0; i < DATA_BYTES_IN_SMALL_REGISTER; ++i) {
+    os << ", " << (int)word.bytes[i];
+  }
 }
+
+void print_word(std::ostream &os, const word &word) {
+  os << (word.sign == POS_SIGN ? "+" : "-");
+  for (int i = 0; i < DATA_BYTES_IN_WORD; ++i) {
+    os << ", " << (int)word.bytes[i];
+  }
+}
+
+void print_command(std::ostream &os, const word &command, const char *command_name) {
+  os << command_name << "\t" << (unsigned)get_address(command) << "," << (unsigned)command.bytes[byte_i];
+  format_range fmt = decode_format(command.bytes[byte_f]);
+  os << "(" << (int)fmt.low << ":" << (int)fmt.high << ")";
+}
+} // namespace mix

@@ -10,22 +10,20 @@
 #ifndef MIX_SMALL_REGISTER_H
 #define MIX_SMALL_REGISTER_H
 
-#include "mix_byte.h"
 #include "format_range.h"
+#include "mix_byte.h"
 
-namespace mix
-{
-	const int DATA_BYTES_IN_SMALL_REGISTER = 2;
-	struct small_word
-	{
-		bool sign;
-		byte bytes[DATA_BYTES_IN_SMALL_REGISTER];
-	};
-	
-	bool is_negative(const small_word &data);
-	void inc(small_word &sreg, bool &override);
-	int get_value(const small_word &data, byte format = DEFAULT_FORMAT);
-	void set_value(value_type val, small_word &data, bool &override);
-}
+namespace mix {
+const int DATA_BYTES_IN_SMALL_REGISTER = 2;
+struct small_word {
+  bool sign;
+  byte bytes[DATA_BYTES_IN_SMALL_REGISTER];
+};
 
-#endif //MIX_SMALL_REGISTER_H
+bool is_negative(const small_word &data);
+void inc(small_word &sreg, bool &override);
+int get_value(const small_word &data, byte format = DEFAULT_FORMAT);
+void set_value(value_type val, small_word &data, bool &override);
+} // namespace mix
+
+#endif // MIX_SMALL_REGISTER_H

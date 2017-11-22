@@ -1,7 +1,7 @@
 #include "machine_fixture.h"
 
-#include <vm/mix_word.h>
 #include <vm/mix_small_word.h>
+#include <vm/mix_word.h>
 
 namespace mix {
 
@@ -43,14 +43,14 @@ int MachineFixture::get_reg_x_value() const {
 }
 
 void MachineFixture::set_reg_i_value(int index, int value) {
-  set_value(value, machine.reg_i[index-1], isOverflowed);
+  set_value(value, machine.reg_i[index - 1], isOverflowed);
 }
 
 int MachineFixture::get_reg_i_value(int index) const {
-  return get_value(machine.reg_i[index-1]);
+  return get_value(machine.reg_i[index - 1]);
 }
 
 void MachineFixture::expect_eq(const word &expected, const word &actual) const {
   EXPECT_EQ(get_value(expected), get_value(actual));
 }
-}  // namespace mix
+} // namespace mix

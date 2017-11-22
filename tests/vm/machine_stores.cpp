@@ -1,7 +1,7 @@
 #include "machine_fixture.h"
 
 namespace mix {
-class MachineStoresTestSuite: public MachineFixture {};
+class MachineStoresTestSuite : public MachineFixture {};
 
 TEST_F(MachineStoresTestSuite, sta) {
   set_reg_a_value(-73);
@@ -73,5 +73,4 @@ TEST_F(MachineStoresTestSuite, stz) {
   EXPECT_EQ(0, get_memory_value(152));
 }
 
-}  // namespace mix
-
+} // namespace mix

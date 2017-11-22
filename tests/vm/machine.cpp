@@ -2,7 +2,7 @@
 
 namespace mix {
 
-class MachineTestSuite: public MachineFixture {};
+class MachineTestSuite : public MachineFixture {};
 
 TEST_F(MachineTestSuite, start_state) {
   EXPECT_EQ(0, get_reg_a_value());
@@ -20,4 +20,4 @@ TEST_F(MachineTestSuite, hlt) {
   EXPECT_TRUE(machine.halt);
 }
 
-}  // namespace mix
+} // namespace mix

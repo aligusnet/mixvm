@@ -7,29 +7,29 @@
 
 namespace mix {
 
-class MachineFixture: public ::testing::Test {
+class MachineFixture : public ::testing::Test {
 protected:
   Machine machine;
   bool isOverflowed;
-  
+
   void set_next_instruction_address(int address);
   int get_next_instruction_address() const;
   bool is_next_instruction_address_unchanged() const;
-  
+
   void set_memory_value(int address, int value);
   int get_memory_value(int address) const;
-  
+
   void set_reg_a_value(int value);
   int get_reg_a_value() const;
-  
+
   void set_reg_x_value(int value);
   int get_reg_x_value() const;
-  
+
   void set_reg_i_value(int index, int value);
   int get_reg_i_value(int index) const;
-  
+
   void expect_eq(const word &expected, const word &actual) const;
 };
-}  // namespace mix
+} // namespace mix
 
-#endif  // TESTS_MACHINE_FIXTURE
+#endif // TESTS_MACHINE_FIXTURE

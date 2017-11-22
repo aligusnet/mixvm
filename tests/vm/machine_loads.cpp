@@ -3,16 +3,16 @@
 #include <vm/format_range.h>
 
 namespace mix {
-class MachineLoadsTestSuite: public MachineFixture {
+class MachineLoadsTestSuite : public MachineFixture {
 protected:
   int build_positive_value(byte a1, byte a2, byte i, byte f, byte c) {
     return get_value(make_word(POS_SIGN, a1, a2, i, f, c));
   }
-  
+
   int build_negative_value(byte a1, byte a2, byte i, byte f, byte c) {
     return get_value(make_word(NEG_SIGN, a1, a2, i, f, c));
   }
-  
+
   word set_index_specification(word instruction, byte index) {
     instruction.bytes[byte_i] = index;
     return instruction;
@@ -205,5 +205,4 @@ TEST_F(MachineLoadsTestSuite, ldxn_1_3_bytes) {
   EXPECT_EQ(expected_value, get_reg_x_value());
 }
 
-}  // namespace mix
-
+} // namespace mix

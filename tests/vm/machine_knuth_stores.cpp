@@ -2,33 +2,33 @@
 #include "machine_fixture.h"
 
 namespace mix {
-class MachineKnuthStoresTestSuite: public MachineFixture {
+class MachineKnuthStoresTestSuite : public MachineFixture {
 protected:
   int address;
-  
+
   MachineKnuthStoresTestSuite() {
     address = 2000;
     machine.reg_a = make_word(POS_SIGN, 6, 7, 8, 9, 0);
     machine.reg_x = make_word(POS_SIGN, 16, 17, 18, 19, 20);
     machine.memory[address] = make_word(NEG_SIGN, 1, 2, 3, 4, 5);
   }
-  
+
   void expect_memory(word expected) const {
     expect_eq(expected, machine.memory[address]);
   }
-  
+
   void execute_sta() {
     machine.sta(make_cmd(cmd_sta, address));
   }
-  
+
   void execute_sta(byte format_low, byte format_high) {
     machine.sta(make_cmd(cmd_sta, address, encode_format(format_low, format_high)));
   }
-  
+
   void execute_stx() {
     machine.stx(make_cmd(cmd_stx, address));
   }
-  
+
   void execute_stx(byte format_low, byte format_high) {
     machine.stx(make_cmd(cmd_stx, address, encode_format(format_low, format_high)));
   }
@@ -94,5 +94,4 @@ TEST_F(MachineKnuthStoresTestSuite, stx_0_1_bytes) {
   expect_memory(make_word(POS_SIGN, 20, 2, 3, 4, 5));
 }
 
-}  // namespace mix
-
+} // namespace mix
