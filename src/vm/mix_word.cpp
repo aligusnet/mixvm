@@ -15,25 +15,21 @@ Word::Word(bool sign, byte a1, byte a2, byte i, byte f, byte c) {
   this->bytes[byte_c] = c;
 }
 
-Word Word::make_as_instruction(byte cmd, short addr, byte f) {
+Word Word::make_as_instruction(byte cmd, short addr, byte i, byte f) {
   Word result;
   result.sign = POS_SIGN;
   result.set_address(addr);
-  result.bytes[byte_i] = 0;
+  result.bytes[byte_i] = i;
   result.bytes[byte_f] = f;
   result.bytes[byte_c] = cmd;
   return result;
-}
-
-bool Word::is_negative() const {
-  return sign == NEG_SIGN;
 }
 
 short Word::get_address() const {
   short address = 0;
   address += bytes[byte_a1] * VALUES_IN_BYTE;
   address += bytes[byte_a2];
-  if (is_negative()) {
+  if (sign == NEG_SIGN) {
     address *= -1;
   }
   return address;
@@ -97,7 +93,7 @@ value_type Word::get_value(int format) const {
   bool negative = false;
   if (fmt.low > 0) {
     --fmt.low;
-  } else if (is_negative()) {
+  } else if (sign == NEG_SIGN) {
     negative = true;
   }
 
@@ -126,10 +122,6 @@ byte Word::get_specification() const {
   return bytes[byte_i];
 }
 
-void Word::set_specification(byte index) {
-  bytes[byte_i] = index;
-}
-
 bool Word::get_sign() const {
   return sign;
 }
@@ -152,7 +144,7 @@ void Word::print_instruction(std::ostream &os, const char *command_name) const {
 }
 
 Word make_cmd(byte cmd, short addr, byte f) {
-  return Word::make_as_instruction(cmd, addr, f);
+  return Word::make_as_instruction(cmd, addr, 0, f);
 }
 
 } // namespace mix

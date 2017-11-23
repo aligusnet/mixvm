@@ -13,12 +13,11 @@ const int VALUES_IN_WORD =
 
 class Word {
 public:
-  static Word make_as_instruction(byte cmd, short addr = 0, byte f = DEFAULT_FORMAT);
+  static Word make_as_instruction(byte cmd, short addr = 0, byte i = 0, byte f = DEFAULT_FORMAT);
 
   Word() = default;
   Word(bool sign, byte a1, byte a2, byte i, byte f, byte c);
 
-  bool is_negative() const;
   short get_address() const;
   void set_address(short address);
 
@@ -33,9 +32,7 @@ public:
 
   byte get_operation_code() const;
   byte get_modification() const;
-
   byte get_specification() const;
-  void set_specification(byte index);
 
   bool get_sign() const;
   void set_sign(bool value);

@@ -515,7 +515,7 @@ void Machine::ja(const Word &data) { // 40
 void Machine::jan(const Word &data) { // 40, 0
   LOG_COMMAND_NAME(data)
 
-  if (reg_a.is_negative()) {
+  if (reg_a.get_sign() == NEG_SIGN) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
@@ -544,7 +544,7 @@ void Machine::jap(const Word &data) { // 40, 2
 void Machine::jann(const Word &data) { // 40, 3
   LOG_COMMAND_NAME(data)
 
-  if (!reg_a.is_negative()) {
+  if (reg_a.get_sign() != NEG_SIGN) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
@@ -1082,7 +1082,7 @@ void Machine::jx(const Word &data) { // 47
 void Machine::jxn(const Word &data) { // 47, 0
   LOG_COMMAND_NAME(data)
 
-  if (reg_x.is_negative()) {
+  if (reg_x.get_sign() == NEG_SIGN) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
@@ -1111,7 +1111,7 @@ void Machine::jxp(const Word &data) { // 47, 2
 void Machine::jxnn(const Word &data) { // 47, 3
   LOG_COMMAND_NAME(data)
 
-  if (!reg_x.is_negative()) {
+  if (reg_x.get_sign() != NEG_SIGN) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
