@@ -1,44 +1,56 @@
-/*
- *  word.h
- *  mixvm
- *
- *  Created by Alexander Ignatyev on 19.06.10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef MIX_WORD_H
 #define MIX_WORD_H
 
 #include "format_range.h"
 #include "mix_byte.h"
 
+#include <iosfwd>
+
 namespace mix {
-// const int SIGN_BYTES_IN_WORD = 1;
 const int DATA_BYTES_IN_WORD = 5;
-// const int BYTES_IN_WORD = DATA_BYTES_IN_WORD+SIGN_BYTES_IN_WORD;
 const int VALUES_IN_WORD =
     VALUES_IN_BYTE * VALUES_IN_BYTE * VALUES_IN_BYTE * VALUES_IN_BYTE * VALUES_IN_BYTE; // DATA_BYTES_IN_WORD times
 
-struct word {
+class Word {
+public:
+  static Word make_as_instruction(byte cmd, short addr = 0, byte f = DEFAULT_FORMAT);
+
+  Word() = default;
+  Word(bool sign, byte a1, byte a2, byte i, byte f, byte c);
+
+  bool is_negative() const;
+  short get_address() const;
+  void set_address(short address);
+
+  void right_shift(int nbytes);
+  void left_shift(int nbytes);
+
+  void set_value(const Word &source, int format);
+  // return true if overflowed
+  bool set_value(int value);
+
+  value_type get_value(int format = DEFAULT_FORMAT) const;
+
+  byte get_operation_code() const;
+  byte get_modification() const;
+
+  byte get_specification() const;
+  void set_specification(byte index);
+
+  bool get_sign() const;
+  void set_sign(bool value);
+
+  void print_word(std::ostream &os) const;
+  void print_instruction(std::ostream &os, const char *command_name) const;
+
+private:
   bool sign;
   byte bytes[DATA_BYTES_IN_WORD];
+
+  friend struct LongValue;
 };
 
-enum bytes_format { byte_a1 = 0, byte_a2 = 1, byte_i = 2, byte_f = 3, byte_c = 4 };
-
-bool is_negative(const word &data);
-unsigned short get_address(const word &data);
-void right_shift(word &data, int count);
-void left_shift(word &data, int count);
-void set_value(const word &from, int format, word &to);
-void set_value(value_type val, word &to, bool &override);
-void set_long_value(long_value_type val, word &high_word, word &low_word, bool &override);
-value_type get_value(const word &data, byte format = DEFAULT_FORMAT);
-long_value_type get_long_value(const word &high_word, const word &low_word);
-void set_address(byte *bytes, short addr);
-word make_word(bool sign, byte a1, byte a2, byte i, byte f, byte c);
-word make_cmd(byte cmd, short addr = 0, byte f = DEFAULT_FORMAT);
+Word make_cmd(byte cmd, short addr = 0, byte f = DEFAULT_FORMAT);
 
 } // namespace mix
 

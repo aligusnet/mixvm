@@ -158,32 +158,32 @@ void test_vm() {
 
   vm.memory[92] = make_cmd(cmd_hlt);
 
-  vm.memory[150] = make_word(POS_SIGN, 8, 0, 3, 5, 4);
-  vm.memory[151] = make_word(POS_SIGN, 0, 0, 0, 11, 11);
-  vm.memory[152] = make_word(POS_SIGN, 6, 7, 8, 9, 0);
-  vm.memory[100] = make_word(NEG_SIGN, 1, 2, 3, 4, 5);
-  vm.memory[101] = make_word(NEG_SIGN, 1, 2, 3, 4, 5);
-  vm.memory[102] = make_word(NEG_SIGN, 1, 2, 3, 4, 5);
-  vm.memory[103] = make_word(NEG_SIGN, 1, 2, 3, 4, 5);
-  vm.memory[104] = make_word(NEG_SIGN, 1, 2, 3, 4, 5);
-  vm.memory[105] = make_word(NEG_SIGN, 1, 2, 3, 4, 5);
-  vm.memory[106] = make_word(NEG_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[107] = make_word(NEG_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[108] = make_word(NEG_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[109] = make_word(NEG_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[110] = make_word(NEG_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[111] = make_word(NEG_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[112] = make_word(NEG_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[113] = make_word(NEG_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[114] = make_word(NEG_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[200] = make_word(POS_SIGN, 1, 2, 3, 4, 5);
-  vm.memory[210] = make_word(POS_SIGN, 0, 0, 0, 0, 30);
-  vm.memory[211] = make_word(POS_SIGN, 0, 0, 0, 0, 50);
-  vm.memory[220] = make_word(POS_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[221] = make_word(POS_SIGN, 1, 1, 1, 1, 1);
-  vm.memory[230] = make_word(POS_SIGN, 0, 1, 2, 3, 4);
-  vm.memory[231] = make_word(POS_SIGN, 5, 4, 3, 2, 1);
-  vm.memory[232] = make_word(POS_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[150] = Word(POS_SIGN, 8, 0, 3, 5, 4);
+  vm.memory[151] = Word(POS_SIGN, 0, 0, 0, 11, 11);
+  vm.memory[152] = Word(POS_SIGN, 6, 7, 8, 9, 0);
+  vm.memory[100] = Word(NEG_SIGN, 1, 2, 3, 4, 5);
+  vm.memory[101] = Word(NEG_SIGN, 1, 2, 3, 4, 5);
+  vm.memory[102] = Word(NEG_SIGN, 1, 2, 3, 4, 5);
+  vm.memory[103] = Word(NEG_SIGN, 1, 2, 3, 4, 5);
+  vm.memory[104] = Word(NEG_SIGN, 1, 2, 3, 4, 5);
+  vm.memory[105] = Word(NEG_SIGN, 1, 2, 3, 4, 5);
+  vm.memory[106] = Word(NEG_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[107] = Word(NEG_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[108] = Word(NEG_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[109] = Word(NEG_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[110] = Word(NEG_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[111] = Word(NEG_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[112] = Word(NEG_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[113] = Word(NEG_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[114] = Word(NEG_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[200] = Word(POS_SIGN, 1, 2, 3, 4, 5);
+  vm.memory[210] = Word(POS_SIGN, 0, 0, 0, 0, 30);
+  vm.memory[211] = Word(POS_SIGN, 0, 0, 0, 0, 50);
+  vm.memory[220] = Word(POS_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[221] = Word(POS_SIGN, 1, 1, 1, 1, 1);
+  vm.memory[230] = Word(POS_SIGN, 0, 1, 2, 3, 4);
+  vm.memory[231] = Word(POS_SIGN, 5, 4, 3, 2, 1);
+  vm.memory[232] = Word(POS_SIGN, 1, 1, 1, 1, 1);
 
   vm.print_state(ofs_start);
 

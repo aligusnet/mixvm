@@ -1,11 +1,13 @@
 #include "mix_machine.h"
+#include "mix_long_value.h"
+
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define LOG_COMMAND_NAME(data)                                                                                         \
-  print_command(std::cout, (data), __FUNCTION__);                                                                      \
+  (data).print_instruction(std::cout, __FUNCTION__);                                                                   \
   std::cout << std::endl;
 
 namespace mix {
@@ -25,10 +27,10 @@ Machine::Machine() {
 
 void Machine::print_state(std::ostream &os) {
   os << "Register A: ";
-  print_word(os, reg_a);
+  reg_a.print_word(os);
   os << std::endl;
   os << "Register X: ";
-  print_word(os, reg_x);
+  reg_x.print_word(os);
   os << std::endl;
   for (int i = 0; i < SMALL_REGISTERS; ++i) {
     os << "Register I" << (i + 1) << ":";
@@ -44,12 +46,12 @@ void Machine::print_state(std::ostream &os) {
   os << "CompareFlag: " << compare_flag << std::endl;
   for (int i = 0; i < MEMORY_WORDS; ++i) {
     os << "Memory[" << (i) << "]:";
-    print_word(os, memory[i]);
+    memory[i].print_word(os);
     os << std::endl;
   }
 }
 
-do_statement *Machine::get_statement(const word &data) {
+do_statement *Machine::get_statement(const Word &data) {
   static do_statement statements[] = {
       &Machine::nop, // 0
       &Machine::add,     &Machine::sub,     &Machine::mul,     &Machine::div,     &Machine::hlt,
@@ -74,299 +76,299 @@ do_statement *Machine::get_statement(const word &data) {
       &Machine::cmpx // 63
   };
 
-  return &statements[data.bytes[byte_c]];
+  return &statements[data.get_operation_code()];
 }
 
-void Machine::nothing(const word &data) {
+void Machine::nothing(const Word &data) {
   std::cerr << "mix: do_nothing!!!\n";
 }
 
-void Machine::nop(const word &data) { // 0
+void Machine::nop(const Word &data) { // 0
   LOG_COMMAND_NAME(data)
 }
 
-void Machine::add(const word &data) { // 1
+void Machine::add(const Word &data) { // 1
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
 
-  value_type val = get_value(memory[addr], data.bytes[byte_f]);
-  val += get_value(reg_a);
-  set_value(val, reg_a, override);
+  value_type val = memory[addr].get_value(data.get_modification());
+  val += reg_a.get_value();
+  override = reg_a.set_value(val);
 }
 
-void Machine::sub(const word &data) { // 2
+void Machine::sub(const Word &data) { // 2
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr], data.bytes[byte_f]) * -1;
-  val += get_value(reg_a);
-  set_value(val, reg_a, override);
+  value_type val = memory[addr].get_value(data.get_modification()) * -1;
+  val += reg_a.get_value();
+  override = reg_a.set_value(val);
 }
 
-void Machine::mul(const word &data) { // 3
+void Machine::mul(const Word &data) { // 3
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
 
-  long_value_type val1 = get_value(reg_a);
-  long_value_type val2 = get_value(memory[addr], data.bytes[byte_f]);
+  long_value_type val1 = reg_a.get_value();
+  long_value_type val2 = memory[addr].get_value(data.get_modification());
   long_value_type val = val1 * val2;
-  set_long_value(val, reg_a, reg_x, override);
+  override = LongValue::set(val, reg_a, reg_x);
 }
 
-void Machine::div(const word &data) { // 4
+void Machine::div(const Word &data) { // 4
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
 
-  value_type val_reg_a = get_value(reg_a);
-  value_type val_mem = get_value(memory[addr], data.bytes[byte_f]);
+  value_type val_reg_a = reg_a.get_value();
+  value_type val_mem = memory[addr].get_value(data.get_modification());
   if (abs(val_reg_a) < abs(val_mem)) {
-    long_value_type val = get_long_value(reg_a, reg_x);
+    long_value_type val = LongValue::get(reg_a, reg_x);
     long_value_type quotient = val / val_mem;
     value_type remainder = val - quotient * val_mem;
-    set_value((value_type)remainder, reg_x, override);
-    reg_x.sign = reg_a.sign;
-    set_value((value_type)quotient, reg_a, override);
+    override = reg_x.set_value((value_type)remainder);
+    reg_x.set_sign(reg_a.get_sign());
+    override = reg_a.set_value((value_type)quotient);
   } else {
     override = true;
   }
 }
 
-void Machine::hlt(const word &data) { // 5
+void Machine::hlt(const Word &data) { // 5
   LOG_COMMAND_NAME(data)
   halt = true;
 }
 
-void Machine::lda(const word &data) { // 8
+void Machine::lda(const Word &data) { // 8
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
   memset(&reg_a, 0, sizeof(reg_a));
-  set_value(memory[addr], data.bytes[byte_f], reg_a);
-  format_range fmt = decode_format(data.bytes[byte_f]);
-  int count = DATA_BYTES_IN_WORD - fmt.high;
-  if (count > 0) {
-    right_shift(reg_a, count);
+  reg_a.set_value(memory[addr], data.get_modification());
+  format_range fmt = decode_format(data.get_modification());
+  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
+  if (nbytes > 0) {
+    reg_a.right_shift(nbytes);
   }
 }
 
-void Machine::ld1(const word &data) { // 9
+void Machine::ld1(const Word &data) { // 9
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val, reg_i[0], override);
 }
 
-void Machine::ld2(const word &data) { // 10
+void Machine::ld2(const Word &data) { // 10
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val, reg_i[1], override);
 }
 
-void Machine::ld3(const word &data) { // 11
+void Machine::ld3(const Word &data) { // 11
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val, reg_i[2], override);
 }
 
-void Machine::ld4(const word &data) { // 12
+void Machine::ld4(const Word &data) { // 12
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val, reg_i[3], override);
 }
 
-void Machine::ld5(const word &data) { // 13
+void Machine::ld5(const Word &data) { // 13
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val, reg_i[4], override);
 }
 
-void Machine::ld6(const word &data) { // 14
+void Machine::ld6(const Word &data) { // 14
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val, reg_i[5], override);
 }
 
-void Machine::ldx(const word &data) { // 15
+void Machine::ldx(const Word &data) { // 15
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
   memset(&reg_x, 0, sizeof(reg_x));
-  set_value(memory[addr], data.bytes[byte_f], reg_x);
-  format_range fmt = decode_format(data.bytes[byte_f]);
-  int count = DATA_BYTES_IN_WORD - fmt.high;
-  if (count > 0) {
-    right_shift(reg_x, count);
+  reg_x.set_value(memory[addr], data.get_modification());
+  format_range fmt = decode_format(data.get_modification());
+  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
+  if (nbytes > 0) {
+    reg_x.right_shift(nbytes);
   }
 }
 
-void Machine::ldan(const word &data) { // 16
+void Machine::ldan(const Word &data) { // 16
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
   memset(&reg_a, 0, sizeof(reg_a));
-  set_value(memory[addr], data.bytes[byte_f], reg_a);
-  format_range fmt = decode_format(data.bytes[byte_f]);
-  int count = DATA_BYTES_IN_WORD - fmt.high;
-  if (count > 0) {
-    right_shift(reg_a, count);
+  reg_a.set_value(memory[addr], data.get_modification());
+  format_range fmt = decode_format(data.get_modification());
+  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
+  if (nbytes > 0) {
+    reg_a.right_shift(nbytes);
   }
-  reg_a.sign = !reg_a.sign;
+  reg_a.set_sign(!reg_a.get_sign());
 }
 
-void Machine::ld1n(const word &data) { // 17
+void Machine::ld1n(const Word &data) { // 17
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val * -1, reg_i[0], override);
 }
 
-void Machine::ld2n(const word &data) { // 18
+void Machine::ld2n(const Word &data) { // 18
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val * -1, reg_i[1], override);
 }
 
-void Machine::ld3n(const word &data) { // 19
+void Machine::ld3n(const Word &data) { // 19
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val * -1, reg_i[2], override);
 }
 
-void Machine::ld4n(const word &data) { // 20
+void Machine::ld4n(const Word &data) { // 20
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val * -1, reg_i[3], override);
 }
 
-void Machine::ld5n(const word &data) { // 21
+void Machine::ld5n(const Word &data) { // 21
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val * -1, reg_i[4], override);
 }
 
-void Machine::ld6n(const word &data) { // 22
+void Machine::ld6n(const Word &data) { // 22
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  value_type val = get_value(memory[addr]);
+  value_type val = memory[addr].get_value();
   set_value(val * -1, reg_i[5], override);
 }
 
-void Machine::ldxn(const word &data) { // 23
+void Machine::ldxn(const Word &data) { // 23
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
   memset(&reg_x, 0, sizeof(reg_x));
-  set_value(memory[addr], data.bytes[byte_f], reg_x);
-  format_range fmt = decode_format(data.bytes[byte_f]);
-  int count = DATA_BYTES_IN_WORD - fmt.high;
-  if (count > 0) {
-    right_shift(reg_x, count);
+  reg_x.set_value(memory[addr], data.get_modification());
+  format_range fmt = decode_format(data.get_modification());
+  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
+  if (nbytes > 0) {
+    reg_x.right_shift(nbytes);
   }
-  reg_x.sign = !reg_x.sign;
+  reg_x.set_sign(!reg_x.get_sign());
 }
 
-void Machine::sta(const word &data) { // 24
+void Machine::sta(const Word &data) { // 24
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  format_range fmt = decode_format(data.bytes[byte_f]);
-  int count = DATA_BYTES_IN_WORD - fmt.high;
+  format_range fmt = decode_format(data.get_modification());
+  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
   big_register tmp_reg = reg_a;
-  if (count > 0) {
-    left_shift(tmp_reg, count);
+  if (nbytes > 0) {
+    tmp_reg.left_shift(nbytes);
   }
 
-  set_value(tmp_reg, data.bytes[byte_f], memory[addr]);
+  memory[addr].set_value(tmp_reg, data.get_modification());
 }
 
-void Machine::st1(const word &data) { // 25
+void Machine::st1(const Word &data) { // 25
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
   value_type val = get_value(reg_i[0]);
-  set_value(val, memory[addr], override);
+  override = memory[addr].set_value(val);
 }
 
-void Machine::st2(const word &data) { // 26
+void Machine::st2(const Word &data) { // 26
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
   value_type val = get_value(reg_i[1]);
-  set_value(val, memory[addr], override);
+  override = memory[addr].set_value(val);
 }
 
-void Machine::st3(const word &data) { // 27
+void Machine::st3(const Word &data) { // 27
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
   value_type val = get_value(reg_i[2]);
-  set_value(val, memory[addr], override);
+  override = memory[addr].set_value(val);
 }
 
-void Machine::st4(const word &data) { // 28
+void Machine::st4(const Word &data) { // 28
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
   value_type val = get_value(reg_i[3]);
-  set_value(val, memory[addr], override);
+  override = memory[addr].set_value(val);
 }
 
-void Machine::st5(const word &data) { // 29
+void Machine::st5(const Word &data) { // 29
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
   value_type val = get_value(reg_i[4]);
-  set_value(val, memory[addr], override);
+  override = memory[addr].set_value(val);
 }
 
-void Machine::st6(const word &data) { // 30
+void Machine::st6(const Word &data) { // 30
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
   value_type val = get_value(reg_i[5]);
-  set_value(val, memory[addr], override);
+  override = memory[addr].set_value(val);
 }
 
-void Machine::stx(const word &data) { // 31
+void Machine::stx(const Word &data) { // 31
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  format_range fmt = decode_format(data.bytes[byte_f]);
-  int count = DATA_BYTES_IN_WORD - fmt.high;
+  format_range fmt = decode_format(data.get_modification());
+  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
   big_register tmp_reg = reg_x;
-  if (count > 0) {
-    left_shift(tmp_reg, count);
+  if (nbytes > 0) {
+    tmp_reg.left_shift(nbytes);
   }
 
-  set_value(tmp_reg, data.bytes[byte_f], memory[addr]);
+  memory[addr].set_value(tmp_reg, data.get_modification());
 }
 
-void Machine::stj(const word &data) { // 32
+void Machine::stj(const Word &data) { // 32
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
   value_type val = get_value(reg_j);
-  set_value(val, memory[addr], override);
+  override = memory[addr].set_value(val);
 }
 
-void Machine::stz(const word &data) { // 33
+void Machine::stz(const Word &data) { // 33
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  word zero;
+  Word zero;
   memset(&zero, 0, sizeof(zero));
-  set_value(zero, data.bytes[byte_f], memory[addr]);
+  memory[addr].set_value(zero, data.get_modification());
 }
 
-void Machine::jump(const word &data) { // 39
-  switch (data.bytes[byte_f]) {
+void Machine::jump(const Word &data) { // 39
+  switch (data.get_modification()) {
   case 0:
     jmp(data);
     break;
@@ -400,21 +402,21 @@ void Machine::jump(const word &data) { // 39
   };
 }
 
-void Machine::jmp(const word &data) { // 39, 0
+void Machine::jmp(const Word &data) { // 39, 0
   LOG_COMMAND_NAME(data)
 
   value_type addr = extract_address(data);
   set_value(addr, reg_j, override);
 }
 
-void Machine::jsj(const word &data) { // 39, 1
+void Machine::jsj(const Word &data) { // 39, 1
   LOG_COMMAND_NAME(data)
 
   // int addr = extract_address(data);
   // set_value(addr, reg_j);
 }
 
-void Machine::jov(const word &data) { // 39, 2
+void Machine::jov(const Word &data) { // 39, 2
   LOG_COMMAND_NAME(data)
 
   if (override) {
@@ -424,7 +426,7 @@ void Machine::jov(const word &data) { // 39, 2
   }
 }
 
-void Machine::jnov(const word &data) { // 39, 3
+void Machine::jnov(const Word &data) { // 39, 3
   LOG_COMMAND_NAME(data)
 
   if (!override) {
@@ -433,7 +435,7 @@ void Machine::jnov(const word &data) { // 39, 3
   }
 }
 
-void Machine::jl(const word &data) { // 39, 4
+void Machine::jl(const Word &data) { // 39, 4
   LOG_COMMAND_NAME(data)
 
   if (compare_flag == cmp_less) {
@@ -442,7 +444,7 @@ void Machine::jl(const word &data) { // 39, 4
   }
 }
 
-void Machine::je(const word &data) { // 39, 5
+void Machine::je(const Word &data) { // 39, 5
   LOG_COMMAND_NAME(data)
 
   if (compare_flag == cmp_equal) {
@@ -451,7 +453,7 @@ void Machine::je(const word &data) { // 39, 5
   }
 }
 
-void Machine::jg(const word &data) { // 39, 6
+void Machine::jg(const Word &data) { // 39, 6
   LOG_COMMAND_NAME(data)
 
   if (compare_flag == cmp_greater) {
@@ -460,7 +462,7 @@ void Machine::jg(const word &data) { // 39, 6
   }
 }
 
-void Machine::jge(const word &data) { // 39, 7
+void Machine::jge(const Word &data) { // 39, 7
   LOG_COMMAND_NAME(data)
 
   if (compare_flag != cmp_less) {
@@ -469,7 +471,7 @@ void Machine::jge(const word &data) { // 39, 7
   }
 }
 
-void Machine::jne(const word &data) { // 39, 8
+void Machine::jne(const Word &data) { // 39, 8
   LOG_COMMAND_NAME(data)
 
   if (compare_flag != cmp_equal) {
@@ -478,7 +480,7 @@ void Machine::jne(const word &data) { // 39, 8
   }
 }
 
-void Machine::jle(const word &data) { // 39, 9
+void Machine::jle(const Word &data) { // 39, 9
   LOG_COMMAND_NAME(data)
 
   if (compare_flag != cmp_greater) {
@@ -487,8 +489,8 @@ void Machine::jle(const word &data) { // 39, 9
   }
 }
 
-void Machine::ja(const word &data) { // 40
-  switch (data.bytes[byte_f]) {
+void Machine::ja(const Word &data) { // 40
+  switch (data.get_modification()) {
   case 0:
     jan(data);
     break;
@@ -510,66 +512,66 @@ void Machine::ja(const word &data) { // 40
   };
 }
 
-void Machine::jan(const word &data) { // 40, 0
+void Machine::jan(const Word &data) { // 40, 0
   LOG_COMMAND_NAME(data)
 
-  if (reg_a.sign == NEG_SIGN) {
+  if (reg_a.is_negative()) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::jaz(const word &data) { // 40, 1
+void Machine::jaz(const Word &data) { // 40, 1
   LOG_COMMAND_NAME(data)
 
-  value_type val = get_value(reg_a);
+  value_type val = reg_a.get_value();
   if (val == 0) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::jap(const word &data) { // 40, 2
+void Machine::jap(const Word &data) { // 40, 2
   LOG_COMMAND_NAME(data)
 
-  value_type val = get_value(reg_a);
+  value_type val = reg_a.get_value();
   if (val > 0) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::jann(const word &data) { // 40, 3
+void Machine::jann(const Word &data) { // 40, 3
   LOG_COMMAND_NAME(data)
 
-  if (reg_a.sign != NEG_SIGN) {
+  if (!reg_a.is_negative()) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::janz(const word &data) { // 40, 4
+void Machine::janz(const Word &data) { // 40, 4
   LOG_COMMAND_NAME(data)
 
-  value_type val = get_value(reg_a);
+  value_type val = reg_a.get_value();
   if (val != 0) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::janp(const word &data) { // 40, 5
+void Machine::janp(const Word &data) { // 40, 5
   LOG_COMMAND_NAME(data)
 
-  value_type val = get_value(reg_a);
+  value_type val = reg_a.get_value();
   if (val <= 0) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::j1(const word &data) { // 41
-  switch (data.bytes[byte_f]) {
+void Machine::j1(const Word &data) { // 41
+  switch (data.get_modification()) {
   case 0:
     j1n(data);
     break;
@@ -591,7 +593,7 @@ void Machine::j1(const word &data) { // 41
   };
 }
 
-void Machine::j1n(const word &data) { // 41, 0
+void Machine::j1n(const Word &data) { // 41, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[0].sign == NEG_SIGN) {
@@ -600,7 +602,7 @@ void Machine::j1n(const word &data) { // 41, 0
   }
 }
 
-void Machine::j1z(const word &data) { // 41, 1
+void Machine::j1z(const Word &data) { // 41, 1
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[0]);
@@ -610,7 +612,7 @@ void Machine::j1z(const word &data) { // 41, 1
   }
 }
 
-void Machine::j1p(const word &data) { // 41, 2
+void Machine::j1p(const Word &data) { // 41, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[0]);
@@ -620,7 +622,7 @@ void Machine::j1p(const word &data) { // 41, 2
   }
 }
 
-void Machine::j1nn(const word &data) { // 41, 3
+void Machine::j1nn(const Word &data) { // 41, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[0].sign != NEG_SIGN) {
@@ -629,7 +631,7 @@ void Machine::j1nn(const word &data) { // 41, 3
   }
 }
 
-void Machine::j1nz(const word &data) { // 41, 4
+void Machine::j1nz(const Word &data) { // 41, 4
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[0]);
@@ -639,7 +641,7 @@ void Machine::j1nz(const word &data) { // 41, 4
   }
 }
 
-void Machine::j1np(const word &data) { // 41, 5
+void Machine::j1np(const Word &data) { // 41, 5
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[0]);
@@ -649,8 +651,8 @@ void Machine::j1np(const word &data) { // 41, 5
   }
 }
 
-void Machine::j2(const word &data) { // 41
-  switch (data.bytes[byte_f]) {
+void Machine::j2(const Word &data) { // 41
+  switch (data.get_modification()) {
   case 0:
     j2n(data);
     break;
@@ -672,7 +674,7 @@ void Machine::j2(const word &data) { // 41
   };
 }
 
-void Machine::j2n(const word &data) { // 42, 0
+void Machine::j2n(const Word &data) { // 42, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[1].sign == NEG_SIGN) {
@@ -681,7 +683,7 @@ void Machine::j2n(const word &data) { // 42, 0
   }
 }
 
-void Machine::j2z(const word &data) { // 42, 1
+void Machine::j2z(const Word &data) { // 42, 1
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[1]);
@@ -691,7 +693,7 @@ void Machine::j2z(const word &data) { // 42, 1
   }
 }
 
-void Machine::j2p(const word &data) { // 42, 2
+void Machine::j2p(const Word &data) { // 42, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[1]);
@@ -701,7 +703,7 @@ void Machine::j2p(const word &data) { // 42, 2
   }
 }
 
-void Machine::j2nn(const word &data) { // 42, 3
+void Machine::j2nn(const Word &data) { // 42, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[1].sign != NEG_SIGN) {
@@ -710,7 +712,7 @@ void Machine::j2nn(const word &data) { // 42, 3
   }
 }
 
-void Machine::j2nz(const word &data) { // 42, 4
+void Machine::j2nz(const Word &data) { // 42, 4
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[1]);
@@ -720,7 +722,7 @@ void Machine::j2nz(const word &data) { // 42, 4
   }
 }
 
-void Machine::j2np(const word &data) { // 42, 5
+void Machine::j2np(const Word &data) { // 42, 5
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[1]);
@@ -730,8 +732,8 @@ void Machine::j2np(const word &data) { // 42, 5
   }
 }
 
-void Machine::j3(const word &data) { // 43
-  switch (data.bytes[byte_f]) {
+void Machine::j3(const Word &data) { // 43
+  switch (data.get_modification()) {
   case 0:
     j3n(data);
     break;
@@ -753,7 +755,7 @@ void Machine::j3(const word &data) { // 43
   };
 }
 
-void Machine::j3n(const word &data) { // 43, 0
+void Machine::j3n(const Word &data) { // 43, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[2].sign == NEG_SIGN) {
@@ -762,7 +764,7 @@ void Machine::j3n(const word &data) { // 43, 0
   }
 }
 
-void Machine::j3z(const word &data) { // 43, 1
+void Machine::j3z(const Word &data) { // 43, 1
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[2]);
@@ -772,7 +774,7 @@ void Machine::j3z(const word &data) { // 43, 1
   }
 }
 
-void Machine::j3p(const word &data) { // 43, 2
+void Machine::j3p(const Word &data) { // 43, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[2]);
@@ -782,7 +784,7 @@ void Machine::j3p(const word &data) { // 43, 2
   }
 }
 
-void Machine::j3nn(const word &data) { // 43, 3
+void Machine::j3nn(const Word &data) { // 43, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[2].sign != NEG_SIGN) {
@@ -791,7 +793,7 @@ void Machine::j3nn(const word &data) { // 43, 3
   }
 }
 
-void Machine::j3nz(const word &data) { // 43, 4
+void Machine::j3nz(const Word &data) { // 43, 4
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[2]);
@@ -801,7 +803,7 @@ void Machine::j3nz(const word &data) { // 43, 4
   }
 }
 
-void Machine::j3np(const word &data) { // 43, 5
+void Machine::j3np(const Word &data) { // 43, 5
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[2]);
@@ -811,8 +813,8 @@ void Machine::j3np(const word &data) { // 43, 5
   }
 }
 
-void Machine::j4(const word &data) { // 44
-  switch (data.bytes[byte_f]) {
+void Machine::j4(const Word &data) { // 44
+  switch (data.get_modification()) {
   case 0:
     j4n(data);
     break;
@@ -834,7 +836,7 @@ void Machine::j4(const word &data) { // 44
   };
 }
 
-void Machine::j4n(const word &data) { // 44, 0
+void Machine::j4n(const Word &data) { // 44, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[3].sign == NEG_SIGN) {
@@ -843,7 +845,7 @@ void Machine::j4n(const word &data) { // 44, 0
   }
 }
 
-void Machine::j4z(const word &data) { // 44, 1
+void Machine::j4z(const Word &data) { // 44, 1
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[3]);
@@ -853,7 +855,7 @@ void Machine::j4z(const word &data) { // 44, 1
   }
 }
 
-void Machine::j4p(const word &data) { // 44, 2
+void Machine::j4p(const Word &data) { // 44, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[3]);
@@ -863,7 +865,7 @@ void Machine::j4p(const word &data) { // 44, 2
   }
 }
 
-void Machine::j4nn(const word &data) { // 44, 3
+void Machine::j4nn(const Word &data) { // 44, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[3].sign != NEG_SIGN) {
@@ -872,7 +874,7 @@ void Machine::j4nn(const word &data) { // 44, 3
   }
 }
 
-void Machine::j4nz(const word &data) { // 44, 4
+void Machine::j4nz(const Word &data) { // 44, 4
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[3]);
@@ -882,7 +884,7 @@ void Machine::j4nz(const word &data) { // 44, 4
   }
 }
 
-void Machine::j4np(const word &data) { // 44, 5
+void Machine::j4np(const Word &data) { // 44, 5
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[3]);
@@ -892,8 +894,8 @@ void Machine::j4np(const word &data) { // 44, 5
   }
 }
 
-void Machine::j5(const word &data) { // 45
-  switch (data.bytes[byte_f]) {
+void Machine::j5(const Word &data) { // 45
+  switch (data.get_modification()) {
   case 0:
     j5n(data);
     break;
@@ -915,7 +917,7 @@ void Machine::j5(const word &data) { // 45
   };
 }
 
-void Machine::j5n(const word &data) { // 45, 0
+void Machine::j5n(const Word &data) { // 45, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[4].sign == NEG_SIGN) {
@@ -924,7 +926,7 @@ void Machine::j5n(const word &data) { // 45, 0
   }
 }
 
-void Machine::j5z(const word &data) { // 45, 1
+void Machine::j5z(const Word &data) { // 45, 1
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[4]);
@@ -934,7 +936,7 @@ void Machine::j5z(const word &data) { // 45, 1
   }
 }
 
-void Machine::j5p(const word &data) { // 45, 2
+void Machine::j5p(const Word &data) { // 45, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[4]);
@@ -944,7 +946,7 @@ void Machine::j5p(const word &data) { // 45, 2
   }
 }
 
-void Machine::j5nn(const word &data) { // 45, 3
+void Machine::j5nn(const Word &data) { // 45, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[4].sign != NEG_SIGN) {
@@ -953,7 +955,7 @@ void Machine::j5nn(const word &data) { // 45, 3
   }
 }
 
-void Machine::j5nz(const word &data) { // 45, 4
+void Machine::j5nz(const Word &data) { // 45, 4
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[4]);
@@ -963,7 +965,7 @@ void Machine::j5nz(const word &data) { // 45, 4
   }
 }
 
-void Machine::j5np(const word &data) { // 45, 5
+void Machine::j5np(const Word &data) { // 45, 5
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[4]);
@@ -973,8 +975,8 @@ void Machine::j5np(const word &data) { // 45, 5
   }
 }
 
-void Machine::j6(const word &data) { // 46
-  switch (data.bytes[byte_f]) {
+void Machine::j6(const Word &data) { // 46
+  switch (data.get_modification()) {
   case 0:
     j6n(data);
     break;
@@ -996,7 +998,7 @@ void Machine::j6(const word &data) { // 46
   };
 }
 
-void Machine::j6n(const word &data) { // 46, 0
+void Machine::j6n(const Word &data) { // 46, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[5].sign == NEG_SIGN) {
@@ -1005,7 +1007,7 @@ void Machine::j6n(const word &data) { // 46, 0
   }
 }
 
-void Machine::j6z(const word &data) { // 46, 1
+void Machine::j6z(const Word &data) { // 46, 1
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[5]);
@@ -1015,7 +1017,7 @@ void Machine::j6z(const word &data) { // 46, 1
   }
 }
 
-void Machine::j6p(const word &data) { // 46, 2
+void Machine::j6p(const Word &data) { // 46, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[5]);
@@ -1025,7 +1027,7 @@ void Machine::j6p(const word &data) { // 46, 2
   }
 }
 
-void Machine::j6nn(const word &data) { // 46, 3
+void Machine::j6nn(const Word &data) { // 46, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[5].sign != NEG_SIGN) {
@@ -1034,7 +1036,7 @@ void Machine::j6nn(const word &data) { // 46, 3
   }
 }
 
-void Machine::j6nz(const word &data) { // 46, 4
+void Machine::j6nz(const Word &data) { // 46, 4
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[5]);
@@ -1044,7 +1046,7 @@ void Machine::j6nz(const word &data) { // 46, 4
   }
 }
 
-void Machine::j6np(const word &data) { // 46, 5
+void Machine::j6np(const Word &data) { // 46, 5
   LOG_COMMAND_NAME(data)
 
   value_type val = get_value(reg_i[5]);
@@ -1054,8 +1056,8 @@ void Machine::j6np(const word &data) { // 46, 5
   }
 }
 
-void Machine::jx(const word &data) { // 47
-  switch (data.bytes[byte_f]) {
+void Machine::jx(const Word &data) { // 47
+  switch (data.get_modification()) {
   case 0:
     jxn(data);
     break;
@@ -1077,66 +1079,66 @@ void Machine::jx(const word &data) { // 47
   };
 }
 
-void Machine::jxn(const word &data) { // 47, 0
+void Machine::jxn(const Word &data) { // 47, 0
   LOG_COMMAND_NAME(data)
 
-  if (reg_x.sign == NEG_SIGN) {
+  if (reg_x.is_negative()) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::jxz(const word &data) { // 47, 1
+void Machine::jxz(const Word &data) { // 47, 1
   LOG_COMMAND_NAME(data)
 
-  value_type val = get_value(reg_x);
+  value_type val = reg_x.get_value();
   if (val == 0) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::jxp(const word &data) { // 47, 2
+void Machine::jxp(const Word &data) { // 47, 2
   LOG_COMMAND_NAME(data)
 
-  value_type val = get_value(reg_x);
+  value_type val = reg_x.get_value();
   if (val > 0) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::jxnn(const word &data) { // 47, 3
+void Machine::jxnn(const Word &data) { // 47, 3
   LOG_COMMAND_NAME(data)
 
-  if (reg_x.sign != NEG_SIGN) {
+  if (!reg_x.is_negative()) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::jxnz(const word &data) { // 47, 4
+void Machine::jxnz(const Word &data) { // 47, 4
   LOG_COMMAND_NAME(data)
 
-  value_type val = get_value(reg_x);
+  value_type val = reg_x.get_value();
   if (val != 0) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::jxnp(const word &data) { // 47, 5
+void Machine::jxnp(const Word &data) { // 47, 5
   LOG_COMMAND_NAME(data)
 
-  value_type val = get_value(reg_x);
+  value_type val = reg_x.get_value();
   if (val <= 0) {
     int addr = extract_address(data);
     set_value(addr, reg_j, override);
   }
 }
 
-void Machine::ena(const word &data) { // 48
-  switch (data.bytes[byte_f]) {
+void Machine::ena(const Word &data) { // 48
+  switch (data.get_modification()) {
   case 2:
     enta(data);
     break;
@@ -1149,8 +1151,8 @@ void Machine::ena(const word &data) { // 48
   };
 }
 
-void Machine::en1(const word &data) { // 49
-  switch (data.bytes[byte_f]) {
+void Machine::en1(const Word &data) { // 49
+  switch (data.get_modification()) {
   case 2:
     ent1(data);
     break;
@@ -1163,8 +1165,8 @@ void Machine::en1(const word &data) { // 49
   };
 }
 
-void Machine::en2(const word &data) { // 50
-  switch (data.bytes[byte_f]) {
+void Machine::en2(const Word &data) { // 50
+  switch (data.get_modification()) {
   case 2:
     ent2(data);
     break;
@@ -1177,8 +1179,8 @@ void Machine::en2(const word &data) { // 50
   };
 }
 
-void Machine::en3(const word &data) { // 51
-  switch (data.bytes[byte_f]) {
+void Machine::en3(const Word &data) { // 51
+  switch (data.get_modification()) {
   case 2:
     ent3(data);
     break;
@@ -1191,8 +1193,8 @@ void Machine::en3(const word &data) { // 51
   };
 }
 
-void Machine::en4(const word &data) { // 52
-  switch (data.bytes[byte_f]) {
+void Machine::en4(const Word &data) { // 52
+  switch (data.get_modification()) {
   case 2:
     ent4(data);
     break;
@@ -1205,8 +1207,8 @@ void Machine::en4(const word &data) { // 52
   };
 }
 
-void Machine::en5(const word &data) { // 53
-  switch (data.bytes[byte_f]) {
+void Machine::en5(const Word &data) { // 53
+  switch (data.get_modification()) {
   case 2:
     ent5(data);
     break;
@@ -1219,8 +1221,8 @@ void Machine::en5(const word &data) { // 53
   };
 }
 
-void Machine::en6(const word &data) { // 54
-  switch (data.bytes[byte_f]) {
+void Machine::en6(const Word &data) { // 54
+  switch (data.get_modification()) {
   case 2:
     ent6(data);
     break;
@@ -1233,8 +1235,8 @@ void Machine::en6(const word &data) { // 54
   };
 }
 
-void Machine::enx(const word &data) { // 55
-  switch (data.bytes[byte_f]) {
+void Machine::enx(const Word &data) { // 55
+  switch (data.get_modification()) {
   case 2:
     entx(data);
     break;
@@ -1247,71 +1249,71 @@ void Machine::enx(const word &data) { // 55
   };
 }
 
-void Machine::enta(const word &data) { // 48, 2
+void Machine::enta(const Word &data) { // 48, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  set_value(val, reg_a, override);
+  override = reg_a.set_value(val);
 }
 
-void Machine::ent1(const word &data) { // 49, 2
+void Machine::ent1(const Word &data) { // 49, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
   set_value(val, reg_i[0], override);
 }
 
-void Machine::ent2(const word &data) { // 50, 2
+void Machine::ent2(const Word &data) { // 50, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
   set_value(val, reg_i[1], override);
 }
 
-void Machine::ent3(const word &data) { // 51, 2
+void Machine::ent3(const Word &data) { // 51, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
   set_value(val, reg_i[2], override);
 }
 
-void Machine::ent4(const word &data) { // 52, 2
+void Machine::ent4(const Word &data) { // 52, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
   set_value(val, reg_i[3], override);
 }
 
-void Machine::ent5(const word &data) { // 53, 2
+void Machine::ent5(const Word &data) { // 53, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
   set_value(val, reg_i[4], override);
 }
 
-void Machine::ent6(const word &data) { // 54, 2
+void Machine::ent6(const Word &data) { // 54, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
   set_value(val, reg_i[5], override);
 }
 
-void Machine::entx(const word &data) { // 55, 2
+void Machine::entx(const Word &data) { // 55, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  set_value(val, reg_x, override);
+  override = reg_x.set_value(val);
 }
 
-void Machine::enna(const word &data) { // 48, 3
+void Machine::enna(const Word &data) { // 48, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  set_value(val, reg_a, override);
-  reg_a.sign = !reg_a.sign;
+  override = reg_a.set_value(val);
+  reg_a.set_sign(!reg_a.get_sign());
 }
 
-void Machine::enn1(const word &data) { // 49, 3
+void Machine::enn1(const Word &data) { // 49, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
@@ -1319,7 +1321,7 @@ void Machine::enn1(const word &data) { // 49, 3
   reg_i[0].sign = !reg_i[0].sign;
 }
 
-void Machine::enn2(const word &data) { // 50, 3
+void Machine::enn2(const Word &data) { // 50, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
@@ -1327,7 +1329,7 @@ void Machine::enn2(const word &data) { // 50, 3
   reg_i[1].sign = !reg_i[1].sign;
 }
 
-void Machine::enn3(const word &data) { // 51, 3
+void Machine::enn3(const Word &data) { // 51, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
@@ -1335,7 +1337,7 @@ void Machine::enn3(const word &data) { // 51, 3
   reg_i[2].sign = !reg_i[2].sign;
 }
 
-void Machine::enn4(const word &data) { // 52, 3
+void Machine::enn4(const Word &data) { // 52, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
@@ -1343,7 +1345,7 @@ void Machine::enn4(const word &data) { // 52, 3
   reg_i[3].sign = !reg_i[3].sign;
 }
 
-void Machine::enn5(const word &data) { // 53, 3
+void Machine::enn5(const Word &data) { // 53, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
@@ -1351,7 +1353,7 @@ void Machine::enn5(const word &data) { // 53, 3
   reg_i[4].sign = !reg_i[4].sign;
 }
 
-void Machine::enn6(const word &data) { // 54, 3
+void Machine::enn6(const Word &data) { // 54, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
@@ -1359,83 +1361,84 @@ void Machine::enn6(const word &data) { // 54, 3
   reg_i[5].sign = !reg_i[5].sign;
 }
 
-void Machine::ennx(const word &data) { // 55, 3
+void Machine::ennx(const Word &data) { // 55, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  set_value(val, reg_x, override);
-  reg_x.sign = !reg_x.sign;
+  override = reg_x.set_value(val);
+  reg_x.set_sign(!reg_x.get_sign());
 }
 
-void Machine::cmpa(const word &data) { // 56
+void Machine::cmpa(const Word &data) { // 56
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = get_value(reg_a, data.bytes[byte_f]);
-  value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+  value_type lhs = reg_a.get_value(data.get_modification());
+  value_type rhs = memory[addr].get_value(data.get_modification());
+  ;
   compare_flag = compare(lhs, rhs);
 }
 
-void Machine::cmp1(const word &data) { // 57
+void Machine::cmp1(const Word &data) { // 57
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = get_value(reg_i[0], data.bytes[byte_f]);
-  value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+  value_type lhs = get_value(reg_i[0], data.get_modification());
+  value_type rhs = memory[addr].get_value(data.get_modification());
   compare_flag = compare(lhs, rhs);
 }
 
-void Machine::cmp2(const word &data) { // 58
+void Machine::cmp2(const Word &data) { // 58
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = get_value(reg_i[1], data.bytes[byte_f]);
-  value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+  value_type lhs = get_value(reg_i[1], data.get_modification());
+  value_type rhs = memory[addr].get_value(data.get_modification());
   compare_flag = compare(lhs, rhs);
 }
 
-void Machine::cmp3(const word &data) { // 59
+void Machine::cmp3(const Word &data) { // 59
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = get_value(reg_i[2], data.bytes[byte_f]);
-  value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+  value_type lhs = get_value(reg_i[2], data.get_modification());
+  value_type rhs = memory[addr].get_value(data.get_modification());
   compare_flag = compare(lhs, rhs);
 }
 
-void Machine::cmp4(const word &data) { // 60
+void Machine::cmp4(const Word &data) { // 60
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = get_value(reg_i[3], data.bytes[byte_f]);
-  value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+  value_type lhs = get_value(reg_i[3], data.get_modification());
+  value_type rhs = memory[addr].get_value(data.get_modification());
   compare_flag = compare(lhs, rhs);
 }
 
-void Machine::cmp5(const word &data) { // 61
+void Machine::cmp5(const Word &data) { // 61
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = get_value(reg_i[4], data.bytes[byte_f]);
-  value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+  value_type lhs = get_value(reg_i[4], data.get_modification());
+  value_type rhs = memory[addr].get_value(data.get_modification());
   compare_flag = compare(lhs, rhs);
 }
 
-void Machine::cmp6(const word &data) { // 62
+void Machine::cmp6(const Word &data) { // 62
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = get_value(reg_i[5], data.bytes[byte_f]);
-  value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+  value_type lhs = get_value(reg_i[5], data.get_modification());
+  value_type rhs = memory[addr].get_value(data.get_modification());
   compare_flag = compare(lhs, rhs);
 }
 
-void Machine::cmpx(const word &data) { // 63
+void Machine::cmpx(const Word &data) { // 63
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = get_value(reg_x, data.bytes[byte_f]);
-  value_type rhs = get_value(memory[addr], data.bytes[byte_f]);
+  value_type lhs = reg_x.get_value(data.get_modification());
+  value_type rhs = memory[addr].get_value(data.get_modification());
   compare_flag = compare(lhs, rhs);
 }
 
@@ -1450,11 +1453,11 @@ void Machine::run(short initial_address) {
   }
 }
 
-unsigned short Machine::extract_address(const word &instruction) {
-  unsigned short address = get_address(instruction);
-  int index_modification = instruction.bytes[byte_i];
-  if (index_modification) {
-    address += get_value(reg_i[index_modification - 1]);
+unsigned short Machine::extract_address(const Word &instruction) {
+  unsigned short address = instruction.get_address();
+  int index_specification = instruction.get_specification();
+  if (index_specification) {
+    address += get_value(reg_i[index_specification - 1]);
   }
   return address;
 }

@@ -19,27 +19,27 @@ bool MachineFixture::is_next_instruction_address_unchanged() const {
 }
 
 void MachineFixture::set_memory_value(int address, int value) {
-  set_value(value, machine.memory[address], isOverflowed);
+  isOverflowed = machine.memory[address].set_value(value);
 }
 
 int MachineFixture::get_memory_value(int address) const {
-  return get_value(machine.memory[address]);
+  return machine.memory[address].get_value();
 }
 
 void MachineFixture::set_reg_a_value(int value) {
-  set_value(value, machine.reg_a, isOverflowed);
+  isOverflowed = machine.reg_a.set_value(value);
 }
 
 int MachineFixture::get_reg_a_value() const {
-  return get_value(machine.reg_a);
+  return machine.reg_a.get_value();
 }
 
 void MachineFixture::set_reg_x_value(int value) {
-  set_value(value, machine.reg_x, isOverflowed);
+  isOverflowed = machine.reg_x.set_value(value);
 }
 
 int MachineFixture::get_reg_x_value() const {
-  return get_value(machine.reg_x);
+  return machine.reg_x.get_value();
 }
 
 void MachineFixture::set_reg_i_value(int index, int value) {
@@ -50,7 +50,7 @@ int MachineFixture::get_reg_i_value(int index) const {
   return get_value(machine.reg_i[index - 1]);
 }
 
-void MachineFixture::expect_eq(const word &expected, const word &actual) const {
-  EXPECT_EQ(get_value(expected), get_value(actual));
+void MachineFixture::expect_eq(const Word &expected, const Word &actual) const {
+  EXPECT_EQ(expected.get_value(), actual.get_value());
 }
 } // namespace mix

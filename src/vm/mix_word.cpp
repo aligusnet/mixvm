@@ -1,50 +1,69 @@
-/*
- *  mix_word.cpp
- *  mixvm
- *
- *  Created by Alexander Ignatyev on 19.06.10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "mix_word.h"
 #include "format_range.h"
 
+#include <sstream>
+
 namespace mix {
-bool is_negative(const word &data) {
-  return data.sign == NEG_SIGN;
+enum bytes_format { byte_a1 = 0, byte_a2 = 1, byte_i = 2, byte_f = 3, byte_c = 4 };
+
+Word::Word(bool sign, byte a1, byte a2, byte i, byte f, byte c) {
+  this->sign = sign;
+  this->bytes[byte_a1] = a1;
+  this->bytes[byte_a2] = a2;
+  this->bytes[byte_i] = i;
+  this->bytes[byte_f] = f;
+  this->bytes[byte_c] = c;
 }
 
-unsigned short get_address(const word &data) {
-  unsigned short address = 0;
-  address += data.bytes[byte_a1] * VALUES_IN_BYTE;
-  address += data.bytes[byte_a2];
-  if (is_negative(data)) {
+Word Word::make_as_instruction(byte cmd, short addr, byte f) {
+  Word result;
+  result.sign = POS_SIGN;
+  result.set_address(addr);
+  result.bytes[byte_i] = 0;
+  result.bytes[byte_f] = f;
+  result.bytes[byte_c] = cmd;
+  return result;
+}
+
+bool Word::is_negative() const {
+  return sign == NEG_SIGN;
+}
+
+short Word::get_address() const {
+  short address = 0;
+  address += bytes[byte_a1] * VALUES_IN_BYTE;
+  address += bytes[byte_a2];
+  if (is_negative()) {
     address *= -1;
   }
   return address;
 }
 
-void right_shift(word &data, int count) {
-  for (int i = DATA_BYTES_IN_WORD - 1; i - count >= 0; --i) {
-    data.bytes[i] = data.bytes[i - count];
+void Word::set_address(short address) {
+  bytes[0] = address / VALUES_IN_BYTE;
+  bytes[1] = address - bytes[0] * VALUES_IN_BYTE;
+}
+
+void Word::right_shift(int nbytes) {
+  for (int i = DATA_BYTES_IN_WORD - 1; i - nbytes >= 0; --i) {
+    bytes[i] = bytes[i - nbytes];
   }
-  for (int i = 0; i < count; ++i) {
-    data.bytes[i] = 0;
+  for (int i = 0; i < nbytes; ++i) {
+    bytes[i] = 0;
   }
 }
 
-void left_shift(word &data, int count) {
-  for (int i = 0; i + count < DATA_BYTES_IN_WORD; ++i) {
-    data.bytes[i] = data.bytes[i + count];
+void Word::left_shift(int nbytes) {
+  for (int i = 0; i + nbytes < DATA_BYTES_IN_WORD; ++i) {
+    bytes[i] = bytes[i + nbytes];
   }
 
-  for (int i = DATA_BYTES_IN_WORD - 1; i > (DATA_BYTES_IN_WORD - count); --i) {
-    data.bytes[i] = 0;
+  for (int i = DATA_BYTES_IN_WORD - 1; i > (DATA_BYTES_IN_WORD - nbytes); --i) {
+    bytes[i] = 0;
   }
 }
 
-void set_value(const word &from, int format, word &to) {
+void Word::set_value(const Word &source, int format) {
   format_range fmt = decode_format(format);
   if (fmt.low < 0)
     fmt.low = 0;
@@ -53,51 +72,32 @@ void set_value(const word &from, int format, word &to) {
 
   if (fmt.low == 0) {
     // copy_sign
-    to.sign = from.sign;
+    sign = source.sign;
     ++fmt.low; // remove sign
   }
 
   for (int i = fmt.low - 1; i < fmt.high; ++i) {
-    to.bytes[i] = from.bytes[i];
+    bytes[i] = source.bytes[i];
   }
 }
 
-void set_value(value_type val, word &to, bool &override) {
-  to.sign = val < 0 ? NEG_SIGN : POS_SIGN;
+bool Word::set_value(int val) {
+  sign = val < 0 ? NEG_SIGN : POS_SIGN;
   if (val < 0)
     val *= -1;
   for (int i = DATA_BYTES_IN_WORD - 1; i >= 0; --i) {
-    to.bytes[i] = val % VALUES_IN_BYTE;
+    bytes[i] = val % VALUES_IN_BYTE;
     val /= VALUES_IN_BYTE;
   }
-
-  override = val > 0;
+  return val > 0;
 }
 
-void set_long_value(long_value_type val, word &high_word, word &low_word, bool &override) {
-  high_word.sign = val < 0 ? NEG_SIGN : POS_SIGN;
-  low_word.sign = high_word.sign;
-  if (val < 0)
-    val *= -1;
-  for (int i = DATA_BYTES_IN_WORD - 1; i >= 0; --i) {
-    low_word.bytes[i] = val % VALUES_IN_BYTE;
-    val /= VALUES_IN_BYTE;
-  }
-
-  for (int i = DATA_BYTES_IN_WORD - 1; i >= 0; --i) {
-    high_word.bytes[i] = val % VALUES_IN_BYTE;
-    val /= VALUES_IN_BYTE;
-  }
-
-  override = val > 0;
-}
-
-value_type get_value(const word &data, byte format) {
+value_type Word::get_value(int format) const {
   format_range fmt = decode_format(format);
   bool negative = false;
   if (fmt.low > 0) {
     --fmt.low;
-  } else if (is_negative(data)) {
+  } else if (is_negative()) {
     negative = true;
   }
 
@@ -106,7 +106,7 @@ value_type get_value(const word &data, byte format) {
   int value = 0;
   for (int i = fmt.low; i < fmt.high; ++i) {
     value *= VALUES_IN_BYTE;
-    value += data.bytes[i];
+    value += bytes[i];
   }
   if (negative) {
     value *= -1;
@@ -114,49 +114,45 @@ value_type get_value(const word &data, byte format) {
   return value;
 }
 
-long_value_type get_long_value(const word &high_word, const word &low_word) {
-  long_value_type value = 0;
+byte Word::get_operation_code() const {
+  return bytes[byte_c];
+}
+
+byte Word::get_modification() const {
+  return bytes[byte_f];
+}
+
+byte Word::get_specification() const {
+  return bytes[byte_i];
+}
+
+void Word::set_specification(byte index) {
+  bytes[byte_i] = index;
+}
+
+bool Word::get_sign() const {
+  return sign;
+}
+
+void Word::set_sign(bool value) {
+  sign = value;
+}
+
+void Word::print_word(std::ostream &os) const {
+  os << (sign == POS_SIGN ? "+" : "-");
   for (int i = 0; i < DATA_BYTES_IN_WORD; ++i) {
-    value *= VALUES_IN_BYTE;
-    value += high_word.bytes[i];
+    os << ", " << (int)bytes[i];
   }
-
-  for (int i = 0; i < DATA_BYTES_IN_WORD; ++i) {
-    value *= VALUES_IN_BYTE;
-    value += low_word.bytes[i];
-  }
-
-  if (high_word.sign == NEG_SIGN) {
-    value *= -1;
-  }
-
-  return value;
 }
 
-void set_address(byte *bytes, short addr) {
-  bytes[0] = addr / VALUES_IN_BYTE;
-  bytes[1] = addr - bytes[0] * VALUES_IN_BYTE;
+void Word::print_instruction(std::ostream &os, const char *command_name) const {
+  os << command_name << "\t" << (unsigned)get_address() << "," << (unsigned)bytes[byte_i];
+  format_range fmt = decode_format(bytes[byte_f]);
+  os << "(" << (int)fmt.low << ":" << (int)fmt.high << ")";
 }
 
-word make_word(bool sign, byte a1, byte a2, byte i, byte f, byte c) {
-  word result;
-  result.sign = sign;
-  result.bytes[byte_a1] = a1;
-  result.bytes[byte_a2] = a2;
-  result.bytes[byte_i] = i;
-  result.bytes[byte_f] = f;
-  result.bytes[byte_c] = c;
-  return result;
-}
-
-word make_cmd(byte cmd, short addr, byte f) {
-  word result;
-  result.sign = POS_SIGN;
-  set_address(result.bytes, addr);
-  result.bytes[byte_i] = 0;
-  result.bytes[byte_f] = f;
-  result.bytes[byte_c] = cmd;
-  return result;
+Word make_cmd(byte cmd, short addr, byte f) {
+  return Word::make_as_instruction(cmd, addr, f);
 }
 
 } // namespace mix

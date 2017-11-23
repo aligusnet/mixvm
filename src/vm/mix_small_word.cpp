@@ -67,4 +67,10 @@ void set_value(value_type val, small_word &data, bool &override) {
     data.bytes[1] = val - tmp * VALUES_IN_BYTE;
   }
 }
+
+void set_address(byte *bytes, short addr) {
+  bytes[0] = addr / VALUES_IN_BYTE;
+  bytes[1] = addr - bytes[0] * VALUES_IN_BYTE;
+}
+
 } // namespace mix

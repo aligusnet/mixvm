@@ -24,6 +24,7 @@ bool is_negative(const small_word &data);
 void inc(small_word &sreg, bool &override);
 int get_value(const small_word &data, byte format = DEFAULT_FORMAT);
 void set_value(value_type val, small_word &data, bool &override);
+void set_address(byte *bytes, short addr);
 } // namespace mix
 
 #endif // MIX_SMALL_REGISTER_H
