@@ -361,9 +361,7 @@ void Machine::jump(const Word &data) { // 39
 
 void Machine::jmp(const Word &data) { // 39, 0
   LOG_COMMAND_NAME(data)
-
-  value_type addr = extract_address(data);
-  overflow = reg_j.set_value(addr);
+  unconditionally_jump(data);
 }
 
 void Machine::jsj(const Word &data) { // 39, 1
@@ -378,8 +376,7 @@ void Machine::jov(const Word &data) { // 39, 2
 
   if (overflow) {
     overflow = false;
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -387,8 +384,7 @@ void Machine::jnov(const Word &data) { // 39, 3
   LOG_COMMAND_NAME(data)
 
   if (!overflow) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -396,8 +392,7 @@ void Machine::jl(const Word &data) { // 39, 4
   LOG_COMMAND_NAME(data)
 
   if (compare_flag == cmp_less) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -405,8 +400,7 @@ void Machine::je(const Word &data) { // 39, 5
   LOG_COMMAND_NAME(data)
 
   if (compare_flag == cmp_equal) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -414,8 +408,7 @@ void Machine::jg(const Word &data) { // 39, 6
   LOG_COMMAND_NAME(data)
 
   if (compare_flag == cmp_greater) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -423,8 +416,7 @@ void Machine::jge(const Word &data) { // 39, 7
   LOG_COMMAND_NAME(data)
 
   if (compare_flag != cmp_less) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -432,8 +424,7 @@ void Machine::jne(const Word &data) { // 39, 8
   LOG_COMMAND_NAME(data)
 
   if (compare_flag != cmp_equal) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -441,8 +432,7 @@ void Machine::jle(const Word &data) { // 39, 9
   LOG_COMMAND_NAME(data)
 
   if (compare_flag != cmp_greater) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -473,8 +463,7 @@ void Machine::jan(const Word &data) { // 40, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_a.get_sign() == NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -483,8 +472,7 @@ void Machine::jaz(const Word &data) { // 40, 1
 
   value_type val = reg_a.get_value();
   if (val == 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -493,8 +481,7 @@ void Machine::jap(const Word &data) { // 40, 2
 
   value_type val = reg_a.get_value();
   if (val > 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -502,8 +489,7 @@ void Machine::jann(const Word &data) { // 40, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_a.get_sign() != NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -512,8 +498,7 @@ void Machine::janz(const Word &data) { // 40, 4
 
   value_type val = reg_a.get_value();
   if (val != 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -522,8 +507,7 @@ void Machine::janp(const Word &data) { // 40, 5
 
   value_type val = reg_a.get_value();
   if (val <= 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -554,8 +538,7 @@ void Machine::j1n(const Word &data) { // 41, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[0].get_sign() == NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -564,8 +547,7 @@ void Machine::j1z(const Word &data) { // 41, 1
 
   value_type val = reg_i[0].get_value();
   if (val == 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -574,8 +556,7 @@ void Machine::j1p(const Word &data) { // 41, 2
 
   value_type val = reg_i[0].get_value();
   if (val > 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -583,8 +564,7 @@ void Machine::j1nn(const Word &data) { // 41, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[0].get_sign() != NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -593,8 +573,7 @@ void Machine::j1nz(const Word &data) { // 41, 4
 
   value_type val = reg_i[0].get_value();
   if (val != 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -603,8 +582,7 @@ void Machine::j1np(const Word &data) { // 41, 5
 
   value_type val = reg_i[0].get_value();
   if (val <= 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -635,8 +613,7 @@ void Machine::j2n(const Word &data) { // 42, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[1].get_sign() == NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -645,8 +622,7 @@ void Machine::j2z(const Word &data) { // 42, 1
 
   value_type val = reg_i[1].get_value();
   if (val == 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -655,8 +631,7 @@ void Machine::j2p(const Word &data) { // 42, 2
 
   value_type val = reg_i[1].get_value();
   if (val > 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -664,8 +639,7 @@ void Machine::j2nn(const Word &data) { // 42, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[1].get_sign() != NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -674,8 +648,7 @@ void Machine::j2nz(const Word &data) { // 42, 4
 
   value_type val = reg_i[1].get_value();
   if (val != 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -684,8 +657,7 @@ void Machine::j2np(const Word &data) { // 42, 5
 
   value_type val = reg_i[1].get_value();
   if (val <= 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -716,8 +688,7 @@ void Machine::j3n(const Word &data) { // 43, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[2].get_sign() == NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -726,8 +697,7 @@ void Machine::j3z(const Word &data) { // 43, 1
 
   value_type val = reg_i[2].get_value();
   if (val == 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -736,8 +706,7 @@ void Machine::j3p(const Word &data) { // 43, 2
 
   value_type val = reg_i[2].get_value();
   if (val > 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -745,8 +714,7 @@ void Machine::j3nn(const Word &data) { // 43, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[2].get_sign() != NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -755,8 +723,7 @@ void Machine::j3nz(const Word &data) { // 43, 4
 
   value_type val = reg_i[2].get_value();
   if (val != 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -765,8 +732,7 @@ void Machine::j3np(const Word &data) { // 43, 5
 
   value_type val = reg_i[2].get_value();
   if (val <= 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -797,8 +763,7 @@ void Machine::j4n(const Word &data) { // 44, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[3].get_sign() == NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -807,8 +772,7 @@ void Machine::j4z(const Word &data) { // 44, 1
 
   value_type val = reg_i[3].get_value();
   if (val == 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -817,8 +781,7 @@ void Machine::j4p(const Word &data) { // 44, 2
 
   value_type val = reg_i[3].get_value();
   if (val > 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -826,8 +789,7 @@ void Machine::j4nn(const Word &data) { // 44, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[3].get_sign() != NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -836,8 +798,7 @@ void Machine::j4nz(const Word &data) { // 44, 4
 
   value_type val = reg_i[3].get_value();
   if (val != 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -846,8 +807,7 @@ void Machine::j4np(const Word &data) { // 44, 5
 
   value_type val = reg_i[3].get_value();
   if (val <= 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -878,8 +838,7 @@ void Machine::j5n(const Word &data) { // 45, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[4].get_sign() == NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -888,8 +847,7 @@ void Machine::j5z(const Word &data) { // 45, 1
 
   value_type val = reg_i[4].get_value();
   if (val == 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -898,8 +856,7 @@ void Machine::j5p(const Word &data) { // 45, 2
 
   value_type val = reg_i[4].get_value();
   if (val > 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -907,8 +864,7 @@ void Machine::j5nn(const Word &data) { // 45, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[4].get_sign() != NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -917,8 +873,7 @@ void Machine::j5nz(const Word &data) { // 45, 4
 
   value_type val = reg_i[4].get_value();
   if (val != 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -927,8 +882,7 @@ void Machine::j5np(const Word &data) { // 45, 5
 
   value_type val = reg_i[4].get_value();
   if (val <= 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -959,8 +913,7 @@ void Machine::j6n(const Word &data) { // 46, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_i[5].get_sign() == NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -969,8 +922,7 @@ void Machine::j6z(const Word &data) { // 46, 1
 
   value_type val = reg_i[5].get_value();
   if (val == 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -979,8 +931,7 @@ void Machine::j6p(const Word &data) { // 46, 2
 
   value_type val = reg_i[5].get_value();
   if (val > 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -988,8 +939,7 @@ void Machine::j6nn(const Word &data) { // 46, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_i[5].get_sign() != NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -998,8 +948,7 @@ void Machine::j6nz(const Word &data) { // 46, 4
 
   value_type val = reg_i[5].get_value();
   if (val != 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -1008,8 +957,7 @@ void Machine::j6np(const Word &data) { // 46, 5
 
   value_type val = reg_i[5].get_value();
   if (val <= 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -1040,8 +988,7 @@ void Machine::jxn(const Word &data) { // 47, 0
   LOG_COMMAND_NAME(data)
 
   if (reg_x.get_sign() == NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -1050,8 +997,7 @@ void Machine::jxz(const Word &data) { // 47, 1
 
   value_type val = reg_x.get_value();
   if (val == 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -1060,8 +1006,7 @@ void Machine::jxp(const Word &data) { // 47, 2
 
   value_type val = reg_x.get_value();
   if (val > 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -1069,8 +1014,7 @@ void Machine::jxnn(const Word &data) { // 47, 3
   LOG_COMMAND_NAME(data)
 
   if (reg_x.get_sign() != NEG_SIGN) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -1079,8 +1023,7 @@ void Machine::jxnz(const Word &data) { // 47, 4
 
   value_type val = reg_x.get_value();
   if (val != 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
 }
 
@@ -1089,9 +1032,13 @@ void Machine::jxnp(const Word &data) { // 47, 5
 
   value_type val = reg_x.get_value();
   if (val <= 0) {
-    int addr = extract_address(data);
-    overflow = reg_j.set_value(addr);
+    unconditionally_jump(data);
   }
+}
+
+void Machine::unconditionally_jump(const Word &instruction) {
+  const auto address = extract_address(instruction);
+  overflow = reg_j.set_value(address);
 }
 
 void Machine::ena(const Word &data) { // 48

@@ -259,6 +259,8 @@ struct Machine {
   void store_big_register(big_register reg, const Word &instruction);
   void store_small_register(const small_register &reg, const Word &instruction);
   void store_index_register(int index, const Word &instruction);
+
+  void unconditionally_jump(const Word &instruction);
 };
 
 } // namespace mix
