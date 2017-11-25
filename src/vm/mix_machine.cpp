@@ -42,7 +42,7 @@ void Machine::print_state(std::ostream &os) {
   reg_j.print(os);
   os << std::endl;
 
-  os << "Override: " << override << std::endl;
+  os << "Override: " << overflow << std::endl;
   os << "CompareFlag: " << compare_flag << std::endl;
   for (int i = 0; i < MEMORY_WORDS; ++i) {
     os << "Memory[" << (i) << "]:";
@@ -94,7 +94,7 @@ void Machine::add(const Word &data) { // 1
 
   value_type val = memory[addr].get_value(data.get_field_specification());
   val += reg_a.get_value();
-  override = reg_a.set_value(val);
+  overflow = reg_a.set_value(val);
 }
 
 void Machine::sub(const Word &data) { // 2
@@ -103,7 +103,7 @@ void Machine::sub(const Word &data) { // 2
   int addr = extract_address(data);
   value_type val = memory[addr].get_value(data.get_field_specification()) * -1;
   val += reg_a.get_value();
-  override = reg_a.set_value(val);
+  overflow = reg_a.set_value(val);
 }
 
 void Machine::mul(const Word &data) { // 3
@@ -114,7 +114,7 @@ void Machine::mul(const Word &data) { // 3
   long_value_type val1 = reg_a.get_value();
   long_value_type val2 = memory[addr].get_value(data.get_field_specification());
   long_value_type val = val1 * val2;
-  override = LongValue::set(val, reg_a, reg_x);
+  overflow = LongValue::set(val, reg_a, reg_x);
 }
 
 void Machine::div(const Word &data) { // 4
@@ -128,11 +128,11 @@ void Machine::div(const Word &data) { // 4
     long_value_type val = LongValue::get(reg_a, reg_x);
     long_value_type quotient = val / val_mem;
     value_type remainder = val - quotient * val_mem;
-    override = reg_x.set_value((value_type)remainder);
+    overflow = reg_x.set_value((value_type)remainder);
     reg_x.set_sign(reg_a.get_sign());
-    override = reg_a.set_value((value_type)quotient);
+    overflow = reg_a.set_value((value_type)quotient);
   } else {
-    override = true;
+    overflow = true;
   }
 }
 
@@ -143,136 +143,109 @@ void Machine::hlt(const Word &data) { // 5
 
 void Machine::lda(const Word &data) { // 8
   LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  memset(&reg_a, 0, sizeof(reg_a));
-  reg_a.set_value(memory[addr], data.get_field_specification());
-  FieldSpecification fmt = data.get_field_specification();
+  load_register(&reg_a, data);
+}
+
+void Machine::ldx(const Word &data) { // 15
+  LOG_COMMAND_NAME(data)
+  load_register(&reg_x, data);
+}
+
+void Machine::load_register(big_register *reg, const Word &instruction) const {
+  const auto address = extract_address(instruction);
+  memset(reg, 0, sizeof(big_register));
+  reg->set_value(memory[address], instruction.get_field_specification());
+  FieldSpecification fmt = instruction.get_field_specification();
   int nbytes = DATA_BYTES_IN_WORD - fmt.high;
   if (nbytes > 0) {
-    reg_a.right_shift(nbytes);
+    reg->right_shift(nbytes);
   }
 }
 
 void Machine::ld1(const Word &data) { // 9
   LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[0].set_value(val);
+  load_index_register(1, data);
 }
 
 void Machine::ld2(const Word &data) { // 10
   LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[1].set_value(val);
+  load_index_register(2, data);
 }
 
 void Machine::ld3(const Word &data) { // 11
   LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[2].set_value(val);
+  load_index_register(3, data);
 }
 
 void Machine::ld4(const Word &data) { // 12
   LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[3].set_value(val);
+  load_index_register(4, data);
 }
 
 void Machine::ld5(const Word &data) { // 13
   LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[4].set_value(val);
+  load_index_register(5, data);
 }
 
 void Machine::ld6(const Word &data) { // 14
   LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[5].set_value(val);
+  load_index_register(6, data);
 }
 
-void Machine::ldx(const Word &data) { // 15
-  LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  memset(&reg_x, 0, sizeof(reg_x));
-  reg_x.set_value(memory[addr], data.get_field_specification());
-  FieldSpecification fmt = data.get_field_specification();
-  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
-  if (nbytes > 0) {
-    reg_x.right_shift(nbytes);
-  }
+void Machine::load_index_register(int index, const Word &instruction) {
+  const auto address = extract_address(instruction);
+  value_type val = memory[address].get_value();
+  overflow = reg_i[index-1].set_value(val);
 }
 
 void Machine::ldan(const Word &data) { // 16
   LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  memset(&reg_a, 0, sizeof(reg_a));
-  reg_a.set_value(memory[addr], data.get_field_specification());
-  FieldSpecification fmt = data.get_field_specification();
-  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
-  if (nbytes > 0) {
-    reg_a.right_shift(nbytes);
-  }
-  reg_a.set_sign(!reg_a.get_sign());
-}
-
-void Machine::ld1n(const Word &data) { // 17
-  LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[0].set_value(val * -1);
-}
-
-void Machine::ld2n(const Word &data) { // 18
-  LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[1].set_value(val * -1);
-}
-
-void Machine::ld3n(const Word &data) { // 19
-  LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[2].set_value(val * -1);
-}
-
-void Machine::ld4n(const Word &data) { // 20
-  LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[3].set_value(val * -1);
-}
-
-void Machine::ld5n(const Word &data) { // 21
-  LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[4].set_value(val * -1);
-}
-
-void Machine::ld6n(const Word &data) { // 22
-  LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value();
-  override = reg_i[5].set_value(val * -1);
+  load_register_negative(&reg_a, data);
 }
 
 void Machine::ldxn(const Word &data) { // 23
   LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  memset(&reg_x, 0, sizeof(reg_x));
-  reg_x.set_value(memory[addr], data.get_field_specification());
-  FieldSpecification fmt = data.get_field_specification();
-  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
-  if (nbytes > 0) {
-    reg_x.right_shift(nbytes);
-  }
-  reg_x.set_sign(!reg_x.get_sign());
+  load_register_negative(&reg_x, data);
+}
+
+void Machine::load_register_negative(big_register *reg, const Word &instruction) const {
+  load_register(reg, instruction);
+  reg->set_sign(!reg->get_sign());
+}
+
+void Machine::ld1n(const Word &data) { // 17
+  LOG_COMMAND_NAME(data)
+  load_index_register_negative(1, data);
+}
+
+void Machine::ld2n(const Word &data) { // 18
+  LOG_COMMAND_NAME(data)
+  load_index_register_negative(2, data);
+}
+
+void Machine::ld3n(const Word &data) { // 19
+  LOG_COMMAND_NAME(data)
+  load_index_register_negative(3, data);
+}
+
+void Machine::ld4n(const Word &data) { // 20
+  LOG_COMMAND_NAME(data)
+  load_index_register_negative(4, data);
+}
+
+void Machine::ld5n(const Word &data) { // 21
+  LOG_COMMAND_NAME(data)
+  load_index_register_negative(5, data);
+}
+
+void Machine::ld6n(const Word &data) { // 22
+  LOG_COMMAND_NAME(data)
+  load_index_register_negative(6, data);
+}
+
+void Machine::load_index_register_negative(int index, const Word &instruction) {
+  load_index_register(index, instruction);
+  reg_i[index-1].set_sign(!reg_i[index-1].get_sign());
 }
 
 void Machine::sta(const Word &data) { // 24
@@ -293,7 +266,7 @@ void Machine::st1(const Word &data) { // 25
 
   int addr = extract_address(data);
   value_type val = reg_i[0].get_value();
-  override = memory[addr].set_value(val);
+  overflow = memory[addr].set_value(val);
 }
 
 void Machine::st2(const Word &data) { // 26
@@ -301,7 +274,7 @@ void Machine::st2(const Word &data) { // 26
 
   int addr = extract_address(data);
   value_type val = reg_i[1].get_value();
-  override = memory[addr].set_value(val);
+  overflow = memory[addr].set_value(val);
 }
 
 void Machine::st3(const Word &data) { // 27
@@ -309,7 +282,7 @@ void Machine::st3(const Word &data) { // 27
 
   int addr = extract_address(data);
   value_type val = reg_i[2].get_value();
-  override = memory[addr].set_value(val);
+  overflow = memory[addr].set_value(val);
 }
 
 void Machine::st4(const Word &data) { // 28
@@ -317,7 +290,7 @@ void Machine::st4(const Word &data) { // 28
 
   int addr = extract_address(data);
   value_type val = reg_i[3].get_value();
-  override = memory[addr].set_value(val);
+  overflow = memory[addr].set_value(val);
 }
 
 void Machine::st5(const Word &data) { // 29
@@ -325,7 +298,7 @@ void Machine::st5(const Word &data) { // 29
 
   int addr = extract_address(data);
   value_type val = reg_i[4].get_value();
-  override = memory[addr].set_value(val);
+  overflow = memory[addr].set_value(val);
 }
 
 void Machine::st6(const Word &data) { // 30
@@ -333,7 +306,7 @@ void Machine::st6(const Word &data) { // 30
 
   int addr = extract_address(data);
   value_type val = reg_i[5].get_value();
-  override = memory[addr].set_value(val);
+  overflow = memory[addr].set_value(val);
 }
 
 void Machine::stx(const Word &data) { // 31
@@ -355,7 +328,7 @@ void Machine::stj(const Word &data) { // 32
 
   int addr = extract_address(data);
   value_type val = reg_j.get_value();
-  override = memory[addr].set_value(val);
+  overflow = memory[addr].set_value(val);
 }
 
 void Machine::stz(const Word &data) { // 33
@@ -406,7 +379,7 @@ void Machine::jmp(const Word &data) { // 39, 0
   LOG_COMMAND_NAME(data)
 
   value_type addr = extract_address(data);
-  override = reg_j.set_value(addr);
+  overflow = reg_j.set_value(addr);
 }
 
 void Machine::jsj(const Word &data) { // 39, 1
@@ -419,19 +392,19 @@ void Machine::jsj(const Word &data) { // 39, 1
 void Machine::jov(const Word &data) { // 39, 2
   LOG_COMMAND_NAME(data)
 
-  if (override) {
-    override = false;
+  if (overflow) {
+    overflow = false;
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
 void Machine::jnov(const Word &data) { // 39, 3
   LOG_COMMAND_NAME(data)
 
-  if (!override) {
+  if (!overflow) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -440,7 +413,7 @@ void Machine::jl(const Word &data) { // 39, 4
 
   if (compare_flag == cmp_less) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -449,7 +422,7 @@ void Machine::je(const Word &data) { // 39, 5
 
   if (compare_flag == cmp_equal) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -458,7 +431,7 @@ void Machine::jg(const Word &data) { // 39, 6
 
   if (compare_flag == cmp_greater) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -467,7 +440,7 @@ void Machine::jge(const Word &data) { // 39, 7
 
   if (compare_flag != cmp_less) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -476,7 +449,7 @@ void Machine::jne(const Word &data) { // 39, 8
 
   if (compare_flag != cmp_equal) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -485,7 +458,7 @@ void Machine::jle(const Word &data) { // 39, 9
 
   if (compare_flag != cmp_greater) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -517,7 +490,7 @@ void Machine::jan(const Word &data) { // 40, 0
 
   if (reg_a.get_sign() == NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -527,7 +500,7 @@ void Machine::jaz(const Word &data) { // 40, 1
   value_type val = reg_a.get_value();
   if (val == 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -537,7 +510,7 @@ void Machine::jap(const Word &data) { // 40, 2
   value_type val = reg_a.get_value();
   if (val > 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -546,7 +519,7 @@ void Machine::jann(const Word &data) { // 40, 3
 
   if (reg_a.get_sign() != NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -556,7 +529,7 @@ void Machine::janz(const Word &data) { // 40, 4
   value_type val = reg_a.get_value();
   if (val != 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -566,7 +539,7 @@ void Machine::janp(const Word &data) { // 40, 5
   value_type val = reg_a.get_value();
   if (val <= 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -598,7 +571,7 @@ void Machine::j1n(const Word &data) { // 41, 0
 
   if (reg_i[0].get_sign() == NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -608,7 +581,7 @@ void Machine::j1z(const Word &data) { // 41, 1
   value_type val = reg_i[0].get_value();
   if (val == 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -618,7 +591,7 @@ void Machine::j1p(const Word &data) { // 41, 2
   value_type val = reg_i[0].get_value();
   if (val > 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -627,7 +600,7 @@ void Machine::j1nn(const Word &data) { // 41, 3
 
   if (reg_i[0].get_sign() != NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -637,7 +610,7 @@ void Machine::j1nz(const Word &data) { // 41, 4
   value_type val = reg_i[0].get_value();
   if (val != 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -647,7 +620,7 @@ void Machine::j1np(const Word &data) { // 41, 5
   value_type val = reg_i[0].get_value();
   if (val <= 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -679,7 +652,7 @@ void Machine::j2n(const Word &data) { // 42, 0
 
   if (reg_i[1].get_sign() == NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -689,7 +662,7 @@ void Machine::j2z(const Word &data) { // 42, 1
   value_type val = reg_i[1].get_value();
   if (val == 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -699,7 +672,7 @@ void Machine::j2p(const Word &data) { // 42, 2
   value_type val = reg_i[1].get_value();
   if (val > 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -708,7 +681,7 @@ void Machine::j2nn(const Word &data) { // 42, 3
 
   if (reg_i[1].get_sign() != NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -718,7 +691,7 @@ void Machine::j2nz(const Word &data) { // 42, 4
   value_type val = reg_i[1].get_value();
   if (val != 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -728,7 +701,7 @@ void Machine::j2np(const Word &data) { // 42, 5
   value_type val = reg_i[1].get_value();
   if (val <= 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -760,7 +733,7 @@ void Machine::j3n(const Word &data) { // 43, 0
 
   if (reg_i[2].get_sign() == NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -770,7 +743,7 @@ void Machine::j3z(const Word &data) { // 43, 1
   value_type val = reg_i[2].get_value();
   if (val == 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -780,7 +753,7 @@ void Machine::j3p(const Word &data) { // 43, 2
   value_type val = reg_i[2].get_value();
   if (val > 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -789,7 +762,7 @@ void Machine::j3nn(const Word &data) { // 43, 3
 
   if (reg_i[2].get_sign() != NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -799,7 +772,7 @@ void Machine::j3nz(const Word &data) { // 43, 4
   value_type val = reg_i[2].get_value();
   if (val != 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -809,7 +782,7 @@ void Machine::j3np(const Word &data) { // 43, 5
   value_type val = reg_i[2].get_value();
   if (val <= 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -841,7 +814,7 @@ void Machine::j4n(const Word &data) { // 44, 0
 
   if (reg_i[3].get_sign() == NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -851,7 +824,7 @@ void Machine::j4z(const Word &data) { // 44, 1
   value_type val = reg_i[3].get_value();
   if (val == 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -861,7 +834,7 @@ void Machine::j4p(const Word &data) { // 44, 2
   value_type val = reg_i[3].get_value();
   if (val > 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -870,7 +843,7 @@ void Machine::j4nn(const Word &data) { // 44, 3
 
   if (reg_i[3].get_sign() != NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -880,7 +853,7 @@ void Machine::j4nz(const Word &data) { // 44, 4
   value_type val = reg_i[3].get_value();
   if (val != 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -890,7 +863,7 @@ void Machine::j4np(const Word &data) { // 44, 5
   value_type val = reg_i[3].get_value();
   if (val <= 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -922,7 +895,7 @@ void Machine::j5n(const Word &data) { // 45, 0
 
   if (reg_i[4].get_sign() == NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -932,7 +905,7 @@ void Machine::j5z(const Word &data) { // 45, 1
   value_type val = reg_i[4].get_value();
   if (val == 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -942,7 +915,7 @@ void Machine::j5p(const Word &data) { // 45, 2
   value_type val = reg_i[4].get_value();
   if (val > 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -951,7 +924,7 @@ void Machine::j5nn(const Word &data) { // 45, 3
 
   if (reg_i[4].get_sign() != NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -961,7 +934,7 @@ void Machine::j5nz(const Word &data) { // 45, 4
   value_type val = reg_i[4].get_value();
   if (val != 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -971,7 +944,7 @@ void Machine::j5np(const Word &data) { // 45, 5
   value_type val = reg_i[4].get_value();
   if (val <= 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1003,7 +976,7 @@ void Machine::j6n(const Word &data) { // 46, 0
 
   if (reg_i[5].get_sign() == NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1013,7 +986,7 @@ void Machine::j6z(const Word &data) { // 46, 1
   value_type val = reg_i[5].get_value();
   if (val == 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1023,7 +996,7 @@ void Machine::j6p(const Word &data) { // 46, 2
   value_type val = reg_i[5].get_value();
   if (val > 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1032,7 +1005,7 @@ void Machine::j6nn(const Word &data) { // 46, 3
 
   if (reg_i[5].get_sign() != NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1042,7 +1015,7 @@ void Machine::j6nz(const Word &data) { // 46, 4
   value_type val = reg_i[5].get_value();
   if (val != 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1052,7 +1025,7 @@ void Machine::j6np(const Word &data) { // 46, 5
   value_type val = reg_i[5].get_value();
   if (val <= 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1084,7 +1057,7 @@ void Machine::jxn(const Word &data) { // 47, 0
 
   if (reg_x.get_sign() == NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1094,7 +1067,7 @@ void Machine::jxz(const Word &data) { // 47, 1
   value_type val = reg_x.get_value();
   if (val == 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1104,7 +1077,7 @@ void Machine::jxp(const Word &data) { // 47, 2
   value_type val = reg_x.get_value();
   if (val > 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1113,7 +1086,7 @@ void Machine::jxnn(const Word &data) { // 47, 3
 
   if (reg_x.get_sign() != NEG_SIGN) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1123,7 +1096,7 @@ void Machine::jxnz(const Word &data) { // 47, 4
   value_type val = reg_x.get_value();
   if (val != 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1133,7 +1106,7 @@ void Machine::jxnp(const Word &data) { // 47, 5
   value_type val = reg_x.get_value();
   if (val <= 0) {
     int addr = extract_address(data);
-    override = reg_j.set_value(addr);
+    overflow = reg_j.set_value(addr);
   }
 }
 
@@ -1253,63 +1226,63 @@ void Machine::enta(const Word &data) { // 48, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_a.set_value(val);
+  overflow = reg_a.set_value(val);
 }
 
 void Machine::ent1(const Word &data) { // 49, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[0].set_value(val);
+  overflow = reg_i[0].set_value(val);
 }
 
 void Machine::ent2(const Word &data) { // 50, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[1].set_value(val);
+  overflow = reg_i[1].set_value(val);
 }
 
 void Machine::ent3(const Word &data) { // 51, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[2].set_value(val);
+  overflow = reg_i[2].set_value(val);
 }
 
 void Machine::ent4(const Word &data) { // 52, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[3].set_value(val);
+  overflow = reg_i[3].set_value(val);
 }
 
 void Machine::ent5(const Word &data) { // 53, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[4].set_value(val);
+  overflow = reg_i[4].set_value(val);
 }
 
 void Machine::ent6(const Word &data) { // 54, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[5].set_value(val);
+  overflow = reg_i[5].set_value(val);
 }
 
 void Machine::entx(const Word &data) { // 55, 2
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_x.set_value(val);
+  overflow = reg_x.set_value(val);
 }
 
 void Machine::enna(const Word &data) { // 48, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_a.set_value(val);
+  overflow = reg_a.set_value(val);
   reg_a.set_sign(!reg_a.get_sign());
 }
 
@@ -1317,7 +1290,7 @@ void Machine::enn1(const Word &data) { // 49, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[0].set_value(val);
+  overflow = reg_i[0].set_value(val);
   reg_i[0].set_sign(!reg_i[0].get_sign());
 }
 
@@ -1325,7 +1298,7 @@ void Machine::enn2(const Word &data) { // 50, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[1].set_value(val);
+  overflow = reg_i[1].set_value(val);
   reg_i[1].set_sign(!reg_i[1].get_sign());
 }
 
@@ -1333,7 +1306,7 @@ void Machine::enn3(const Word &data) { // 51, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[2].set_value(val);
+  overflow = reg_i[2].set_value(val);
   reg_i[2].set_sign(!reg_i[2].get_sign());
 }
 
@@ -1341,7 +1314,7 @@ void Machine::enn4(const Word &data) { // 52, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[3].set_value(val);
+  overflow = reg_i[3].set_value(val);
   reg_i[3].set_sign(!reg_i[3].get_sign());
 }
 
@@ -1349,7 +1322,7 @@ void Machine::enn5(const Word &data) { // 53, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[4].set_value(val);
+  overflow = reg_i[4].set_value(val);
   reg_i[4].set_sign(!reg_i[4].get_sign());
 }
 
@@ -1357,7 +1330,7 @@ void Machine::enn6(const Word &data) { // 54, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_i[5].set_value(val);
+  overflow = reg_i[5].set_value(val);
   reg_i[5].set_sign(!reg_i[5].get_sign());
 }
 
@@ -1365,7 +1338,7 @@ void Machine::ennx(const Word &data) { // 55, 3
   LOG_COMMAND_NAME(data)
 
   value_type val = (value_type)extract_address(data);
-  override = reg_x.set_value(val);
+  overflow = reg_x.set_value(val);
   reg_x.set_sign(!reg_x.get_sign());
 }
 
@@ -1447,13 +1420,13 @@ void Machine::run(short initial_address) {
   reg_j.set_address(initial_address);
   while (!halt) {
     short command_addr = reg_j.get_value();
-    override = reg_j.inc();
+    overflow = reg_j.inc();
     do_statement statement = *get_statement(memory[command_addr]);
     (this->*statement)(memory[command_addr]);
   }
 }
 
-unsigned short Machine::extract_address(const Word &instruction) {
+unsigned short Machine::extract_address(const Word &instruction) const {
   unsigned short address = instruction.get_address();
   int index_specification = instruction.get_specification();
   if (index_specification) {

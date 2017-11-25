@@ -1,12 +1,3 @@
-/*
- *  mix_machine.h
- *  mixvm
- *
- *  Created by Alexander Ignatyev on 19.06.10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef MIX_MACHINE_H
 #define MIX_MACHINE_H
 
@@ -98,7 +89,7 @@ struct Machine {
   big_register reg_x;
   small_register reg_i[SMALL_REGISTERS];
   small_register reg_j;
-  bool override;
+  bool overflow;
   compare_t compare_flag;
   bool halt;
 
@@ -258,7 +249,12 @@ struct Machine {
 
   void run(short initial_address);
 
-  unsigned short extract_address(const Word &instruction);
+  unsigned short extract_address(const Word &instruction) const;
+  
+  void load_register(big_register *reg, const Word &instruction) const;
+  void load_index_register(int index, const Word &instruction);
+  void load_register_negative(big_register *reg, const Word &instruction) const;
+  void load_index_register_negative(int index, const Word &instruction);
 };
 
 } // namespace mix

@@ -10,28 +10,28 @@ TEST_F(MachineJumpsTestSuite, jmp) {
 }
 
 TEST_F(MachineJumpsTestSuite, jov_jump_if_overflowed) {
-  machine.override = true;
+  machine.overflow = true;
   machine.jov(make_cmd(cmd_jmp, 11));
 
   EXPECT_EQ(11, get_next_instruction_address());
 }
 
 TEST_F(MachineJumpsTestSuite, jov_do_nothing_if_not_overflowed) {
-  machine.override = false;
+  machine.overflow = false;
   machine.jov(make_cmd(cmd_jmp, 11));
 
   EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MachineJumpsTestSuite, jnov_jump_if_overflowed) {
-  machine.override = true;
+  machine.overflow = true;
   machine.jnov(make_cmd(cmd_jmp, 12));
 
   EXPECT_TRUE(is_next_instruction_address_unchanged());
 }
 
 TEST_F(MachineJumpsTestSuite, jnov_do_nothing_if_not_overflowed) {
-  machine.override = false;
+  machine.overflow = false;
   machine.jnov(make_cmd(cmd_jmp, 12));
 
   EXPECT_EQ(12, get_next_instruction_address());
