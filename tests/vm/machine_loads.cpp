@@ -1,6 +1,6 @@
 #include "machine_fixture.h"
 
-#include <vm/format_range.h>
+#include <vm/mix_field_specification.h>
 
 namespace mix {
 class MachineLoadsTestSuite : public MachineFixture {
@@ -25,7 +25,7 @@ TEST_F(MachineLoadsTestSuite, lda_0_3_bytes) {
   const int value = build_negative_value(1, 2, 3, 4, 5);
   const int expected_value = build_negative_value(0, 0, 1, 2, 3);
   set_memory_value(152, value);
-  machine.lda(make_cmd(cmd_lda, 152, encode_format(0, 3)));
+  machine.lda(make_cmd(cmd_lda, 152, {0, 3}));
 
   EXPECT_EQ(expected_value, get_reg_a_value());
 }
@@ -34,7 +34,7 @@ TEST_F(MachineLoadsTestSuite, lda_3_4_bytes) {
   const int value = build_negative_value(1, 2, 3, 4, 5);
   const int expected_value = build_positive_value(0, 0, 0, 3, 4);
   set_memory_value(152, value);
-  machine.lda(make_cmd(cmd_lda, 152, encode_format(3, 4)));
+  machine.lda(make_cmd(cmd_lda, 152, {3, 4}));
 
   EXPECT_EQ(expected_value, get_reg_a_value());
 }
@@ -112,7 +112,7 @@ TEST_F(MachineLoadsTestSuite, ldx_1_3_bytes) {
   const int value = build_negative_value(1, 2, 3, 4, 5);
   const int expected_value = build_positive_value(0, 0, 1, 2, 3);
   set_memory_value(152, value);
-  machine.ldx(make_cmd(cmd_ldx, 152, encode_format(1, 3)));
+  machine.ldx(make_cmd(cmd_ldx, 152, {1, 3}));
 
   EXPECT_EQ(expected_value, get_reg_x_value());
 }
@@ -128,7 +128,7 @@ TEST_F(MachineLoadsTestSuite, ldan_0_3_bytes) {
   const int value = build_negative_value(1, 2, 3, 4, 5);
   const int expected_value = build_positive_value(0, 0, 1, 2, 3);
   set_memory_value(152, value);
-  machine.ldan(make_cmd(cmd_ldan, 152, encode_format(0, 3)));
+  machine.ldan(make_cmd(cmd_ldan, 152, {0, 3}));
 
   EXPECT_EQ(expected_value, get_reg_a_value());
 }
@@ -137,7 +137,7 @@ TEST_F(MachineLoadsTestSuite, ldan_3_4_bytes) {
   const int value = build_negative_value(1, 2, 3, 4, 5);
   const int expected_value = build_negative_value(0, 0, 0, 3, 4);
   set_memory_value(152, value);
-  machine.ldan(make_cmd(cmd_ldan, 152, encode_format(3, 4)));
+  machine.ldan(make_cmd(cmd_ldan, 152, {3, 4}));
 
   EXPECT_EQ(expected_value, get_reg_a_value());
 }
@@ -195,7 +195,7 @@ TEST_F(MachineLoadsTestSuite, ldxn_1_3_bytes) {
   const int value = build_negative_value(1, 2, 3, 4, 5);
   const int expected_value = build_negative_value(0, 0, 1, 2, 3);
   set_memory_value(152, value);
-  machine.ldxn(make_cmd(cmd_ldxn, 152, encode_format(1, 3)));
+  machine.ldxn(make_cmd(cmd_ldxn, 152, {1, 3}));
 
   EXPECT_EQ(expected_value, get_reg_x_value());
 }

@@ -36,9 +36,8 @@ bool SmallWord::set_value(value_type val) {
   return isOverflowed;
 }
 
-int SmallWord::get_value(byte format) const {
+int SmallWord::get_value(FieldSpecification fmt) const {
   static const int DIFF_IN_WORDS = 3;
-  format_range fmt = decode_format(format);
   bool negative = false;
   if (fmt.low == 0) {
     negative = sign == POS_SIGN ? false : true;

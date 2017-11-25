@@ -1,5 +1,4 @@
 #include "mix_word.h"
-#include "format_range.h"
 
 #include <sstream>
 
@@ -15,12 +14,12 @@ Word::Word(bool sign, byte a1, byte a2, byte i, byte f, byte c) {
   this->bytes[byte_c] = c;
 }
 
-Word Word::make_as_instruction(byte cmd, short addr, byte i, byte f) {
+Word Word::make_as_instruction(byte cmd, short addr, byte i, FieldSpecification f) {
   Word result;
   result.sign = POS_SIGN;
   result.set_address(addr);
   result.bytes[byte_i] = i;
-  result.bytes[byte_f] = f;
+  result.bytes[byte_f] = f.encode();
   result.bytes[byte_c] = cmd;
   return result;
 }
@@ -59,8 +58,7 @@ void Word::left_shift(int nbytes) {
   }
 }
 
-void Word::set_value(const Word &source, int format) {
-  format_range fmt = decode_format(format);
+void Word::set_value(const Word &source, FieldSpecification fmt) {
   if (fmt.low < 0)
     fmt.low = 0;
   if (fmt.high > 5)
@@ -88,8 +86,7 @@ bool Word::set_value(int val) {
   return val > 0;
 }
 
-value_type Word::get_value(int format) const {
-  format_range fmt = decode_format(format);
+value_type Word::get_value(FieldSpecification fmt) const {
   bool negative = false;
   if (fmt.low > 0) {
     --fmt.low;
@@ -112,6 +109,10 @@ value_type Word::get_value(int format) const {
 
 byte Word::get_operation_code() const {
   return bytes[byte_c];
+}
+
+FieldSpecification Word::get_field_specification() const {
+  return FieldSpecification::decode(bytes[byte_f]);
 }
 
 byte Word::get_modification() const {
@@ -139,11 +140,11 @@ void Word::print_word(std::ostream &os) const {
 
 void Word::print_instruction(std::ostream &os, const char *command_name) const {
   os << command_name << "\t" << (unsigned)get_address() << "," << (unsigned)bytes[byte_i];
-  format_range fmt = decode_format(bytes[byte_f]);
+  FieldSpecification fmt = FieldSpecification::decode(bytes[byte_f]);
   os << "(" << (int)fmt.low << ":" << (int)fmt.high << ")";
 }
 
-Word make_cmd(byte cmd, short addr, byte f) {
+Word make_cmd(byte cmd, short addr, FieldSpecification f) {
   return Word::make_as_instruction(cmd, addr, 0, f);
 }
 

@@ -22,7 +22,7 @@ protected:
   }
 
   void execute_sta(byte format_low, byte format_high) {
-    machine.sta(make_cmd(cmd_sta, address, encode_format(format_low, format_high)));
+    machine.sta(make_cmd(cmd_sta, address, {format_low, format_high}));
   }
 
   void execute_stx() {
@@ -30,7 +30,7 @@ protected:
   }
 
   void execute_stx(byte format_low, byte format_high) {
-    machine.stx(make_cmd(cmd_stx, address, encode_format(format_low, format_high)));
+    machine.stx(make_cmd(cmd_stx, address, {format_low, format_high}));
   }
 };
 

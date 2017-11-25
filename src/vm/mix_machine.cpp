@@ -92,7 +92,7 @@ void Machine::add(const Word &data) { // 1
 
   int addr = extract_address(data);
 
-  value_type val = memory[addr].get_value(data.get_modification());
+  value_type val = memory[addr].get_value(data.get_field_specification());
   val += reg_a.get_value();
   override = reg_a.set_value(val);
 }
@@ -101,7 +101,7 @@ void Machine::sub(const Word &data) { // 2
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type val = memory[addr].get_value(data.get_modification()) * -1;
+  value_type val = memory[addr].get_value(data.get_field_specification()) * -1;
   val += reg_a.get_value();
   override = reg_a.set_value(val);
 }
@@ -112,7 +112,7 @@ void Machine::mul(const Word &data) { // 3
   int addr = extract_address(data);
 
   long_value_type val1 = reg_a.get_value();
-  long_value_type val2 = memory[addr].get_value(data.get_modification());
+  long_value_type val2 = memory[addr].get_value(data.get_field_specification());
   long_value_type val = val1 * val2;
   override = LongValue::set(val, reg_a, reg_x);
 }
@@ -123,7 +123,7 @@ void Machine::div(const Word &data) { // 4
   int addr = extract_address(data);
 
   value_type val_reg_a = reg_a.get_value();
-  value_type val_mem = memory[addr].get_value(data.get_modification());
+  value_type val_mem = memory[addr].get_value(data.get_field_specification());
   if (abs(val_reg_a) < abs(val_mem)) {
     long_value_type val = LongValue::get(reg_a, reg_x);
     long_value_type quotient = val / val_mem;
@@ -145,8 +145,8 @@ void Machine::lda(const Word &data) { // 8
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
   memset(&reg_a, 0, sizeof(reg_a));
-  reg_a.set_value(memory[addr], data.get_modification());
-  format_range fmt = decode_format(data.get_modification());
+  reg_a.set_value(memory[addr], data.get_field_specification());
+  FieldSpecification fmt = data.get_field_specification();
   int nbytes = DATA_BYTES_IN_WORD - fmt.high;
   if (nbytes > 0) {
     reg_a.right_shift(nbytes);
@@ -199,8 +199,8 @@ void Machine::ldx(const Word &data) { // 15
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
   memset(&reg_x, 0, sizeof(reg_x));
-  reg_x.set_value(memory[addr], data.get_modification());
-  format_range fmt = decode_format(data.get_modification());
+  reg_x.set_value(memory[addr], data.get_field_specification());
+  FieldSpecification fmt = data.get_field_specification();
   int nbytes = DATA_BYTES_IN_WORD - fmt.high;
   if (nbytes > 0) {
     reg_x.right_shift(nbytes);
@@ -211,8 +211,8 @@ void Machine::ldan(const Word &data) { // 16
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
   memset(&reg_a, 0, sizeof(reg_a));
-  reg_a.set_value(memory[addr], data.get_modification());
-  format_range fmt = decode_format(data.get_modification());
+  reg_a.set_value(memory[addr], data.get_field_specification());
+  FieldSpecification fmt = data.get_field_specification();
   int nbytes = DATA_BYTES_IN_WORD - fmt.high;
   if (nbytes > 0) {
     reg_a.right_shift(nbytes);
@@ -266,8 +266,8 @@ void Machine::ldxn(const Word &data) { // 23
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
   memset(&reg_x, 0, sizeof(reg_x));
-  reg_x.set_value(memory[addr], data.get_modification());
-  format_range fmt = decode_format(data.get_modification());
+  reg_x.set_value(memory[addr], data.get_field_specification());
+  FieldSpecification fmt = data.get_field_specification();
   int nbytes = DATA_BYTES_IN_WORD - fmt.high;
   if (nbytes > 0) {
     reg_x.right_shift(nbytes);
@@ -278,14 +278,14 @@ void Machine::ldxn(const Word &data) { // 23
 void Machine::sta(const Word &data) { // 24
   LOG_COMMAND_NAME(data)
   int addr = extract_address(data);
-  format_range fmt = decode_format(data.get_modification());
+  FieldSpecification fmt = data.get_field_specification();
   int nbytes = DATA_BYTES_IN_WORD - fmt.high;
   big_register tmp_reg = reg_a;
   if (nbytes > 0) {
     tmp_reg.left_shift(nbytes);
   }
 
-  memory[addr].set_value(tmp_reg, data.get_modification());
+  memory[addr].set_value(tmp_reg, data.get_field_specification());
 }
 
 void Machine::st1(const Word &data) { // 25
@@ -340,14 +340,14 @@ void Machine::stx(const Word &data) { // 31
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  format_range fmt = decode_format(data.get_modification());
+  FieldSpecification fmt = data.get_field_specification();
   int nbytes = DATA_BYTES_IN_WORD - fmt.high;
   big_register tmp_reg = reg_x;
   if (nbytes > 0) {
     tmp_reg.left_shift(nbytes);
   }
 
-  memory[addr].set_value(tmp_reg, data.get_modification());
+  memory[addr].set_value(tmp_reg, data.get_field_specification());
 }
 
 void Machine::stj(const Word &data) { // 32
@@ -364,7 +364,7 @@ void Machine::stz(const Word &data) { // 33
   int addr = extract_address(data);
   Word zero;
   memset(&zero, 0, sizeof(zero));
-  memory[addr].set_value(zero, data.get_modification());
+  memory[addr].set_value(zero, data.get_field_specification());
 }
 
 void Machine::jump(const Word &data) { // 39
@@ -1373,8 +1373,8 @@ void Machine::cmpa(const Word &data) { // 56
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = reg_a.get_value(data.get_modification());
-  value_type rhs = memory[addr].get_value(data.get_modification());
+  value_type lhs = reg_a.get_value(data.get_field_specification());
+  value_type rhs = memory[addr].get_value(data.get_field_specification());
   ;
   compare_flag = compare(lhs, rhs);
 }
@@ -1383,8 +1383,8 @@ void Machine::cmp1(const Word &data) { // 57
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = reg_i[0].get_value(data.get_modification());
-  value_type rhs = memory[addr].get_value(data.get_modification());
+  value_type lhs = reg_i[0].get_value(data.get_field_specification());
+  value_type rhs = memory[addr].get_value(data.get_field_specification());
   compare_flag = compare(lhs, rhs);
 }
 
@@ -1392,8 +1392,8 @@ void Machine::cmp2(const Word &data) { // 58
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = reg_i[1].get_value(data.get_modification());
-  value_type rhs = memory[addr].get_value(data.get_modification());
+  value_type lhs = reg_i[1].get_value(data.get_field_specification());
+  value_type rhs = memory[addr].get_value(data.get_field_specification());
   compare_flag = compare(lhs, rhs);
 }
 
@@ -1401,8 +1401,8 @@ void Machine::cmp3(const Word &data) { // 59
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = reg_i[2].get_value(data.get_modification());
-  value_type rhs = memory[addr].get_value(data.get_modification());
+  value_type lhs = reg_i[2].get_value(data.get_field_specification());
+  value_type rhs = memory[addr].get_value(data.get_field_specification());
   compare_flag = compare(lhs, rhs);
 }
 
@@ -1410,8 +1410,8 @@ void Machine::cmp4(const Word &data) { // 60
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = reg_i[3].get_value(data.get_modification());
-  value_type rhs = memory[addr].get_value(data.get_modification());
+  value_type lhs = reg_i[3].get_value(data.get_field_specification());
+  value_type rhs = memory[addr].get_value(data.get_field_specification());
   compare_flag = compare(lhs, rhs);
 }
 
@@ -1419,8 +1419,8 @@ void Machine::cmp5(const Word &data) { // 61
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = reg_i[4].get_value(data.get_modification());
-  value_type rhs = memory[addr].get_value(data.get_modification());
+  value_type lhs = reg_i[4].get_value(data.get_field_specification());
+  value_type rhs = memory[addr].get_value(data.get_field_specification());
   compare_flag = compare(lhs, rhs);
 }
 
@@ -1428,8 +1428,8 @@ void Machine::cmp6(const Word &data) { // 62
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = reg_i[5].get_value(data.get_modification());
-  value_type rhs = memory[addr].get_value(data.get_modification());
+  value_type lhs = reg_i[5].get_value(data.get_field_specification());
+  value_type rhs = memory[addr].get_value(data.get_field_specification());
   compare_flag = compare(lhs, rhs);
 }
 
@@ -1437,8 +1437,8 @@ void Machine::cmpx(const Word &data) { // 63
   LOG_COMMAND_NAME(data)
 
   int addr = extract_address(data);
-  value_type lhs = reg_x.get_value(data.get_modification());
-  value_type rhs = memory[addr].get_value(data.get_modification());
+  value_type lhs = reg_x.get_value(data.get_field_specification());
+  value_type rhs = memory[addr].get_value(data.get_field_specification());
   compare_flag = compare(lhs, rhs);
 }
 

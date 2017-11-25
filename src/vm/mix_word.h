@@ -1,8 +1,8 @@
 #ifndef MIX_WORD_H
 #define MIX_WORD_H
 
-#include "format_range.h"
 #include "mix_byte.h"
+#include "mix_field_specification.h"
 
 #include <iosfwd>
 
@@ -13,7 +13,8 @@ const int VALUES_IN_WORD =
 
 class Word {
 public:
-  static Word make_as_instruction(byte cmd, short addr = 0, byte i = 0, byte f = DEFAULT_FORMAT);
+  static Word make_as_instruction(byte cmd, short addr = 0, byte i = 0,
+                                  FieldSpecification f = FieldSpecification::DEFAULT);
 
   Word() = default;
   Word(bool sign, byte a1, byte a2, byte i, byte f, byte c);
@@ -24,13 +25,14 @@ public:
   void right_shift(int nbytes);
   void left_shift(int nbytes);
 
-  void set_value(const Word &source, int format);
+  void set_value(const Word &source, FieldSpecification format);
   // return true if overflowed
   bool set_value(int value);
 
-  value_type get_value(int format = DEFAULT_FORMAT) const;
+  value_type get_value(FieldSpecification format = FieldSpecification::DEFAULT) const;
 
   byte get_operation_code() const;
+  FieldSpecification get_field_specification() const;
   byte get_modification() const;
   byte get_specification() const;
 
@@ -47,7 +49,7 @@ private:
   friend struct LongValue;
 };
 
-Word make_cmd(byte cmd, short addr = 0, byte f = DEFAULT_FORMAT);
+Word make_cmd(byte cmd, short addr = 0, FieldSpecification f = FieldSpecification::DEFAULT);
 
 } // namespace mix
 

@@ -24,7 +24,7 @@ protected:
   }
 
   void execute_lda(byte format_low, byte format_high) {
-    machine.lda(make_cmd(cmd_lda, address, encode_format(format_low, format_high)));
+    machine.lda(make_cmd(cmd_lda, address, {format_low, format_high}));
   }
 
   void execute_ldx() {
@@ -32,7 +32,7 @@ protected:
   }
 
   void execute_ldx(byte format_low, byte format_high) {
-    machine.ldx(make_cmd(cmd_ldx, address, encode_format(format_low, format_high)));
+    machine.ldx(make_cmd(cmd_ldx, address, {format_low, format_high}));
   }
 };
 

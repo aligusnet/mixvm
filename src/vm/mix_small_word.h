@@ -1,8 +1,8 @@
 #ifndef MIX_SMALL_REGISTER_H
 #define MIX_SMALL_REGISTER_H
 
-#include "format_range.h"
 #include "mix_byte.h"
+#include "mix_field_specification.h"
 
 #include <iosfwd>
 
@@ -14,9 +14,9 @@ public:
   bool inc();  // return true if overflowed
   bool set_value(value_type val);  // return true if overflowed
   void set_address(short addr);
-  
-  int get_value(byte format = DEFAULT_FORMAT) const;
-  
+
+  int get_value(FieldSpecification format = FieldSpecification::DEFAULT) const;
+
   bool get_sign() const;
   void set_sign(bool sign);
   
