@@ -143,15 +143,15 @@ void Machine::hlt(const Word &data) { // 5
 
 void Machine::lda(const Word &data) { // 8
   LOG_COMMAND_NAME(data)
-  load_register(&reg_a, data);
+  load_big_register(&reg_a, data);
 }
 
 void Machine::ldx(const Word &data) { // 15
   LOG_COMMAND_NAME(data)
-  load_register(&reg_x, data);
+  load_big_register(&reg_x, data);
 }
 
-void Machine::load_register(big_register *reg, const Word &instruction) const {
+void Machine::load_big_register(big_register *reg, const Word &instruction) const {
   const auto address = extract_address(instruction);
   memset(reg, 0, sizeof(big_register));
   reg->set_value(memory[address], instruction.get_field_specification());
@@ -209,7 +209,7 @@ void Machine::ldxn(const Word &data) { // 23
 }
 
 void Machine::load_register_negative(big_register *reg, const Word &instruction) const {
-  load_register(reg, instruction);
+  load_big_register(reg, instruction);
   reg->set_sign(!reg->get_sign());
 }
 
@@ -250,85 +250,69 @@ void Machine::load_index_register_negative(int index, const Word &instruction) {
 
 void Machine::sta(const Word &data) { // 24
   LOG_COMMAND_NAME(data)
-  int addr = extract_address(data);
-  FieldSpecification fmt = data.get_field_specification();
-  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
-  big_register tmp_reg = reg_a;
-  if (nbytes > 0) {
-    tmp_reg.left_shift(nbytes);
-  }
-
-  memory[addr].set_value(tmp_reg, data.get_field_specification());
-}
-
-void Machine::st1(const Word &data) { // 25
-  LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type val = reg_i[0].get_value();
-  overflow = memory[addr].set_value(val);
-}
-
-void Machine::st2(const Word &data) { // 26
-  LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type val = reg_i[1].get_value();
-  overflow = memory[addr].set_value(val);
-}
-
-void Machine::st3(const Word &data) { // 27
-  LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type val = reg_i[2].get_value();
-  overflow = memory[addr].set_value(val);
-}
-
-void Machine::st4(const Word &data) { // 28
-  LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type val = reg_i[3].get_value();
-  overflow = memory[addr].set_value(val);
-}
-
-void Machine::st5(const Word &data) { // 29
-  LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type val = reg_i[4].get_value();
-  overflow = memory[addr].set_value(val);
-}
-
-void Machine::st6(const Word &data) { // 30
-  LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type val = reg_i[5].get_value();
-  overflow = memory[addr].set_value(val);
+  store_big_register(reg_a, data);
 }
 
 void Machine::stx(const Word &data) { // 31
   LOG_COMMAND_NAME(data)
 
-  int addr = extract_address(data);
-  FieldSpecification fmt = data.get_field_specification();
-  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
-  big_register tmp_reg = reg_x;
+  store_big_register(reg_x, data);
+}
+
+void Machine::store_big_register(big_register reg, const Word &instruction) {
+  FieldSpecification fs = instruction.get_field_specification();
+  int nbytes = DATA_BYTES_IN_WORD - fs.high;
   if (nbytes > 0) {
-    tmp_reg.left_shift(nbytes);
+    reg.left_shift(nbytes);
   }
 
-  memory[addr].set_value(tmp_reg, data.get_field_specification());
+  const auto address = extract_address(instruction);
+  memory[address].set_value(reg, fs);
+}
+
+void Machine::st1(const Word &data) { // 25
+  LOG_COMMAND_NAME(data)
+  store_index_register(1, data);
+}
+
+void Machine::st2(const Word &data) { // 26
+  LOG_COMMAND_NAME(data)
+  store_index_register(2, data);
+}
+
+void Machine::st3(const Word &data) { // 27
+  LOG_COMMAND_NAME(data)
+  store_index_register(3, data);
+}
+
+void Machine::st4(const Word &data) { // 28
+  LOG_COMMAND_NAME(data)
+  store_index_register(4, data);
+}
+
+void Machine::st5(const Word &data) { // 29
+  LOG_COMMAND_NAME(data)
+  store_index_register(5, data);
+}
+
+void Machine::st6(const Word &data) { // 30
+  LOG_COMMAND_NAME(data)
+  store_index_register(6, data);
+}
+
+void Machine::store_index_register(int index, const Word &instruction) {
+  store_small_register(reg_i[index - 1], instruction);
 }
 
 void Machine::stj(const Word &data) { // 32
   LOG_COMMAND_NAME(data)
+  store_small_register(reg_j, data);
+}
 
-  int addr = extract_address(data);
-  value_type val = reg_j.get_value();
-  overflow = memory[addr].set_value(val);
+void Machine::store_small_register(const small_register &reg, const Word &instruction) {
+  const auto address = extract_address(instruction);
+  const auto value = reg.get_value();
+  overflow = memory[address].set_value(value);
 }
 
 void Machine::stz(const Word &data) { // 33
