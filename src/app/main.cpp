@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include "vm/mix_machine.h"
-#include "vm/mix_printer.h"
 
 void test_vm() {
   using namespace mix;

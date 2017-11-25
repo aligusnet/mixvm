@@ -6,11 +6,11 @@
 namespace mix {
 
 void MachineFixture::set_next_instruction_address(int address) {
-  set_value(address, machine.reg_j, isOverflowed);
+  isOverflowed = machine.reg_j.set_value(address);
 }
 
 int MachineFixture::get_next_instruction_address() const {
-  return get_value(machine.reg_j);
+  return machine.reg_j.get_value();
 }
 
 bool MachineFixture::is_next_instruction_address_unchanged() const {
@@ -43,11 +43,11 @@ int MachineFixture::get_reg_x_value() const {
 }
 
 void MachineFixture::set_reg_i_value(int index, int value) {
-  set_value(value, machine.reg_i[index - 1], isOverflowed);
+  isOverflowed = machine.reg_i[index - 1].set_value(value);
 }
 
 int MachineFixture::get_reg_i_value(int index) const {
-  return get_value(machine.reg_i[index - 1]);
+  return machine.reg_i[index - 1].get_value();
 }
 
 void MachineFixture::expect_eq(const Word &expected, const Word &actual) const {

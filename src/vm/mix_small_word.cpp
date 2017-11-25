@@ -1,38 +1,47 @@
-/*
- *  mix_small_register.cpp
- *  mixvm
- *
- *  Created by Alexander Ignatyev on 19.06.10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "mix_small_word.h"
+
+#include <sstream>
+
 namespace mix {
-bool is_negative(const small_word &data) {
-  return data.sign == NEG_SIGN;
-}
-
-void inc(small_word &sreg, bool &override) {
-  override = false;
-  if (sreg.bytes[1] < VALUES_IN_BYTE - 1) {
-    ++sreg.bytes[1];
-  } else if (sreg.bytes[0] < VALUES_IN_BYTE - 1) {
-    sreg.bytes[1] = 0;
-    ++sreg.bytes[0];
+bool SmallWord::inc() {
+  bool isOverflowed = false;
+  if (bytes[1] < VALUES_IN_BYTE - 1) {
+    ++bytes[1];
+  } else if (bytes[0] < VALUES_IN_BYTE - 1) {
+    bytes[1] = 0;
+    ++bytes[0];
   } else {
-    override = true;
-    sreg.bytes[1] = 0;
-    sreg.bytes[0] = 0;
+    isOverflowed = true;
+    bytes[1] = 0;
+    bytes[0] = 0;
   }
+  return isOverflowed;
 }
 
-int get_value(const small_word &data, byte format) {
+bool SmallWord::set_value(value_type val) {
+  bool isOverflowed = false;
+  sign = val < 0 ? NEG_SIGN : POS_SIGN;
+  if (val < 0)
+    val *= -1;
+  value_type tmp = val / VALUES_IN_BYTE;
+  if (tmp > VALUES_IN_BYTE) {
+    isOverflowed = true;
+    bytes[0] = VALUES_IN_BYTE - 1;
+    bytes[1] = VALUES_IN_BYTE - 1;
+  } else {
+    isOverflowed = false;
+    bytes[0] = tmp;
+    bytes[1] = val - tmp * VALUES_IN_BYTE;
+  }
+  return isOverflowed;
+}
+
+int SmallWord::get_value(byte format) const {
   static const int DIFF_IN_WORDS = 3;
   format_range fmt = decode_format(format);
   bool negative = false;
   if (fmt.low == 0) {
-    negative = data.sign == POS_SIGN ? false : true;
+    negative = sign == POS_SIGN ? false : true;
   }
   if (fmt.low < DIFF_IN_WORDS) {
     fmt.low = 0;
@@ -44,7 +53,7 @@ int get_value(const small_word &data, byte format) {
   int value = 0;
   for (int i = fmt.low; i < fmt.high; ++i) {
     value *= VALUES_IN_BYTE;
-    value += data.bytes[i];
+    value += bytes[i];
   }
   if (negative) {
     value *= -1;
@@ -52,25 +61,24 @@ int get_value(const small_word &data, byte format) {
   return value;
 }
 
-void set_value(value_type val, small_word &data, bool &override) {
-  data.sign = val < 0 ? NEG_SIGN : POS_SIGN;
-  if (val < 0)
-    val *= -1;
-  value_type tmp = val / VALUES_IN_BYTE;
-  if (tmp > VALUES_IN_BYTE) {
-    override = true;
-    data.bytes[0] = VALUES_IN_BYTE - 1;
-    data.bytes[1] = VALUES_IN_BYTE - 1;
-  } else {
-    override = false;
-    data.bytes[0] = tmp;
-    data.bytes[1] = val - tmp * VALUES_IN_BYTE;
-  }
-}
-
-void set_address(byte *bytes, short addr) {
+void SmallWord::set_address(short addr) {
   bytes[0] = addr / VALUES_IN_BYTE;
   bytes[1] = addr - bytes[0] * VALUES_IN_BYTE;
+}
+
+bool SmallWord::get_sign() const {
+  return sign;
+}
+
+void SmallWord::set_sign(bool sign) {
+  this->sign = sign;
+}
+
+void SmallWord::print(std::ostream &os) const {
+  os << (sign == POS_SIGN ? "+" : "-");
+  for (int i = 0; i < DATA_BYTES_IN_SMALL_REGISTER; ++i) {
+    os << ", " << (int)bytes[i];
+  }
 }
 
 } // namespace mix

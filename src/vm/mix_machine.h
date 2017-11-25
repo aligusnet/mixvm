@@ -10,7 +10,6 @@
 #ifndef MIX_MACHINE_H
 #define MIX_MACHINE_H
 
-#include "mix_printer.h"
 #include "mix_small_word.h"
 #include "mix_word.h"
 
@@ -87,7 +86,7 @@ enum commands_t {
 };
 
 typedef Word big_register;
-typedef small_word small_register;
+typedef SmallWord small_register;
 
 struct Machine;
 typedef void (Machine::*do_statement)(const Word &command);
