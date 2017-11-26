@@ -11,16 +11,6 @@
   std::cout << std::endl;
 
 namespace mix {
-compare_t compare(value_type lhs, value_type rhs) {
-  if (lhs < rhs) {
-    return cmp_less;
-  } else if (lhs > rhs) {
-    return cmp_greater;
-  } else {
-    return cmp_equal;
-  }
-}
-
 Machine::Machine() {
   memset(this, 0, sizeof(Machine));
 }
@@ -36,7 +26,7 @@ void Machine::run(short initial_address) {
 }
 
 void Machine::nothing(const Word &data) {
-  std::cerr << "mix: do_nothing!!!\n";
+  LOG_COMMAND_NAME(data)
 }
 
 void Machine::nop(const Word &data) { // 0
@@ -960,75 +950,42 @@ void Machine::ennx(const Word &data) { // 55, 3
 
 void Machine::cmpa(const Word &data) { // 56
   LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type lhs = reg_a.get_value(data.get_field_specification());
-  value_type rhs = memory[addr].get_value(data.get_field_specification());
-  ;
-  compare_flag = compare(lhs, rhs);
+  compare_register_and_memory(reg_a, data);
 }
 
 void Machine::cmp1(const Word &data) { // 57
   LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type lhs = reg_i[0].get_value(data.get_field_specification());
-  value_type rhs = memory[addr].get_value(data.get_field_specification());
-  compare_flag = compare(lhs, rhs);
+  compare_index_register_and_memory(1, data);
 }
 
 void Machine::cmp2(const Word &data) { // 58
   LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type lhs = reg_i[1].get_value(data.get_field_specification());
-  value_type rhs = memory[addr].get_value(data.get_field_specification());
-  compare_flag = compare(lhs, rhs);
+  compare_index_register_and_memory(2, data);
 }
 
 void Machine::cmp3(const Word &data) { // 59
   LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type lhs = reg_i[2].get_value(data.get_field_specification());
-  value_type rhs = memory[addr].get_value(data.get_field_specification());
-  compare_flag = compare(lhs, rhs);
+  compare_index_register_and_memory(3, data);
 }
 
 void Machine::cmp4(const Word &data) { // 60
   LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type lhs = reg_i[3].get_value(data.get_field_specification());
-  value_type rhs = memory[addr].get_value(data.get_field_specification());
-  compare_flag = compare(lhs, rhs);
+  compare_index_register_and_memory(4, data);
 }
 
 void Machine::cmp5(const Word &data) { // 61
   LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type lhs = reg_i[4].get_value(data.get_field_specification());
-  value_type rhs = memory[addr].get_value(data.get_field_specification());
-  compare_flag = compare(lhs, rhs);
+  compare_index_register_and_memory(5, data);
 }
 
 void Machine::cmp6(const Word &data) { // 62
   LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type lhs = reg_i[5].get_value(data.get_field_specification());
-  value_type rhs = memory[addr].get_value(data.get_field_specification());
-  compare_flag = compare(lhs, rhs);
+  compare_index_register_and_memory(6, data);
 }
 
 void Machine::cmpx(const Word &data) { // 63
   LOG_COMMAND_NAME(data)
-
-  int addr = extract_address(data);
-  value_type lhs = reg_x.get_value(data.get_field_specification());
-  value_type rhs = memory[addr].get_value(data.get_field_specification());
-  compare_flag = compare(lhs, rhs);
+  compare_register_and_memory(reg_x, data);
 }
 
 void Machine::execute_instruction(const Word &instruction) {
@@ -1153,11 +1110,11 @@ void Machine::unconditionally_jump(const Word &instruction) {
   overflow = reg_j.set_value(address);
 }
 
-void Machine::transfer_address_to_index_register(int index, const Word &instruction) {
+void Machine::transfer_address_to_index_register(byte index, const Word &instruction) {
   transfer_address_to_register(&reg_i[index - 1], instruction);
 }
 
-void Machine::transfer_negative_address_to_index_register(int index, const Word &instruction) {
+void Machine::transfer_negative_address_to_index_register(byte index, const Word &instruction) {
   transfer_negative_address_to_register(&reg_i[index - 1], instruction);
 }
 
@@ -1170,6 +1127,24 @@ void Machine::transfer_negative_address_to_register(Register *reg, const mix::Wo
 template <typename Register> void Machine::transfer_address_to_register(Register *reg, const Word &instruction) {
   const auto value = extract_address(instruction);
   overflow = reg->set_value(value);
+}
+
+void Machine::compare_index_register_and_memory(byte index, const Word &instruction) {
+  compare_register_and_memory(reg_i[index - 1], instruction);
+}
+
+template <typename Register> void Machine::compare_register_and_memory(const Register &reg, const Word &instruction) {
+  const auto lhs = reg.get_value(instruction.get_field_specification());
+  const auto rhs = get_memory_value(instruction);
+  compare_flag = compare(lhs, rhs);
+}
+
+compare_t Machine::compare(value_type lhs, value_type rhs) {
+  if (lhs < rhs)
+    return cmp_less;
+  if (lhs > rhs)
+    return cmp_greater;
+  return cmp_equal;
 }
 
 value_type Machine::get_memory_value(const Word &instruction) const {
