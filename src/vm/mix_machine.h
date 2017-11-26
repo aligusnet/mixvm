@@ -249,6 +249,7 @@ struct Machine {
 
   void run(short initial_address);
 
+private:
   unsigned short extract_address(const Word &instruction) const;
 
   void load_big_register(big_register *reg, const Word &instruction) const;
@@ -261,6 +262,20 @@ struct Machine {
   void store_index_register(int index, const Word &instruction);
 
   void unconditionally_jump(const Word &instruction);
+
+  void jump_if_index_register_negative(byte index, const Word &instruction);
+  void jump_if_index_register_zero(byte index, const Word &instruction);
+  void jump_if_index_register_positive(byte index, const Word &instruction);
+  void jump_if_index_register_non_negative(byte index, const Word &instruction);
+  void jump_if_index_register_non_zero(byte index, const Word &instruction);
+  void jump_if_index_register_non_positive(byte index, const Word &instruction);
+
+  template <typename Register> void jump_if_negative(const Register &reg, const Word &instruction);
+  template <typename Register> void jump_if_zero(const Register &reg, const Word &instruction);
+  template <typename Register> void jump_if_positive(const Register &reg, const Word &instruction);
+  template <typename Register> void jump_if_non_negative(const Register &reg, const Word &instruction);
+  template <typename Register> void jump_if_non_zero(const Register &reg, const Word &instruction);
+  template <typename Register> void jump_if_non_positive(const Register &reg, const Word &instruction);
 };
 
 } // namespace mix

@@ -461,54 +461,32 @@ void Machine::ja(const Word &data) { // 40
 
 void Machine::jan(const Word &data) { // 40, 0
   LOG_COMMAND_NAME(data)
-
-  if (reg_a.get_sign() == NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_negative(reg_a, data);
 }
 
 void Machine::jaz(const Word &data) { // 40, 1
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_a.get_value();
-  if (val == 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_zero(reg_a, data);
 }
 
 void Machine::jap(const Word &data) { // 40, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_a.get_value();
-  if (val > 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_positive(reg_a, data);
 }
 
 void Machine::jann(const Word &data) { // 40, 3
   LOG_COMMAND_NAME(data)
-
-  if (reg_a.get_sign() != NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_non_negative(reg_a, data);
 }
 
 void Machine::janz(const Word &data) { // 40, 4
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_a.get_value();
-  if (val != 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_non_zero(reg_a, data);
 }
 
 void Machine::janp(const Word &data) { // 40, 5
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_a.get_value();
-  if (val <= 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_non_positive(reg_a, data);
 }
 
 void Machine::j1(const Word &data) { // 41
@@ -536,54 +514,32 @@ void Machine::j1(const Word &data) { // 41
 
 void Machine::j1n(const Word &data) { // 41, 0
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[0].get_sign() == NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_negative(1, data);
 }
 
 void Machine::j1z(const Word &data) { // 41, 1
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[0].get_value();
-  if (val == 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_zero(1, data);
 }
 
 void Machine::j1p(const Word &data) { // 41, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[0].get_value();
-  if (val > 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_positive(1, data);
 }
 
 void Machine::j1nn(const Word &data) { // 41, 3
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[0].get_sign() != NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_negative(1, data);
 }
 
 void Machine::j1nz(const Word &data) { // 41, 4
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[0].get_value();
-  if (val != 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_zero(1, data);
 }
 
 void Machine::j1np(const Word &data) { // 41, 5
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[0].get_value();
-  if (val <= 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_positive(1, data);
 }
 
 void Machine::j2(const Word &data) { // 41
@@ -611,54 +567,32 @@ void Machine::j2(const Word &data) { // 41
 
 void Machine::j2n(const Word &data) { // 42, 0
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[1].get_sign() == NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_negative(2, data);
 }
 
 void Machine::j2z(const Word &data) { // 42, 1
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[1].get_value();
-  if (val == 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_zero(2, data);
 }
 
 void Machine::j2p(const Word &data) { // 42, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[1].get_value();
-  if (val > 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_positive(2, data);
 }
 
 void Machine::j2nn(const Word &data) { // 42, 3
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[1].get_sign() != NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_negative(2, data);
 }
 
 void Machine::j2nz(const Word &data) { // 42, 4
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[1].get_value();
-  if (val != 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_zero(2, data);
 }
 
 void Machine::j2np(const Word &data) { // 42, 5
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[1].get_value();
-  if (val <= 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_positive(2, data);
 }
 
 void Machine::j3(const Word &data) { // 43
@@ -686,54 +620,32 @@ void Machine::j3(const Word &data) { // 43
 
 void Machine::j3n(const Word &data) { // 43, 0
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[2].get_sign() == NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_negative(3, data);
 }
 
 void Machine::j3z(const Word &data) { // 43, 1
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[2].get_value();
-  if (val == 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_zero(3, data);
 }
 
 void Machine::j3p(const Word &data) { // 43, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[2].get_value();
-  if (val > 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_positive(3, data);
 }
 
 void Machine::j3nn(const Word &data) { // 43, 3
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[2].get_sign() != NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_negative(3, data);
 }
 
 void Machine::j3nz(const Word &data) { // 43, 4
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[2].get_value();
-  if (val != 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_zero(3, data);
 }
 
 void Machine::j3np(const Word &data) { // 43, 5
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[2].get_value();
-  if (val <= 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_positive(3, data);
 }
 
 void Machine::j4(const Word &data) { // 44
@@ -761,54 +673,32 @@ void Machine::j4(const Word &data) { // 44
 
 void Machine::j4n(const Word &data) { // 44, 0
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[3].get_sign() == NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_negative(4, data);
 }
 
 void Machine::j4z(const Word &data) { // 44, 1
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[3].get_value();
-  if (val == 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_zero(4, data);
 }
 
 void Machine::j4p(const Word &data) { // 44, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[3].get_value();
-  if (val > 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_positive(4, data);
 }
 
 void Machine::j4nn(const Word &data) { // 44, 3
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[3].get_sign() != NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_negative(4, data);
 }
 
 void Machine::j4nz(const Word &data) { // 44, 4
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[3].get_value();
-  if (val != 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_zero(4, data);
 }
 
 void Machine::j4np(const Word &data) { // 44, 5
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[3].get_value();
-  if (val <= 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_positive(4, data);
 }
 
 void Machine::j5(const Word &data) { // 45
@@ -836,54 +726,32 @@ void Machine::j5(const Word &data) { // 45
 
 void Machine::j5n(const Word &data) { // 45, 0
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[4].get_sign() == NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_negative(5, data);
 }
 
 void Machine::j5z(const Word &data) { // 45, 1
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[4].get_value();
-  if (val == 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_zero(5, data);
 }
 
 void Machine::j5p(const Word &data) { // 45, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[4].get_value();
-  if (val > 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_positive(5, data);
 }
 
 void Machine::j5nn(const Word &data) { // 45, 3
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[4].get_sign() != NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_negative(5, data);
 }
 
 void Machine::j5nz(const Word &data) { // 45, 4
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[4].get_value();
-  if (val != 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_zero(5, data);
 }
 
 void Machine::j5np(const Word &data) { // 45, 5
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[4].get_value();
-  if (val <= 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_positive(5, data);
 }
 
 void Machine::j6(const Word &data) { // 46
@@ -911,54 +779,32 @@ void Machine::j6(const Word &data) { // 46
 
 void Machine::j6n(const Word &data) { // 46, 0
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[5].get_sign() == NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_negative(6, data);
 }
 
 void Machine::j6z(const Word &data) { // 46, 1
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[5].get_value();
-  if (val == 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_zero(6, data);
 }
 
 void Machine::j6p(const Word &data) { // 46, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[5].get_value();
-  if (val > 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_positive(6, data);
 }
 
 void Machine::j6nn(const Word &data) { // 46, 3
   LOG_COMMAND_NAME(data)
-
-  if (reg_i[5].get_sign() != NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_negative(6, data);
 }
 
 void Machine::j6nz(const Word &data) { // 46, 4
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[5].get_value();
-  if (val != 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_zero(6, data);
 }
 
 void Machine::j6np(const Word &data) { // 46, 5
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_i[5].get_value();
-  if (val <= 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_index_register_non_positive(6, data);
 }
 
 void Machine::jx(const Word &data) { // 47
@@ -986,53 +832,95 @@ void Machine::jx(const Word &data) { // 47
 
 void Machine::jxn(const Word &data) { // 47, 0
   LOG_COMMAND_NAME(data)
-
-  if (reg_x.get_sign() == NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_negative(reg_x, data);
 }
 
 void Machine::jxz(const Word &data) { // 47, 1
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_x.get_value();
-  if (val == 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_zero(reg_x, data);
 }
 
 void Machine::jxp(const Word &data) { // 47, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_x.get_value();
-  if (val > 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_positive(reg_x, data);
 }
 
 void Machine::jxnn(const Word &data) { // 47, 3
   LOG_COMMAND_NAME(data)
-
-  if (reg_x.get_sign() != NEG_SIGN) {
-    unconditionally_jump(data);
-  }
+  jump_if_non_negative(reg_x, data);
 }
 
 void Machine::jxnz(const Word &data) { // 47, 4
   LOG_COMMAND_NAME(data)
-
-  value_type val = reg_x.get_value();
-  if (val != 0) {
-    unconditionally_jump(data);
-  }
+  jump_if_non_zero(reg_x, data);
 }
 
 void Machine::jxnp(const Word &data) { // 47, 5
   LOG_COMMAND_NAME(data)
+  jump_if_non_positive(reg_x, data);
+}
 
-  value_type val = reg_x.get_value();
+void Machine::jump_if_index_register_negative(byte index, const Word &instruction) {
+  jump_if_negative(reg_i[index - 1], instruction);
+}
+
+void Machine::jump_if_index_register_zero(byte index, const Word &instruction) {
+  jump_if_zero(reg_i[index - 1], instruction);
+}
+
+void Machine::jump_if_index_register_positive(byte index, const Word &instruction) {
+  jump_if_positive(reg_i[index - 1], instruction);
+}
+
+void Machine::jump_if_index_register_non_negative(byte index, const Word &instruction) {
+  jump_if_non_negative(reg_i[index - 1], instruction);
+}
+
+void Machine::jump_if_index_register_non_zero(byte index, const Word &instruction) {
+  jump_if_non_zero(reg_i[index - 1], instruction);
+}
+
+void Machine::jump_if_index_register_non_positive(byte index, const Word &instruction) {
+  jump_if_non_positive(reg_i[index - 1], instruction);
+}
+
+template <typename Register> void Machine::jump_if_negative(const Register &reg, const Word &instruction) {
+  if (reg.get_sign() == NEG_SIGN) {
+    unconditionally_jump(instruction);
+  }
+}
+
+template <typename Register> void Machine::jump_if_zero(const Register &reg, const Word &instruction) {
+  const auto val = reg.get_value();
+  if (val == 0) {
+    unconditionally_jump(instruction);
+  }
+}
+
+template <typename Register> void Machine::jump_if_positive(const Register &reg, const Word &instruction) {
+  const auto val = reg.get_value();
+  if (val > 0) {
+    unconditionally_jump(instruction);
+  }
+}
+
+template <typename Register> void Machine::jump_if_non_negative(const Register &reg, const Word &instruction) {
+  if (reg.get_sign() != NEG_SIGN) {
+    unconditionally_jump(instruction);
+  }
+}
+
+template <typename Register> void Machine::jump_if_non_zero(const Register &reg, const Word &instruction) {
+  const auto val = reg.get_value();
+  if (val != 0) {
+    unconditionally_jump(instruction);
+  }
+}
+
+template <typename Register> void Machine::jump_if_non_positive(const Register &reg, const Word &instruction) {
+  const auto val = reg.get_value();
   if (val <= 0) {
-    unconditionally_jump(data);
+    unconditionally_jump(instruction);
   }
 }
 
