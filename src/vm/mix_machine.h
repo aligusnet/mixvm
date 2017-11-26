@@ -278,6 +278,11 @@ private:
   template <typename Register> void jump_if_non_negative(const Register &reg, const Word &instruction);
   template <typename Register> void jump_if_non_zero(const Register &reg, const Word &instruction);
   template <typename Register> void jump_if_non_positive(const Register &reg, const Word &instruction);
+
+  template <typename Register> void transfer_address_to_register(Register *reg, const Word &instruction);
+  void transfer_address_to_index_register(int index, const Word &instruction);
+  template <typename Register> void transfer_negative_address_to_register(Register *reg, const mix::Word &instruction);
+  void transfer_negative_address_to_index_register(int index, const Word &instruction);
 };
 
 } // namespace mix

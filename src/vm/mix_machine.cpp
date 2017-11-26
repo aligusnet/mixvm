@@ -881,122 +881,81 @@ void Machine::enx(const Word &data) { // 55
 
 void Machine::enta(const Word &data) { // 48, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_a.set_value(val);
+  transfer_address_to_register(&reg_a, data);
 }
 
 void Machine::ent1(const Word &data) { // 49, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[0].set_value(val);
+  transfer_address_to_index_register(1, data);
 }
 
 void Machine::ent2(const Word &data) { // 50, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[1].set_value(val);
+  transfer_address_to_index_register(2, data);
 }
 
 void Machine::ent3(const Word &data) { // 51, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[2].set_value(val);
+  transfer_address_to_index_register(3, data);
 }
 
 void Machine::ent4(const Word &data) { // 52, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[3].set_value(val);
+  transfer_address_to_index_register(4, data);
 }
 
 void Machine::ent5(const Word &data) { // 53, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[4].set_value(val);
+  transfer_address_to_index_register(5, data);
 }
 
 void Machine::ent6(const Word &data) { // 54, 2
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[5].set_value(val);
+  transfer_address_to_index_register(6, data);
 }
 
 void Machine::entx(const Word &data) { // 55, 2
-  LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_x.set_value(val);
+  transfer_address_to_register(&reg_x, data);
 }
 
 void Machine::enna(const Word &data) { // 48, 3
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_a.set_value(val);
-  reg_a.set_sign(!reg_a.get_sign());
+  transfer_negative_address_to_register(&reg_a, data);
 }
 
 void Machine::enn1(const Word &data) { // 49, 3
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[0].set_value(val);
-  reg_i[0].set_sign(!reg_i[0].get_sign());
+  transfer_negative_address_to_index_register(1, data);
 }
 
 void Machine::enn2(const Word &data) { // 50, 3
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[1].set_value(val);
-  reg_i[1].set_sign(!reg_i[1].get_sign());
+  transfer_negative_address_to_index_register(2, data);
 }
 
 void Machine::enn3(const Word &data) { // 51, 3
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[2].set_value(val);
-  reg_i[2].set_sign(!reg_i[2].get_sign());
+  transfer_negative_address_to_index_register(3, data);
 }
 
 void Machine::enn4(const Word &data) { // 52, 3
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[3].set_value(val);
-  reg_i[3].set_sign(!reg_i[3].get_sign());
+  transfer_negative_address_to_index_register(4, data);
 }
 
 void Machine::enn5(const Word &data) { // 53, 3
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[4].set_value(val);
-  reg_i[4].set_sign(!reg_i[4].get_sign());
+  transfer_negative_address_to_index_register(5, data);
 }
 
 void Machine::enn6(const Word &data) { // 54, 3
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_i[5].set_value(val);
-  reg_i[5].set_sign(!reg_i[5].get_sign());
+  transfer_negative_address_to_index_register(6, data);
 }
 
 void Machine::ennx(const Word &data) { // 55, 3
   LOG_COMMAND_NAME(data)
-
-  value_type val = (value_type)extract_address(data);
-  overflow = reg_x.set_value(val);
-  reg_x.set_sign(!reg_x.get_sign());
+  transfer_negative_address_to_register(&reg_x, data);
 }
 
 void Machine::cmpa(const Word &data) { // 56
@@ -1192,6 +1151,25 @@ template <typename Register> void Machine::jump_if_non_positive(const Register &
 void Machine::unconditionally_jump(const Word &instruction) {
   const auto address = extract_address(instruction);
   overflow = reg_j.set_value(address);
+}
+
+void Machine::transfer_address_to_index_register(int index, const Word &instruction) {
+  transfer_address_to_register(&reg_i[index - 1], instruction);
+}
+
+void Machine::transfer_negative_address_to_index_register(int index, const Word &instruction) {
+  transfer_negative_address_to_register(&reg_i[index - 1], instruction);
+}
+
+template <typename Register>
+void Machine::transfer_negative_address_to_register(Register *reg, const mix::Word &instruction) {
+  transfer_address_to_register(reg, instruction);
+  reg->set_sign(!reg->get_sign());
+}
+
+template <typename Register> void Machine::transfer_address_to_register(Register *reg, const Word &instruction) {
+  const auto value = extract_address(instruction);
+  overflow = reg->set_value(value);
 }
 
 value_type Machine::get_memory_value(const Word &instruction) const {
