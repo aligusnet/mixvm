@@ -27,6 +27,8 @@ private:
   byte bytes[DATA_BYTES_IN_SMALL_REGISTER];
 };
 
+std::ostream &operator<<(std::ostream &os, const SmallWord &sw);
+
 } // namespace mix
 
 #endif // MIX_SMALL_REGISTER_H

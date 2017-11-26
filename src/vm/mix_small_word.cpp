@@ -80,4 +80,9 @@ void SmallWord::print(std::ostream &os) const {
   }
 }
 
+std::ostream &operator<<(std::ostream &os, const SmallWord &sw) {
+  sw.print(os);
+  return os;
+}
+
 } // namespace mix

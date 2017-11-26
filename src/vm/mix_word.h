@@ -49,6 +49,8 @@ private:
   friend struct LongValue;
 };
 
+std::ostream &operator<<(std::ostream &os, const Word &word);
+
 Word make_cmd(byte cmd, short addr = 0, FieldSpecification f = FieldSpecification::DEFAULT);
 
 } // namespace mix

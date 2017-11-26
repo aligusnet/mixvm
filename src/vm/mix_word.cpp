@@ -144,6 +144,11 @@ void Word::print_instruction(std::ostream &os, const char *command_name) const {
   os << "(" << (int)fmt.low << ":" << (int)fmt.high << ")";
 }
 
+std::ostream &operator<<(std::ostream &os, const Word &word) {
+  word.print_word(os);
+  return os;
+}
+
 Word make_cmd(byte cmd, short addr, FieldSpecification f) {
   return Word::make_as_instruction(cmd, addr, 0, f);
 }

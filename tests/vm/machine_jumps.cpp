@@ -9,6 +9,13 @@ TEST_F(MachineJumpsTestSuite, jmp) {
   EXPECT_EQ(10, get_next_instruction_address());
 }
 
+TEST_F(MachineJumpsTestSuite, jsj) {
+  machine.memory[10] = make_cmd(cmd_jmp, 77);
+  machine.jsj(make_cmd(cmd_jmp, 10));
+
+  EXPECT_EQ(77, get_next_instruction_address());
+}
+
 TEST_F(MachineJumpsTestSuite, jov_jump_if_overflowed) {
   machine.overflow = true;
   machine.jov(make_cmd(cmd_jmp, 11));

@@ -25,58 +25,14 @@ Machine::Machine() {
   memset(this, 0, sizeof(Machine));
 }
 
-void Machine::print_state(std::ostream &os) {
-  os << "Register A: ";
-  reg_a.print_word(os);
-  os << std::endl;
-  os << "Register X: ";
-  reg_x.print_word(os);
-  os << std::endl;
-  for (int i = 0; i < SMALL_REGISTERS; ++i) {
-    os << "Register I" << (i + 1) << ":";
-    reg_i[i].print(os);
-    os << std::endl;
+void Machine::run(short initial_address) {
+  halt = false;
+  reg_j.set_address(initial_address);
+  while (!halt) {
+    const auto &instruction = memory[reg_j.get_value()];
+    overflow = reg_j.inc();
+    execute_instruction(instruction);
   }
-
-  os << "Register J:";
-  reg_j.print(os);
-  os << std::endl;
-
-  os << "Override: " << overflow << std::endl;
-  os << "CompareFlag: " << compare_flag << std::endl;
-  for (int i = 0; i < MEMORY_WORDS; ++i) {
-    os << "Memory[" << (i) << "]:";
-    memory[i].print_word(os);
-    os << std::endl;
-  }
-}
-
-do_statement *Machine::get_statement(const Word &data) {
-  static do_statement statements[] = {
-      &Machine::nop, // 0
-      &Machine::add,     &Machine::sub,     &Machine::mul,     &Machine::div,     &Machine::hlt,
-      &Machine::nothing, &Machine::nothing, &Machine::lda,     &Machine::ld1,
-      &Machine::ld2, // 10
-      &Machine::ld3,     &Machine::ld4,     &Machine::ld5,     &Machine::ld6,     &Machine::ldx,
-      &Machine::ldan,    &Machine::ld1n,    &Machine::ld2n,    &Machine::ld3n,
-      &Machine::ld4n, // 20
-      &Machine::ld5n,    &Machine::ld6n,    &Machine::ldxn,    &Machine::sta,     &Machine::st1,
-      &Machine::st2,     &Machine::st3,     &Machine::st4,     &Machine::st5,
-      &Machine::st6, // 30
-      &Machine::stx,     &Machine::stj,     &Machine::stz,     &Machine::nothing, &Machine::nothing,
-      &Machine::nothing, &Machine::nothing, &Machine::nothing, &Machine::jump,
-      &Machine::ja, // 40
-      &Machine::j1,      &Machine::j2,      &Machine::j3,      &Machine::j4,      &Machine::j5,
-      &Machine::j6,      &Machine::jx,      &Machine::ena,     &Machine::en1,
-      &Machine::en2, // 50
-      &Machine::en3,     &Machine::en4,     &Machine::en5,     &Machine::en6,     &Machine::enx,
-      &Machine::cmpa,    &Machine::cmp1,    &Machine::cmp2,    &Machine::cmp3,
-      &Machine::cmp4, // 60
-      &Machine::cmp5,    &Machine::cmp6,
-      &Machine::cmpx // 63
-  };
-
-  return &statements[data.get_operation_code()];
 }
 
 void Machine::nothing(const Word &data) {
@@ -90,47 +46,40 @@ void Machine::nop(const Word &data) { // 0
 void Machine::add(const Word &data) { // 1
   LOG_COMMAND_NAME(data)
 
-  int addr = extract_address(data);
-
-  value_type val = memory[addr].get_value(data.get_field_specification());
-  val += reg_a.get_value();
-  overflow = reg_a.set_value(val);
+  const auto m = get_memory_value(data);
+  const auto r = reg_a.get_value();
+  overflow = reg_a.set_value(r + m);
 }
 
 void Machine::sub(const Word &data) { // 2
   LOG_COMMAND_NAME(data)
 
-  int addr = extract_address(data);
-  value_type val = memory[addr].get_value(data.get_field_specification()) * -1;
-  val += reg_a.get_value();
-  overflow = reg_a.set_value(val);
+  const auto m = get_memory_value(data);
+  const auto r = reg_a.get_value();
+  overflow = reg_a.set_value(r - m);
 }
 
 void Machine::mul(const Word &data) { // 3
   LOG_COMMAND_NAME(data)
 
-  int addr = extract_address(data);
-
-  long_value_type val1 = reg_a.get_value();
-  long_value_type val2 = memory[addr].get_value(data.get_field_specification());
-  long_value_type val = val1 * val2;
-  overflow = LongValue::set(val, reg_a, reg_x);
+  long_value_type m = get_memory_value(data);
+  long_value_type r = reg_a.get_value();
+  overflow = LongValue::set(r * m, reg_a, reg_x);
 }
 
 void Machine::div(const Word &data) { // 4
   LOG_COMMAND_NAME(data)
 
-  int addr = extract_address(data);
-
   value_type val_reg_a = reg_a.get_value();
-  value_type val_mem = memory[addr].get_value(data.get_field_specification());
+  value_type val_mem = get_memory_value(data);
+
   if (abs(val_reg_a) < abs(val_mem)) {
     long_value_type val = LongValue::get(reg_a, reg_x);
     long_value_type quotient = val / val_mem;
     value_type remainder = val - quotient * val_mem;
-    overflow = reg_x.set_value((value_type)remainder);
+    overflow = reg_x.set_value(remainder);
     reg_x.set_sign(reg_a.get_sign());
-    overflow = reg_a.set_value((value_type)quotient);
+    overflow = reg_a.set_value(quotient);
   } else {
     overflow = true;
   }
@@ -149,17 +98,6 @@ void Machine::lda(const Word &data) { // 8
 void Machine::ldx(const Word &data) { // 15
   LOG_COMMAND_NAME(data)
   load_big_register(&reg_x, data);
-}
-
-void Machine::load_big_register(big_register *reg, const Word &instruction) const {
-  const auto address = extract_address(instruction);
-  memset(reg, 0, sizeof(big_register));
-  reg->set_value(memory[address], instruction.get_field_specification());
-  FieldSpecification fmt = instruction.get_field_specification();
-  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
-  if (nbytes > 0) {
-    reg->right_shift(nbytes);
-  }
 }
 
 void Machine::ld1(const Word &data) { // 9
@@ -192,12 +130,6 @@ void Machine::ld6(const Word &data) { // 14
   load_index_register(6, data);
 }
 
-void Machine::load_index_register(int index, const Word &instruction) {
-  const auto address = extract_address(instruction);
-  value_type val = memory[address].get_value();
-  overflow = reg_i[index-1].set_value(val);
-}
-
 void Machine::ldan(const Word &data) { // 16
   LOG_COMMAND_NAME(data)
   load_register_negative(&reg_a, data);
@@ -206,11 +138,6 @@ void Machine::ldan(const Word &data) { // 16
 void Machine::ldxn(const Word &data) { // 23
   LOG_COMMAND_NAME(data)
   load_register_negative(&reg_x, data);
-}
-
-void Machine::load_register_negative(big_register *reg, const Word &instruction) const {
-  load_big_register(reg, instruction);
-  reg->set_sign(!reg->get_sign());
 }
 
 void Machine::ld1n(const Word &data) { // 17
@@ -243,11 +170,6 @@ void Machine::ld6n(const Word &data) { // 22
   load_index_register_negative(6, data);
 }
 
-void Machine::load_index_register_negative(int index, const Word &instruction) {
-  load_index_register(index, instruction);
-  reg_i[index-1].set_sign(!reg_i[index-1].get_sign());
-}
-
 void Machine::sta(const Word &data) { // 24
   LOG_COMMAND_NAME(data)
   store_big_register(reg_a, data);
@@ -255,19 +177,7 @@ void Machine::sta(const Word &data) { // 24
 
 void Machine::stx(const Word &data) { // 31
   LOG_COMMAND_NAME(data)
-
   store_big_register(reg_x, data);
-}
-
-void Machine::store_big_register(big_register reg, const Word &instruction) {
-  FieldSpecification fs = instruction.get_field_specification();
-  int nbytes = DATA_BYTES_IN_WORD - fs.high;
-  if (nbytes > 0) {
-    reg.left_shift(nbytes);
-  }
-
-  const auto address = extract_address(instruction);
-  memory[address].set_value(reg, fs);
 }
 
 void Machine::st1(const Word &data) { // 25
@@ -300,19 +210,9 @@ void Machine::st6(const Word &data) { // 30
   store_index_register(6, data);
 }
 
-void Machine::store_index_register(int index, const Word &instruction) {
-  store_small_register(reg_i[index - 1], instruction);
-}
-
 void Machine::stj(const Word &data) { // 32
   LOG_COMMAND_NAME(data)
   store_small_register(reg_j, data);
-}
-
-void Machine::store_small_register(const small_register &reg, const Word &instruction) {
-  const auto address = extract_address(instruction);
-  const auto value = reg.get_value();
-  overflow = memory[address].set_value(value);
 }
 
 void Machine::stz(const Word &data) { // 33
@@ -364,11 +264,18 @@ void Machine::jmp(const Word &data) { // 39, 0
   unconditionally_jump(data);
 }
 
-void Machine::jsj(const Word &data) { // 39, 1
-  LOG_COMMAND_NAME(data)
+void Machine::jsj(const Word &instruction) { // 39, 1
+  LOG_COMMAND_NAME(instruction)
 
-  // int addr = extract_address(data);
-  // set_value(addr, reg_j);
+  // "The next instruction is taken from M"
+  // "<...> the contents of rJ are unchanged"
+
+  // I guess this means that
+  // the next instruction is executed from memory location M
+
+  const auto address = extract_address(instruction);
+  const auto &next_instruction = memory[address];
+  execute_instruction(next_instruction);
 }
 
 void Machine::jov(const Word &data) { // 39, 2
@@ -860,75 +767,6 @@ void Machine::jxnp(const Word &data) { // 47, 5
   jump_if_non_positive(reg_x, data);
 }
 
-void Machine::jump_if_index_register_negative(byte index, const Word &instruction) {
-  jump_if_negative(reg_i[index - 1], instruction);
-}
-
-void Machine::jump_if_index_register_zero(byte index, const Word &instruction) {
-  jump_if_zero(reg_i[index - 1], instruction);
-}
-
-void Machine::jump_if_index_register_positive(byte index, const Word &instruction) {
-  jump_if_positive(reg_i[index - 1], instruction);
-}
-
-void Machine::jump_if_index_register_non_negative(byte index, const Word &instruction) {
-  jump_if_non_negative(reg_i[index - 1], instruction);
-}
-
-void Machine::jump_if_index_register_non_zero(byte index, const Word &instruction) {
-  jump_if_non_zero(reg_i[index - 1], instruction);
-}
-
-void Machine::jump_if_index_register_non_positive(byte index, const Word &instruction) {
-  jump_if_non_positive(reg_i[index - 1], instruction);
-}
-
-template <typename Register> void Machine::jump_if_negative(const Register &reg, const Word &instruction) {
-  if (reg.get_sign() == NEG_SIGN) {
-    unconditionally_jump(instruction);
-  }
-}
-
-template <typename Register> void Machine::jump_if_zero(const Register &reg, const Word &instruction) {
-  const auto val = reg.get_value();
-  if (val == 0) {
-    unconditionally_jump(instruction);
-  }
-}
-
-template <typename Register> void Machine::jump_if_positive(const Register &reg, const Word &instruction) {
-  const auto val = reg.get_value();
-  if (val > 0) {
-    unconditionally_jump(instruction);
-  }
-}
-
-template <typename Register> void Machine::jump_if_non_negative(const Register &reg, const Word &instruction) {
-  if (reg.get_sign() != NEG_SIGN) {
-    unconditionally_jump(instruction);
-  }
-}
-
-template <typename Register> void Machine::jump_if_non_zero(const Register &reg, const Word &instruction) {
-  const auto val = reg.get_value();
-  if (val != 0) {
-    unconditionally_jump(instruction);
-  }
-}
-
-template <typename Register> void Machine::jump_if_non_positive(const Register &reg, const Word &instruction) {
-  const auto val = reg.get_value();
-  if (val <= 0) {
-    unconditionally_jump(instruction);
-  }
-}
-
-void Machine::unconditionally_jump(const Word &instruction) {
-  const auto address = extract_address(instruction);
-  overflow = reg_j.set_value(address);
-}
-
 void Machine::ena(const Word &data) { // 48
   switch (data.get_modification()) {
   case 2:
@@ -1234,15 +1072,131 @@ void Machine::cmpx(const Word &data) { // 63
   compare_flag = compare(lhs, rhs);
 }
 
-void Machine::run(short initial_address) {
-  halt = false;
-  reg_j.set_address(initial_address);
-  while (!halt) {
-    short command_addr = reg_j.get_value();
-    overflow = reg_j.inc();
-    do_statement statement = *get_statement(memory[command_addr]);
-    (this->*statement)(memory[command_addr]);
+void Machine::execute_instruction(const Word &instruction) {
+  do_statement statement = *get_statement(instruction);
+  (this->*statement)(instruction);
+}
+
+void Machine::load_big_register(big_register *reg, const Word &instruction) const {
+  const auto address = extract_address(instruction);
+  memset(reg, 0, sizeof(big_register));
+  reg->set_value(memory[address], instruction.get_field_specification());
+  FieldSpecification fmt = instruction.get_field_specification();
+  int nbytes = DATA_BYTES_IN_WORD - fmt.high;
+  if (nbytes > 0) {
+    reg->right_shift(nbytes);
   }
+}
+
+void Machine::load_index_register(int index, const Word &instruction) {
+  const auto address = extract_address(instruction);
+  value_type val = memory[address].get_value();
+  overflow = reg_i[index - 1].set_value(val);
+}
+
+void Machine::load_register_negative(big_register *reg, const Word &instruction) const {
+  load_big_register(reg, instruction);
+  reg->set_sign(!reg->get_sign());
+}
+
+void Machine::load_index_register_negative(int index, const Word &instruction) {
+  load_index_register(index, instruction);
+  reg_i[index - 1].set_sign(!reg_i[index - 1].get_sign());
+}
+
+void Machine::store_big_register(big_register reg, const Word &instruction) {
+  FieldSpecification fs = instruction.get_field_specification();
+  int nbytes = DATA_BYTES_IN_WORD - fs.high;
+  if (nbytes > 0) {
+    reg.left_shift(nbytes);
+  }
+
+  const auto address = extract_address(instruction);
+  memory[address].set_value(reg, fs);
+}
+
+void Machine::store_index_register(int index, const Word &instruction) {
+  store_small_register(reg_i[index - 1], instruction);
+}
+
+void Machine::store_small_register(const small_register &reg, const Word &instruction) {
+  const auto address = extract_address(instruction);
+  const auto value = reg.get_value();
+  overflow = memory[address].set_value(value);
+}
+
+void Machine::jump_if_index_register_negative(byte index, const Word &instruction) {
+  jump_if_negative(reg_i[index - 1], instruction);
+}
+
+void Machine::jump_if_index_register_zero(byte index, const Word &instruction) {
+  jump_if_zero(reg_i[index - 1], instruction);
+}
+
+void Machine::jump_if_index_register_positive(byte index, const Word &instruction) {
+  jump_if_positive(reg_i[index - 1], instruction);
+}
+
+void Machine::jump_if_index_register_non_negative(byte index, const Word &instruction) {
+  jump_if_non_negative(reg_i[index - 1], instruction);
+}
+
+void Machine::jump_if_index_register_non_zero(byte index, const Word &instruction) {
+  jump_if_non_zero(reg_i[index - 1], instruction);
+}
+
+void Machine::jump_if_index_register_non_positive(byte index, const Word &instruction) {
+  jump_if_non_positive(reg_i[index - 1], instruction);
+}
+
+template <typename Register> void Machine::jump_if_negative(const Register &reg, const Word &instruction) {
+  if (reg.get_sign() == NEG_SIGN) {
+    unconditionally_jump(instruction);
+  }
+}
+
+template <typename Register> void Machine::jump_if_zero(const Register &reg, const Word &instruction) {
+  const auto val = reg.get_value();
+  if (val == 0) {
+    unconditionally_jump(instruction);
+  }
+}
+
+template <typename Register> void Machine::jump_if_positive(const Register &reg, const Word &instruction) {
+  const auto val = reg.get_value();
+  if (val > 0) {
+    unconditionally_jump(instruction);
+  }
+}
+
+template <typename Register> void Machine::jump_if_non_negative(const Register &reg, const Word &instruction) {
+  if (reg.get_sign() != NEG_SIGN) {
+    unconditionally_jump(instruction);
+  }
+}
+
+template <typename Register> void Machine::jump_if_non_zero(const Register &reg, const Word &instruction) {
+  const auto val = reg.get_value();
+  if (val != 0) {
+    unconditionally_jump(instruction);
+  }
+}
+
+template <typename Register> void Machine::jump_if_non_positive(const Register &reg, const Word &instruction) {
+  const auto val = reg.get_value();
+  if (val <= 0) {
+    unconditionally_jump(instruction);
+  }
+}
+
+void Machine::unconditionally_jump(const Word &instruction) {
+  const auto address = extract_address(instruction);
+  overflow = reg_j.set_value(address);
+}
+
+value_type Machine::get_memory_value(const Word &instruction) const {
+  const auto address = extract_address(instruction);
+  return memory[address].get_value(instruction.get_field_specification());
 }
 
 unsigned short Machine::extract_address(const Word &instruction) const {
@@ -1252,5 +1206,47 @@ unsigned short Machine::extract_address(const Word &instruction) const {
     address += reg_i[index_specification - 1].get_value();
   }
   return address;
+}
+
+do_statement *Machine::get_statement(const Word &data) {
+  static do_statement statements[] = {
+      &Machine::nop, // 0
+      &Machine::add,     &Machine::sub,     &Machine::mul,     &Machine::div,     &Machine::hlt,
+      &Machine::nothing, &Machine::nothing, &Machine::lda,     &Machine::ld1,
+      &Machine::ld2, // 10
+      &Machine::ld3,     &Machine::ld4,     &Machine::ld5,     &Machine::ld6,     &Machine::ldx,
+      &Machine::ldan,    &Machine::ld1n,    &Machine::ld2n,    &Machine::ld3n,
+      &Machine::ld4n, // 20
+      &Machine::ld5n,    &Machine::ld6n,    &Machine::ldxn,    &Machine::sta,     &Machine::st1,
+      &Machine::st2,     &Machine::st3,     &Machine::st4,     &Machine::st5,
+      &Machine::st6, // 30
+      &Machine::stx,     &Machine::stj,     &Machine::stz,     &Machine::nothing, &Machine::nothing,
+      &Machine::nothing, &Machine::nothing, &Machine::nothing, &Machine::jump,
+      &Machine::ja, // 40
+      &Machine::j1,      &Machine::j2,      &Machine::j3,      &Machine::j4,      &Machine::j5,
+      &Machine::j6,      &Machine::jx,      &Machine::ena,     &Machine::en1,
+      &Machine::en2, // 50
+      &Machine::en3,     &Machine::en4,     &Machine::en5,     &Machine::en6,     &Machine::enx,
+      &Machine::cmpa,    &Machine::cmp1,    &Machine::cmp2,    &Machine::cmp3,
+      &Machine::cmp4, // 60
+      &Machine::cmp5,    &Machine::cmp6,
+      &Machine::cmpx // 63
+  };
+
+  return &statements[data.get_operation_code()];
+}
+
+void Machine::print_state(std::ostream &os) {
+  os << "Register A: " << reg_a << std::endl;
+  os << "Register X: " << reg_x << std::endl;
+  for (int i = 0; i < SMALL_REGISTERS; ++i) {
+    os << "Register I" << (i + 1) << ":" << reg_i[i] << std::endl;
+  }
+  os << "Register J: " << reg_j << std::endl;
+  os << "Overflow: " << overflow << std::endl;
+  os << "CompareFlag: " << compare_flag << std::endl;
+  for (int i = 0; i < MEMORY_WORDS; ++i) {
+    os << "Memory[" << (i) << "]:" << memory[i] << std::endl;
+  }
 }
 } // namespace mix

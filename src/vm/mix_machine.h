@@ -250,6 +250,8 @@ struct Machine {
   void run(short initial_address);
 
 private:
+  void execute_instruction(const Word &instruction);
+  value_type get_memory_value(const Word &instruction) const;
   unsigned short extract_address(const Word &instruction) const;
 
   void load_big_register(big_register *reg, const Word &instruction) const;
