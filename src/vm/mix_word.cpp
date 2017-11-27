@@ -5,7 +5,7 @@
 namespace mix {
 enum bytes_format { byte_a1 = 0, byte_a2 = 1, byte_i = 2, byte_f = 3, byte_c = 4 };
 
-Word::Word(bool sign, byte a1, byte a2, byte i, byte f, byte c) {
+Word::Word(Sign sign, byte a1, byte a2, byte i, byte f, byte c) {
   this->sign = sign;
   this->bytes[byte_a1] = a1;
   this->bytes[byte_a2] = a2;
@@ -16,7 +16,7 @@ Word::Word(bool sign, byte a1, byte a2, byte i, byte f, byte c) {
 
 Word Word::make_as_instruction(byte cmd, short addr, byte i, FieldSpecification f) {
   Word result;
-  result.sign = POS_SIGN;
+  result.sign = Sign::Positive;
   result.set_address(addr);
   result.bytes[byte_i] = i;
   result.bytes[byte_f] = f.encode();
@@ -28,7 +28,7 @@ short Word::get_address() const {
   short address = 0;
   address += bytes[byte_a1] * VALUES_IN_BYTE;
   address += bytes[byte_a2];
-  if (sign == NEG_SIGN) {
+  if (sign == Sign::Negative) {
     address *= -1;
   }
   return address;
@@ -76,7 +76,7 @@ void Word::set_value(const Word &source, FieldSpecification fmt) {
 }
 
 bool Word::set_value(int val) {
-  sign = val < 0 ? NEG_SIGN : POS_SIGN;
+  sign = mix::get_sign(val);
   if (val < 0)
     val *= -1;
   for (int i = DATA_BYTES_IN_WORD - 1; i >= 0; --i) {
@@ -90,7 +90,7 @@ value_type Word::get_value(FieldSpecification fmt) const {
   bool negative = false;
   if (fmt.low > 0) {
     --fmt.low;
-  } else if (sign == NEG_SIGN) {
+  } else if (sign == Sign::Negative) {
     negative = true;
   }
 
@@ -123,16 +123,20 @@ byte Word::get_specification() const {
   return bytes[byte_i];
 }
 
-bool Word::get_sign() const {
+Sign Word::get_sign() const {
   return sign;
 }
 
-void Word::set_sign(bool value) {
+void Word::set_sign(Sign value) {
   sign = value;
 }
 
+void Word::flip_sign() {
+  sign = mix::flip_sign(sign);
+}
+
 void Word::print_word(std::ostream &os) const {
-  os << (sign == POS_SIGN ? "+" : "-");
+  os << to_char(sign);
   for (int i = 0; i < DATA_BYTES_IN_WORD; ++i) {
     os << ", " << (int)bytes[i];
   }

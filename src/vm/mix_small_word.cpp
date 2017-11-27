@@ -20,7 +20,7 @@ bool SmallWord::inc() {
 
 bool SmallWord::set_value(value_type val) {
   bool isOverflowed = false;
-  sign = val < 0 ? NEG_SIGN : POS_SIGN;
+  sign = mix::get_sign(val);
   if (val < 0)
     val *= -1;
   value_type tmp = val / VALUES_IN_BYTE;
@@ -40,7 +40,7 @@ int SmallWord::get_value(FieldSpecification fmt) const {
   static const int DIFF_IN_WORDS = 3;
   bool negative = false;
   if (fmt.low == 0) {
-    negative = sign == POS_SIGN ? false : true;
+    negative = sign == Sign::Positive ? false : true;
   }
   if (fmt.low < DIFF_IN_WORDS) {
     fmt.low = 0;
@@ -65,16 +65,20 @@ void SmallWord::set_address(short addr) {
   bytes[1] = addr - bytes[0] * VALUES_IN_BYTE;
 }
 
-bool SmallWord::get_sign() const {
+Sign SmallWord::get_sign() const {
   return sign;
 }
 
-void SmallWord::set_sign(bool sign) {
+void SmallWord::set_sign(Sign sign) {
   this->sign = sign;
 }
 
+void SmallWord::flip_sign() {
+  sign = mix::flip_sign(sign);
+}
+
 void SmallWord::print(std::ostream &os) const {
-  os << (sign == POS_SIGN ? "+" : "-");
+  os << to_char(sign);
   for (int i = 0; i < DATA_BYTES_IN_SMALL_REGISTER; ++i) {
     os << ", " << (int)bytes[i];
   }

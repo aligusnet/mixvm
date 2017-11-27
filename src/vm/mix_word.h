@@ -3,6 +3,7 @@
 
 #include "mix_byte.h"
 #include "mix_field_specification.h"
+#include "mix_sign.h"
 
 #include <iosfwd>
 
@@ -17,7 +18,7 @@ public:
                                   FieldSpecification f = FieldSpecification::DEFAULT);
 
   Word() = default;
-  Word(bool sign, byte a1, byte a2, byte i, byte f, byte c);
+  Word(Sign sign, byte a1, byte a2, byte i, byte f, byte c);
 
   short get_address() const;
   void set_address(short address);
@@ -36,14 +37,15 @@ public:
   byte get_modification() const;
   byte get_specification() const;
 
-  bool get_sign() const;
-  void set_sign(bool value);
+  Sign get_sign() const;
+  void set_sign(Sign value);
+  void flip_sign();
 
   void print_word(std::ostream &os) const;
   void print_instruction(std::ostream &os, const char *command_name) const;
 
 private:
-  bool sign;
+  Sign sign;
   byte bytes[DATA_BYTES_IN_WORD];
 
   friend struct LongValue;

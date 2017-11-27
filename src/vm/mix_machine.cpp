@@ -1012,12 +1012,12 @@ void Machine::load_index_register(int index, const Word &instruction) {
 
 void Machine::load_register_negative(big_register *reg, const Word &instruction) const {
   load_big_register(reg, instruction);
-  reg->set_sign(!reg->get_sign());
+  reg->flip_sign();
 }
 
 void Machine::load_index_register_negative(int index, const Word &instruction) {
   load_index_register(index, instruction);
-  reg_i[index - 1].set_sign(!reg_i[index - 1].get_sign());
+  reg_i[index - 1].flip_sign();
 }
 
 void Machine::store_big_register(big_register reg, const Word &instruction) {
@@ -1066,7 +1066,7 @@ void Machine::jump_if_index_register_non_positive(byte index, const Word &instru
 }
 
 template <typename Register> void Machine::jump_if_negative(const Register &reg, const Word &instruction) {
-  if (reg.get_sign() == NEG_SIGN) {
+  if (reg.get_sign() == Sign::Negative) {
     unconditionally_jump(instruction);
   }
 }
@@ -1086,7 +1086,7 @@ template <typename Register> void Machine::jump_if_positive(const Register &reg,
 }
 
 template <typename Register> void Machine::jump_if_non_negative(const Register &reg, const Word &instruction) {
-  if (reg.get_sign() != NEG_SIGN) {
+  if (reg.get_sign() != Sign::Negative) {
     unconditionally_jump(instruction);
   }
 }
@@ -1121,7 +1121,7 @@ void Machine::transfer_negative_address_to_index_register(byte index, const Word
 template <typename Register>
 void Machine::transfer_negative_address_to_register(Register *reg, const mix::Word &instruction) {
   transfer_address_to_register(reg, instruction);
-  reg->set_sign(!reg->get_sign());
+  reg->flip_sign();
 }
 
 template <typename Register> void Machine::transfer_address_to_register(Register *reg, const Word &instruction) {

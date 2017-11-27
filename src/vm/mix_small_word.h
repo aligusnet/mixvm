@@ -3,6 +3,7 @@
 
 #include "mix_byte.h"
 #include "mix_field_specification.h"
+#include "mix_sign.h"
 
 #include <iosfwd>
 
@@ -17,13 +18,14 @@ public:
 
   int get_value(FieldSpecification format = FieldSpecification::DEFAULT) const;
 
-  bool get_sign() const;
-  void set_sign(bool sign);
-  
+  Sign get_sign() const;
+  void set_sign(Sign sign);
+  void flip_sign();
+
   void print(std::ostream &os) const;
   
 private:
-  bool sign;
+  Sign sign;
   byte bytes[DATA_BYTES_IN_SMALL_REGISTER];
 };
 

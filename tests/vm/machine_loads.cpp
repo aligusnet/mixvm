@@ -6,11 +6,11 @@ namespace mix {
 class MachineLoadsTestSuite : public MachineFixture {
 protected:
   int build_positive_value(byte a1, byte a2, byte i, byte f, byte c) {
-    return Word(POS_SIGN, a1, a2, i, f, c).get_value();
+    return Word(Sign::Positive, a1, a2, i, f, c).get_value();
   }
 
   int build_negative_value(byte a1, byte a2, byte i, byte f, byte c) {
-    return Word(NEG_SIGN, a1, a2, i, f, c).get_value();
+    return Word(Sign::Negative, a1, a2, i, f, c).get_value();
   }
 };
 

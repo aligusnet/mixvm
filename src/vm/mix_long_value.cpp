@@ -14,7 +14,7 @@ long_value_type LongValue::get(const Word &high_word, const Word &low_word) {
     value += low_word.bytes[i];
   }
 
-  if (high_word.sign == NEG_SIGN) {
+  if (high_word.sign == Sign::Negative) {
     value *= -1;
   }
 
@@ -22,7 +22,7 @@ long_value_type LongValue::get(const Word &high_word, const Word &low_word) {
 }
 
 bool LongValue::set(long_value_type val, Word &high_word, Word &low_word) {
-  high_word.sign = val < 0 ? NEG_SIGN : POS_SIGN;
+  high_word.sign = mix::get_sign(val);
   low_word.sign = high_word.sign;
   if (val < 0)
     val *= -1;
