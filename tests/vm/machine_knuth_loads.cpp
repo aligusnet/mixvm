@@ -20,19 +20,19 @@ protected:
   }
 
   void execute_lda() {
-    machine.lda(make_cmd(cmd_lda, address));
+    machine.lda(make_instruction(cmd_lda, address));
   }
 
   void execute_lda(byte format_low, byte format_high) {
-    machine.lda(make_cmd(cmd_lda, address, {format_low, format_high}));
+    machine.lda(make_instruction(cmd_lda, address, {format_low, format_high}));
   }
 
   void execute_ldx() {
-    machine.ldx(make_cmd(cmd_ldx, address));
+    machine.ldx(make_instruction(cmd_ldx, address));
   }
 
   void execute_ldx(byte format_low, byte format_high) {
-    machine.ldx(make_cmd(cmd_ldx, address, {format_low, format_high}));
+    machine.ldx(make_instruction(cmd_ldx, address, {format_low, format_high}));
   }
 };
 

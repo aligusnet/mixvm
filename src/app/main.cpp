@@ -3,6 +3,14 @@
 
 #include "vm/mix_machine.h"
 
+void test_vm();
+mix::Word make_cmd(mix::byte cmd, short addr = 0, mix::FieldSpecification f = mix::FieldSpecification::DEFAULT);
+
+int main(int argc, char *const argv[]) {
+  test_vm();
+  return 0;
+}
+
 void test_vm() {
   using namespace mix;
   std::ofstream ofs_start("start.txt");
@@ -96,7 +104,7 @@ void test_vm() {
   vm.memory[73] = make_cmd(cmd_cmpx, 104);
   vm.memory[74] = make_cmd(cmd_jmp, 76); // jmp
   vm.memory[75] = make_cmd(cmd_nop);
-  // vm.memory[76] = make_cmd(	cmd_jmp, 74, 7); //jge
+  // vm.memory[76] = make_cmd(  cmd_jmp, 74, 7); //jge
   vm.memory[76] = make_cmd(cmd_jmp, 74, {0, 2}); // jov
 
   // jump reg_a
@@ -206,7 +214,6 @@ void test_vm() {
   vm.print_state(ofs_result2);
 }
 
-int main(int argc, char *const argv[]) {
-  test_vm();
-  return 0;
+mix::Word make_cmd(mix::byte cmd, short addr, mix::FieldSpecification f) {
+  return mix::Word::make_as_instruction(cmd, addr, 0, f);
 }

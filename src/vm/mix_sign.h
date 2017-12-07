@@ -3,7 +3,7 @@
 
 namespace mix {
 
-enum class Sign { Positive = 0, Negative = 1 };
+enum class Sign : char { Positive = 0, Negative = 1 };
 
 Sign flip_sign(Sign sign);
 char to_char(Sign sign);

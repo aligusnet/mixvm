@@ -3,6 +3,8 @@
 
 #include "mix_byte.h"
 
+#include <iosfwd>
+
 namespace mix {
 struct FieldSpecification {
   static const FieldSpecification DEFAULT;
@@ -12,7 +14,11 @@ struct FieldSpecification {
   byte high;
 
   byte encode() const;
+
+  void print(std::ostream &os) const;
 };
+
+std::ostream &operator<<(std::ostream &os, FieldSpecification fs);
 
 } // namespace mix
 

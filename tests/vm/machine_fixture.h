@@ -12,6 +12,8 @@ protected:
   Machine machine;
   bool isOverflowed;
 
+  Instruction make_instruction(byte cmd, short addr = 0, FieldSpecification f = FieldSpecification::DEFAULT);
+
   void set_next_instruction_address(int address);
   int get_next_instruction_address() const;
   bool is_next_instruction_address_unchanged() const;

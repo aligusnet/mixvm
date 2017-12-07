@@ -1,5 +1,7 @@
 #include "mix_field_specification.h"
 
+#include <sstream>
+
 namespace mix {
 
 namespace {
@@ -17,6 +19,15 @@ FieldSpecification FieldSpecification::decode(byte f) {
 
 byte FieldSpecification::encode() const {
   return low * BASE + high;
+}
+
+void FieldSpecification::print(std::ostream &os) const {
+  os << "(" << static_cast<int>(low) << ":" << static_cast<int>(high) << ")";
+}
+
+std::ostream &operator<<(std::ostream &os, FieldSpecification fs) {
+  fs.print(os);
+  return os;
 }
 
 } // namespace mix

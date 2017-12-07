@@ -18,19 +18,19 @@ protected:
   }
 
   void execute_sta() {
-    machine.sta(make_cmd(cmd_sta, address));
+    machine.sta(make_instruction(cmd_sta, address));
   }
 
   void execute_sta(byte format_low, byte format_high) {
-    machine.sta(make_cmd(cmd_sta, address, {format_low, format_high}));
+    machine.sta(make_instruction(cmd_sta, address, {format_low, format_high}));
   }
 
   void execute_stx() {
-    machine.stx(make_cmd(cmd_stx, address));
+    machine.stx(make_instruction(cmd_stx, address));
   }
 
   void execute_stx(byte format_low, byte format_high) {
-    machine.stx(make_cmd(cmd_stx, address, {format_low, format_high}));
+    machine.stx(make_instruction(cmd_stx, address, {format_low, format_high}));
   }
 };
 

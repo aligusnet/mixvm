@@ -16,7 +16,7 @@ TEST_F(MachineTestSuite, start_state) {
 
 TEST_F(MachineTestSuite, hlt) {
   machine.halt = false;
-  machine.hlt(make_cmd(cmd_hlt));
+  machine.hlt(make_instruction(cmd_hlt));
   EXPECT_TRUE(machine.halt);
 }
 
