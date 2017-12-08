@@ -66,6 +66,22 @@ enum commands_t {
   cmd_enn5 = cmd_ent5,
   cmd_enn6 = cmd_ent6,
   cmd_ennx = cmd_entx,
+  cmd_inca = cmd_enta,
+  cmd_inc1 = cmd_ent1,
+  cmd_inc2 = cmd_ent2,
+  cmd_inc3 = cmd_ent3,
+  cmd_inc4 = cmd_ent4,
+  cmd_inc5 = cmd_ent5,
+  cmd_inc6 = cmd_ent6,
+  cmd_incx = cmd_entx,
+  cmd_deca = cmd_enta,
+  cmd_dec1 = cmd_ent1,
+  cmd_dec2 = cmd_ent2,
+  cmd_dec3 = cmd_ent3,
+  cmd_dec4 = cmd_ent4,
+  cmd_dec5 = cmd_ent5,
+  cmd_dec6 = cmd_ent6,
+  cmd_decx = cmd_entx,
   cmd_cmpa,
   cmd_cmp1,
   cmd_cmp2,
@@ -239,6 +255,24 @@ struct Machine {
   void enn6(Instruction instruction); // 54, 3
   void ennx(Instruction instruction); // 55, 3
 
+  void inca(Instruction instruction); // 48, 0
+  void inc1(Instruction instruction); // 49, 0
+  void inc2(Instruction instruction); // 50, 0
+  void inc3(Instruction instruction); // 51, 0
+  void inc4(Instruction instruction); // 52, 0
+  void inc5(Instruction instruction); // 53, 0
+  void inc6(Instruction instruction); // 54, 0
+  void incx(Instruction instruction); // 55, 0
+
+  void deca(Instruction instruction); // 48, 1
+  void dec1(Instruction instruction); // 49, 1
+  void dec2(Instruction instruction); // 50, 1
+  void dec3(Instruction instruction); // 51, 1
+  void dec4(Instruction instruction); // 52, 1
+  void dec5(Instruction instruction); // 53, 1
+  void dec6(Instruction instruction); // 54, 1
+  void decx(Instruction instruction); // 55, 1
+
   void cmpa(Instruction instruction); // 56
   void cmp1(Instruction instruction); // 57
   void cmp2(Instruction instruction); // 58
@@ -284,6 +318,11 @@ private:
   void transfer_address_to_index_register(byte index, Instruction instruction);
   template <typename Register> void transfer_negative_address_to_register(Register *reg, Instruction instruction);
   void transfer_negative_address_to_index_register(byte index, Instruction instruction);
+
+  template <typename Register> void increment_register(Register *reg);
+  void increment_index_register(byte index);
+  template <typename Register> void decrement_register(Register *reg);
+  void decrement_index_register(byte index);
 
   template <typename Register> void compare_register_and_memory(const Register &reg, Instruction instruction);
   void compare_index_register_and_memory(byte index, Instruction instruction);

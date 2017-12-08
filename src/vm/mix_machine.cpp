@@ -948,6 +948,86 @@ void Machine::ennx(Instruction instruction) { // 55, 3
   transfer_negative_address_to_register(&reg_x, instruction);
 }
 
+void Machine::inca(Instruction instruction) { // 48, 0
+  LOG_COMMAND_NAME(instruction)
+  increment_register(&reg_a);
+}
+
+void Machine::inc1(Instruction instruction) { // 49, 0
+  LOG_COMMAND_NAME(instruction)
+  increment_index_register(1);
+}
+
+void Machine::inc2(Instruction instruction) { // 50, 0
+  LOG_COMMAND_NAME(instruction)
+  increment_index_register(2);
+}
+
+void Machine::inc3(Instruction instruction) { // 51, 0
+  LOG_COMMAND_NAME(instruction)
+  increment_index_register(3);
+}
+
+void Machine::inc4(Instruction instruction) { // 52, 0
+  LOG_COMMAND_NAME(instruction)
+  increment_index_register(4);
+}
+
+void Machine::inc5(Instruction instruction) { // 53, 0
+  LOG_COMMAND_NAME(instruction)
+  increment_index_register(5);
+}
+
+void Machine::inc6(Instruction instruction) { // 54, 0
+  LOG_COMMAND_NAME(instruction)
+  increment_index_register(6);
+}
+
+void Machine::incx(Instruction instruction) { // 55, 0
+  LOG_COMMAND_NAME(instruction)
+  increment_register(&reg_x);
+}
+
+void Machine::deca(Instruction instruction) { // 48, 1
+  LOG_COMMAND_NAME(instruction)
+  decrement_register(&reg_a);
+}
+
+void Machine::dec1(Instruction instruction) { // 49, 1
+  LOG_COMMAND_NAME(instruction)
+  decrement_index_register(1);
+}
+
+void Machine::dec2(Instruction instruction) { // 50, 1
+  LOG_COMMAND_NAME(instruction)
+  decrement_index_register(2);
+}
+
+void Machine::dec3(Instruction instruction) { // 51, 1
+  LOG_COMMAND_NAME(instruction)
+  decrement_index_register(3);
+}
+
+void Machine::dec4(Instruction instruction) { // 52, 1
+  LOG_COMMAND_NAME(instruction)
+  decrement_index_register(4);
+}
+
+void Machine::dec5(Instruction instruction) { // 53, 1
+  LOG_COMMAND_NAME(instruction)
+  decrement_index_register(5);
+}
+
+void Machine::dec6(Instruction instruction) { // 54, 1
+  LOG_COMMAND_NAME(instruction)
+  decrement_index_register(6);
+}
+
+void Machine::decx(Instruction instruction) { // 55, 1
+  LOG_COMMAND_NAME(instruction)
+  decrement_register(&reg_x);
+}
+
 void Machine::cmpa(Instruction instruction) { // 56
   LOG_COMMAND_NAME(instruction)
   compare_register_and_memory(reg_a, instruction);
@@ -1127,6 +1207,24 @@ void Machine::transfer_negative_address_to_register(Register *reg, Instruction i
 template <typename Register> void Machine::transfer_address_to_register(Register *reg, Instruction instruction) {
   const auto value = extract_address(instruction);
   overflow = reg->set_value(value);
+}
+
+void Machine::increment_index_register(byte index) {
+  increment_register(&reg_i[index - 1]);
+}
+
+template <typename Register> void Machine::increment_register(Register *reg) {
+  auto value = reg->get_value();
+  overflow = reg->set_value(value + 1);
+}
+
+void Machine::decrement_index_register(byte index) {
+  decrement_register(&reg_i[index - 1]);
+}
+
+template <typename Register> void Machine::decrement_register(Register *reg) {
+  auto value = reg->get_value();
+  overflow = reg->set_value(value - 1);
 }
 
 void Machine::compare_index_register_and_memory(byte index, Instruction instruction) {

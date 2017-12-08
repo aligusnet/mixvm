@@ -7,6 +7,7 @@ void test_vm();
 mix::Word make_cmd(mix::byte cmd, short addr = 0, mix::FieldSpecification f = mix::FieldSpecification::DEFAULT);
 
 int main(int argc, char *const argv[]) {
+  std::cout << sizeof(mix::GenericWord<5>) << std::endl;
   test_vm();
   return 0;
 }
