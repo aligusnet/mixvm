@@ -759,6 +759,12 @@ void Machine::jxnp(Instruction instruction) { // 47, 5
 
 void Machine::ena(Instruction instruction) { // 48
   switch (instruction.get_modification()) {
+  case 0:
+    inca(instruction);
+    break;
+  case 1:
+    deca(instruction);
+    break;
   case 2:
     enta(instruction);
     break;
@@ -773,6 +779,12 @@ void Machine::ena(Instruction instruction) { // 48
 
 void Machine::en1(Instruction instruction) { // 49
   switch (instruction.get_modification()) {
+  case 0:
+    inc1(instruction);
+    break;
+  case 1:
+    dec1(instruction);
+    break;
   case 2:
     ent1(instruction);
     break;
@@ -787,6 +799,12 @@ void Machine::en1(Instruction instruction) { // 49
 
 void Machine::en2(Instruction instruction) { // 50
   switch (instruction.get_modification()) {
+  case 0:
+    inc2(instruction);
+    break;
+  case 1:
+    dec2(instruction);
+    break;
   case 2:
     ent2(instruction);
     break;
@@ -801,6 +819,12 @@ void Machine::en2(Instruction instruction) { // 50
 
 void Machine::en3(Instruction instruction) { // 51
   switch (instruction.get_modification()) {
+  case 0:
+    inc3(instruction);
+    break;
+  case 1:
+    dec3(instruction);
+    break;
   case 2:
     ent3(instruction);
     break;
@@ -815,6 +839,12 @@ void Machine::en3(Instruction instruction) { // 51
 
 void Machine::en4(Instruction instruction) { // 52
   switch (instruction.get_modification()) {
+  case 0:
+    inc4(instruction);
+    break;
+  case 1:
+    dec4(instruction);
+    break;
   case 2:
     ent4(instruction);
     break;
@@ -829,6 +859,12 @@ void Machine::en4(Instruction instruction) { // 52
 
 void Machine::en5(Instruction instruction) { // 53
   switch (instruction.get_modification()) {
+  case 0:
+    inc5(instruction);
+    break;
+  case 1:
+    dec5(instruction);
+    break;
   case 2:
     ent5(instruction);
     break;
@@ -843,6 +879,12 @@ void Machine::en5(Instruction instruction) { // 53
 
 void Machine::en6(Instruction instruction) { // 54
   switch (instruction.get_modification()) {
+  case 0:
+    inc6(instruction);
+    break;
+  case 1:
+    dec6(instruction);
+    break;
   case 2:
     ent6(instruction);
     break;
@@ -857,6 +899,12 @@ void Machine::en6(Instruction instruction) { // 54
 
 void Machine::enx(Instruction instruction) { // 55
   switch (instruction.get_modification()) {
+  case 0:
+    incx(instruction);
+    break;
+  case 1:
+    decx(instruction);
+    break;
   case 2:
     entx(instruction);
     break;
