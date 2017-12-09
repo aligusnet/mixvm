@@ -6,7 +6,7 @@
 namespace mix {
 
 Instruction MachineFixture::make_instruction(byte cmd, short addr, FieldSpecification f) {
-  return Instruction(Word::make_as_instruction(cmd, addr, 0, f));
+  return Instruction(cmd, addr, 0, f);
 }
 
 void MachineFixture::set_next_instruction_address(int address) {

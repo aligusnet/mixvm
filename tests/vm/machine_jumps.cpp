@@ -10,7 +10,7 @@ TEST_F(MachineJumpsTestSuite, jmp) {
 }
 
 TEST_F(MachineJumpsTestSuite, jsj) {
-  machine.memory[10] = Word::make_as_instruction(cmd_jmp, 77);
+  machine.memory[10] = Instruction(cmd_jmp, 77).as_word();
   machine.jsj(make_instruction(cmd_jmp, 10));
 
   EXPECT_EQ(77, get_next_instruction_address());

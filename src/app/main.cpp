@@ -216,5 +216,5 @@ void test_vm() {
 }
 
 mix::Word make_cmd(mix::byte cmd, short addr, mix::FieldSpecification f) {
-  return mix::Word::make_as_instruction(cmd, addr, 0, f);
+  return mix::Instruction(cmd, addr, 0, f).as_word();
 }
