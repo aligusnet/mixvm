@@ -5,6 +5,8 @@
 #include "mix_small_word.h"
 #include "mix_word.h"
 
+#include <array>
+
 namespace mix {
 enum compare_t { cmp_less = -1, cmp_equal, cmp_greater };
 
@@ -22,6 +24,7 @@ enum commands_t {
   cmd_srax = cmd_shift,
   cmd_slc = cmd_shift,
   cmd_src = cmd_shift,
+  cmd_move,
   cmd_lda = 8,
   cmd_ld1,
   cmd_ld2 = 10,
@@ -117,7 +120,7 @@ struct Machine {
   compare_t compare_flag;
   bool halt;
 
-  Word memory[MEMORY_WORDS];
+  std::array<Word, MEMORY_WORDS> memory;
 
   Machine();
   void print_state(std::ostream &os);
@@ -137,6 +140,7 @@ struct Machine {
   void srax(Instruction instruction);  // 6, 3
   void slc(Instruction instruction);   // 6, 4
   void src(Instruction instruction);   // 6, 5
+  void move(Instruction instruction);  // 7
 
   void lda(Instruction instruction); // 8
   void ld1(Instruction instruction); // 9

@@ -2,6 +2,7 @@
 #include "mix_array_shifter.h"
 #include "mix_long_value.h"
 
+#include <algorithm>
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
@@ -138,6 +139,27 @@ void Machine::src(Instruction instruction) { // 6, 5
   LOG_COMMAND_NAME(instruction)
   auto num_elements = instruction.get_address();
   double_rotate_right(&reg_a.bytes, &reg_x.bytes, num_elements);
+}
+
+void Machine::move(Instruction instruction) { // 7
+  LOG_COMMAND_NAME(instruction)
+
+  auto num_elements = instruction.get_modification();
+  auto source_address = extract_address(instruction);
+  auto target_address = reg_i[0].get_address();
+
+  auto source_begin = memory.begin() + source_address;
+  auto source_end = source_begin + num_elements;
+  auto target_begin = memory.begin() + target_address;
+
+  const bool is_target_start_inside_source_interval =
+      target_address >= source_address && target_address < (source_address + num_elements);
+
+  if (is_target_start_inside_source_interval) {
+    std::copy_backward(source_begin, source_end, target_begin);
+  } else {
+    std::copy(source_begin, source_end, target_begin);
+  }
 }
 
 void Machine::lda(Instruction instruction) { // 8
@@ -1371,7 +1393,7 @@ do_statement *Machine::get_statement(Instruction instruction) {
   static do_statement statements[] = {
       &Machine::nop, // 0
       &Machine::add,     &Machine::sub,     &Machine::mul,     &Machine::div,     &Machine::hlt,
-      &Machine::nothing, &Machine::nothing, &Machine::lda,     &Machine::ld1,
+      &Machine::shift,   &Machine::move,    &Machine::lda,     &Machine::ld1,
       &Machine::ld2, // 10
       &Machine::ld3,     &Machine::ld4,     &Machine::ld5,     &Machine::ld6,     &Machine::ldx,
       &Machine::ldan,    &Machine::ld1n,    &Machine::ld2n,    &Machine::ld3n,

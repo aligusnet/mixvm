@@ -12,6 +12,23 @@ protected:
     expect_eq(default_reg_x, machine.reg_x);
   }
 
+  void test_move(int target_start_address, int source_start_address, int num_elements) {
+    machine.reg_i[0].set_value(target_start_address);
+    for (int i = 0; i < 10; ++i) {
+      machine.memory[source_start_address + i].set_value(calc_value(i));
+    }
+
+    machine.move(Instruction(cmd_move, source_start_address, 0, 10));
+
+    for (int i = 0; i < 10; ++i) {
+      ASSERT_EQ(calc_value(i), machine.memory[target_start_address + i].get_value());
+    }
+  }
+
+  static value_type calc_value(value_type index) {
+    return 3 * index + 127;
+  }
+
   big_register default_reg_a{Sign::Positive, 1, 2, 3, 4, 5};
   big_register default_reg_x{Sign::Negative, 6, 7, 8, 9, 10};
 };
@@ -154,6 +171,18 @@ TEST_F(MachineMiscellaneousTestSuite, src_to_107) {
 
   expect_eq(Word(Sign::Positive, 4, 5, 6, 7, 8), machine.reg_a);
   expect_eq(Word(Sign::Negative, 9, 10, 1, 2, 3), machine.reg_x);
+}
+
+TEST_F(MachineMiscellaneousTestSuite, move_non_overlapped) {
+  test_move(100, 200, 10);
+}
+
+TEST_F(MachineMiscellaneousTestSuite, move_target_start_inside_source_range) {
+  test_move(100, 90, 20);
+}
+
+TEST_F(MachineMiscellaneousTestSuite, move_source_start_inside_target_range) {
+  test_move(90, 100, 20);
 }
 
 } // namespace mix
