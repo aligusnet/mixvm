@@ -5,6 +5,7 @@
 #include "mix_field_specification.h"
 #include "mix_sign.h"
 
+#include <array>
 #include <ostream>
 
 namespace mix {
@@ -128,12 +129,16 @@ public:
   }
 
   Sign sign;
-  byte bytes[DATA_BYTES];
+  std::array<byte, DATA_BYTES> bytes;
 };
 
 template <int N> std::ostream &operator<<(std::ostream &os, const GenericWord<N> &word) {
   word.print(os);
   return os;
+}
+
+template <int N> bool operator==(const GenericWord<N> &lhs, const GenericWord<N> &rhs) {
+  return lhs.sign == rhs.sign && lhs.bytes == rhs.bytes;
 }
 
 } // namespace mix

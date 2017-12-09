@@ -1,4 +1,5 @@
 #include "mix_machine.h"
+#include "mix_array_shifter.h"
 #include "mix_long_value.h"
 
 #include <iostream>
@@ -78,6 +79,65 @@ void Machine::div(Instruction instruction) { // 4
 void Machine::hlt(Instruction instruction) { // 5
   LOG_COMMAND_NAME(instruction)
   halt = true;
+}
+
+void Machine::shift(Instruction instruction) { // 6
+  switch (instruction.get_modification()) {
+  case 0:
+    sla(instruction);
+    break;
+  case 1:
+    sra(instruction);
+    break;
+  case 2:
+    slax(instruction);
+    break;
+  case 3:
+    srax(instruction);
+    break;
+  case 4:
+    slc(instruction);
+    break;
+  case 5:
+    src(instruction);
+    break;
+  };
+}
+
+void Machine::sla(Instruction instruction) { // 6, 0
+  LOG_COMMAND_NAME(instruction)
+  auto num_elements = instruction.get_address();
+  shift_left(&reg_a.bytes, num_elements);
+}
+
+void Machine::sra(Instruction instruction) { // 6, 1
+  LOG_COMMAND_NAME(instruction)
+  auto num_elements = instruction.get_address();
+  shift_right(&reg_a.bytes, num_elements);
+}
+
+void Machine::slax(Instruction instruction) { // 6, 2
+  LOG_COMMAND_NAME(instruction)
+  auto num_elements = instruction.get_address();
+  double_shift_left(&reg_a.bytes, &reg_x.bytes, num_elements);
+}
+
+void Machine::srax(Instruction instruction) { // 6, 3
+  LOG_COMMAND_NAME(instruction)
+  auto num_elements = instruction.get_address();
+  double_shift_right(&reg_a.bytes, &reg_x.bytes, num_elements);
+}
+
+void Machine::slc(Instruction instruction) { // 6, 4
+  LOG_COMMAND_NAME(instruction)
+  auto num_elements = instruction.get_address();
+  double_rotate_left(&reg_a.bytes, &reg_x.bytes, num_elements);
+}
+
+void Machine::src(Instruction instruction) { // 6, 5
+  LOG_COMMAND_NAME(instruction)
+  auto num_elements = instruction.get_address();
+  double_rotate_right(&reg_a.bytes, &reg_x.bytes, num_elements);
 }
 
 void Machine::lda(Instruction instruction) { // 8

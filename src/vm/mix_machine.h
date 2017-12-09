@@ -15,6 +15,13 @@ enum commands_t {
   cmd_mul,
   cmd_div,
   cmd_hlt = 5,
+  cmd_shift,
+  cmd_sla = cmd_shift,
+  cmd_sra = cmd_shift,
+  cmd_slax = cmd_shift,
+  cmd_srax = cmd_shift,
+  cmd_slc = cmd_shift,
+  cmd_src = cmd_shift,
   cmd_lda = 8,
   cmd_ld1,
   cmd_ld2 = 10,
@@ -123,6 +130,13 @@ struct Machine {
   void mul(Instruction instruction); // 3
   void div(Instruction instruction); // 4
   void hlt(Instruction instruction); // 5
+  void shift(Instruction instruction); // 6
+  void sla(Instruction instruction);   // 6, 0
+  void sra(Instruction instruction);   // 6, 1
+  void slax(Instruction instruction);  // 6, 2
+  void srax(Instruction instruction);  // 6, 3
+  void slc(Instruction instruction);   // 6, 4
+  void src(Instruction instruction);   // 6, 5
 
   void lda(Instruction instruction); // 8
   void ld1(Instruction instruction); // 9

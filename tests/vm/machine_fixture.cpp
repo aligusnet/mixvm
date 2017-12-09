@@ -55,6 +55,6 @@ int MachineFixture::get_reg_i_value(int index) const {
 }
 
 void MachineFixture::expect_eq(const Word &expected, const Word &actual) const {
-  EXPECT_EQ(expected.get_value(), actual.get_value());
+  EXPECT_EQ(expected, actual);
 }
 } // namespace mix
